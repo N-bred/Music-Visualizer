@@ -25,3 +25,14 @@ function update(t?: number) {
 }
 
 renderer.setAnimationLoop(update);
+
+
+window.addEventListener('keyup', e => {
+  switch(e.key) {
+    case 'q':
+      scene.animateBox()
+      break
+    default:
+      break
+  }
+})
