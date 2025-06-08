@@ -7,21 +7,18 @@ import AudioManager from "./audioManager";
 const appContainer = document.querySelector("#app");
 
 const songList = ["public/songs/System of a Down - Forest.mp3"];
-const numberOfFrequencies = 64;
+const numberOfFrequencies = 512;
 const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(0);
 audioManager.volume = 0.5;
 
 const scene = new VisualizerScene();
-scene.instantiatePanel(numberOfFrequencies, "x");
+scene.instantiatePanel(numberOfFrequencies, "y");
 scene.instantiateLight();
-scene.position.set(150,0,0)
+scene.position.set(150,-100,0)
 
 const camera = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
 camera.position.set(0, 0, -150);
-
-// camera.auto
-// camera.lookAt();
 
 const renderer = new T.WebGLRenderer();
 renderer.setSize(innerWidth, innerHeight);
@@ -51,7 +48,7 @@ window.addEventListener("keyup", (e) => {
       }
       break;
     case "d":
-      console.log(scene);
+      console.log(audioManager.fft);
       break;
     default:
       break;

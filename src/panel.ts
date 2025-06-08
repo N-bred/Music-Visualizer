@@ -16,15 +16,27 @@ export default class Panel extends T.Group {
   setup() {
     for (let i = 0; i < this._quantity / 2; ++i) {
       const box = new Box({
-        scale: 2,
-        color: 0xff00000,
-        transitionColor: 0x0000ff,
+        color: new T.Color(0xffffff),
+        transitionColor: new T.Color(0x0000ff),
         direction: this._direction,
-        position: new T.Vector3(0, -i, 0),
+        position: this.createPositionVector(this._direction, i),
       });
       this.add(box.element);
       this._boxes.push(box);
     }
+  }
+
+  createPositionVector(direction: Direction, i: number): T.Vector3 {
+    if (direction === "x") {
+      return new T.Vector3(0, -i, 0);
+    }
+    if (direction === "y") {
+      return new T.Vector3(-i, 0, 0);
+    }
+    if (direction === "z") {
+      return new T.Vector3(-i, -i, 0);
+    }
+    return new T.Vector3(0, 0, 0);
   }
 
   animateBoxes(fft: Uint8Array<ArrayBufferLike>) {
