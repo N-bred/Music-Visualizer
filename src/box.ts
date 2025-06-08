@@ -41,8 +41,7 @@ export default class Box {
     return boxMesh;
   }
 
-  animate(s: number) {
-    let scalar = s;
+  animate(scalar: number) {
     if (this._direction === "y") {
       scalar *= -1;
     }
@@ -52,7 +51,7 @@ export default class Box {
     this._el.material.color.lerpColors(
       this._color,
       this._transitionColor,
-      Math.abs(scalar) / 250
+      Math.abs(scalar) / 195
     );
   }
 }

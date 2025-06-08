@@ -5,9 +5,11 @@ import VisualizerScene from "./scene";
 import AudioManager from "./audioManager";
 
 const appContainer = document.querySelector("#app");
+const songsFolder = "public/songs/";
+const songNames = ["System of a Down - Forest.mp3"];
 
-const songList = ["public/songs/System of a Down - Forest.mp3"];
-const numberOfFrequencies = 512;
+const songList = songNames.map((song) => songsFolder + song);
+const numberOfFrequencies = 512 * 2;
 const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(0);
 audioManager.volume = 0.5;
@@ -15,7 +17,7 @@ audioManager.volume = 0.5;
 const scene = new VisualizerScene();
 scene.instantiatePanel(numberOfFrequencies, "y");
 scene.instantiateLight();
-scene.position.set(150,-100,0)
+scene.position.set(150, -100, 0);
 
 const camera = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
 camera.position.set(0, 0, -150);
@@ -34,6 +36,12 @@ function update(_t?: number) {
 }
 
 renderer.setAnimationLoop(update);
+
+window.addEventListener("resize", () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 
 window.addEventListener("keyup", (e) => {
   switch (e.key) {
