@@ -2,6 +2,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as T from "three";
 import VisualizerScene from "./scene";
+import AudioManager from "./audioManager";
 
 const appContainer = document.querySelector("#app");
 const scene = new VisualizerScene();
@@ -19,6 +20,11 @@ appContainer?.appendChild(renderer.domElement);
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
 
+const songList = ["public/songs/System of a Down - Forest.mp3"];
+const audioManager = new AudioManager(songList);
+audioManager.setSong(0);
+audioManager.volume = 0.5;
+
 function update(_t?: number) {
   renderer.render(scene, camera);
   orbitControls.update();
@@ -26,13 +32,19 @@ function update(_t?: number) {
 
 renderer.setAnimationLoop(update);
 
-
-window.addEventListener('keyup', e => {
-  switch(e.key) {
-    case 'q':
-      scene.animateBox()
-      break
+window.addEventListener("keyup", (e) => {
+  switch (e.key) {
+    case "q":
+      scene.animateBox();
+      break;
+    case "p":
+      if (audioManager.isPlaying) {
+        audioManager.pause();
+      } else {
+        audioManager.play();
+      }
+      break;
     default:
-      break
+      break;
   }
-})
+});
