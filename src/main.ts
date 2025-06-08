@@ -19,7 +19,7 @@ appContainer?.appendChild(renderer.domElement);
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
 
-function update(t?: number) {
+function update(_t?: number) {
   renderer.render(scene, camera);
   orbitControls.update();
 }

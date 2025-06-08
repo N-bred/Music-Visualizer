@@ -1,19 +1,19 @@
 import * as T from "three";
-import gsap from "gsap";
+
+import { Box } from "./box";
 
 export default class VisualizerScene extends T.Scene {
-  private triggered = false;
+  private _triggered = false;
+  private _boxes: Box[] = [];
   constructor() {
     super();
     this.background = new T.Color(0x000000);
   }
 
-  instantiateBox(color: T.Color = new T.Color(0xffffff)) {
-    const boxGeometry = new T.BoxGeometry(1, 1, 1);
-    const boxMaterial = new T.MeshStandardMaterial({ color });
-    const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
-    boxMesh.position.set(0, 0, 0);
-    this.add(boxMesh);
+  instantiateBox() {
+    const box = new Box({scale: 2, color: 0xff00000, transitionColor: 0x0000ff});
+    this.add(box.element);
+    this._boxes.push(box);
   }
 
   instantiateLight(
@@ -28,23 +28,10 @@ export default class VisualizerScene extends T.Scene {
   }
 
   animateBox() {
-    this.children.forEach((c) => {
-      if (c.type === "Mesh") {
-        const child = c as T.Mesh<
-          T.BoxGeometry,
-          T.MeshStandardMaterial,
-          T.Object3DEventMap
-        >;
-        
-        const scale = this.triggered ? { x: 1 } : { x: 2 };
-        const position = this.triggered ? { x: 0 } : { x: -0.5 };
-        const color = this.triggered ? 0xffffff : 0x000000;
-
-        gsap.to(child.scale, scale);
-        gsap.to(child.position, position);
-        gsap.to(child.material.color, new T.Color(color));
-        this.triggered = !this.triggered;
-      }
+    this._boxes.forEach((box) => {
+      box.animate(this._triggered);
     });
+
+    this._triggered = !this._triggered;
   }
 }
