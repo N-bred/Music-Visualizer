@@ -21,7 +21,8 @@ const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
 
 const songList = ["public/songs/System of a Down - Forest.mp3"];
-const audioManager = new AudioManager(songList);
+const numberOfFrequencies = 32;
+const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(0);
 audioManager.volume = 0.5;
 
@@ -43,6 +44,9 @@ window.addEventListener("keyup", (e) => {
       } else {
         audioManager.play();
       }
+      break;
+    case "d":
+      console.log(audioManager.fft);
       break;
     default:
       break;
