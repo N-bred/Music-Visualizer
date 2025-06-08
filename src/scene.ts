@@ -1,19 +1,19 @@
 import * as T from "three";
-
-import { Box } from "./box";
+import Panel from "./panel";
+import { type Direction } from "./box";
 
 export default class VisualizerScene extends T.Scene {
-  private _triggered = false;
-  private _boxes: Box[] = [];
+  private _panels: Panel[] = [];
+
   constructor() {
     super();
     this.background = new T.Color(0x000000);
   }
 
-  instantiateBox() {
-    const box = new Box({scale: 2, color: 0xff00000, transitionColor: 0x0000ff});
-    this.add(box.element);
-    this._boxes.push(box);
+  instantiatePanel(quantity: number, direction: Direction) {
+    const panel = new Panel(quantity, direction);
+    this.add(panel);
+    this._panels.push(panel);
   }
 
   instantiateLight(
@@ -27,11 +27,9 @@ export default class VisualizerScene extends T.Scene {
     this.add(light);
   }
 
-  animateBox() {
-    this._boxes.forEach((box) => {
-      box.animate(this._triggered);
+  animatePanel(fft: Uint8Array<ArrayBufferLike>) {
+    this._panels.forEach((panel) => {
+      panel.animateBoxes(fft);
     });
-
-    this._triggered = !this._triggered;
   }
 }

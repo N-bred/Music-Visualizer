@@ -5,13 +5,23 @@ import VisualizerScene from "./scene";
 import AudioManager from "./audioManager";
 
 const appContainer = document.querySelector("#app");
+
+const songList = ["public/songs/System of a Down - Forest.mp3"];
+const numberOfFrequencies = 64;
+const audioManager = new AudioManager(songList, numberOfFrequencies);
+audioManager.setSong(0);
+audioManager.volume = 0.5;
+
 const scene = new VisualizerScene();
-scene.instantiateBox();
+scene.instantiatePanel(numberOfFrequencies, "x");
 scene.instantiateLight();
+scene.position.set(150,0,0)
 
 const camera = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
-camera.position.set(0, 0, -5);
-camera.lookAt(new T.Vector3(0, 0, 0));
+camera.position.set(0, 0, -150);
+
+// camera.auto
+// camera.lookAt();
 
 const renderer = new T.WebGLRenderer();
 renderer.setSize(innerWidth, innerHeight);
@@ -20,14 +30,9 @@ appContainer?.appendChild(renderer.domElement);
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
 
-const songList = ["public/songs/System of a Down - Forest.mp3"];
-const numberOfFrequencies = 32;
-const audioManager = new AudioManager(songList, numberOfFrequencies);
-audioManager.setSong(0);
-audioManager.volume = 0.5;
-
 function update(_t?: number) {
   renderer.render(scene, camera);
+  scene.animatePanel(audioManager.fft);
   orbitControls.update();
 }
 
@@ -36,7 +41,7 @@ renderer.setAnimationLoop(update);
 window.addEventListener("keyup", (e) => {
   switch (e.key) {
     case "q":
-      scene.animateBox();
+      scene.animatePanel(audioManager.fft);
       break;
     case "p":
       if (audioManager.isPlaying) {
@@ -46,7 +51,7 @@ window.addEventListener("keyup", (e) => {
       }
       break;
     case "d":
-      console.log(audioManager.fft);
+      console.log(scene);
       break;
     default:
       break;

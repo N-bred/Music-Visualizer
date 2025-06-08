@@ -3,9 +3,9 @@
 - [x] Implement Audio API with Song
 - [x] Attach Events to Audio API
 - [x] Console log FFT - GET FFT
-- [] Make row of boxes and scale them accordingly to FFT
-- [] Remove gsap?
-- [] Remove triggered?
+- [x] Make row of boxes and scale them accordingly to FFT
+- [x] Remove gsap?
+- [x] Remove triggered?
 
 # Part 3
 
