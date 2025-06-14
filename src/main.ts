@@ -57,6 +57,7 @@ window.addEventListener("keyup", (e) => {
       break;
     case "d":
       console.log(audioManager.fft);
+      console.log(scene.children)
       break;
     default:
       break;

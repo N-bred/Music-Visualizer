@@ -7,6 +7,7 @@ type BoxType = {
   position?: T.Vector3;
   color?: T.Color;
   direction?: Direction;
+  rotation?: number;
 };
 
 export default class Box {
@@ -14,6 +15,7 @@ export default class Box {
   private _color: T.Color;
   private _position: T.Vector3;
   private _direction: Direction;
+  private _rotation: number;
   private _el: T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
 
   constructor({
@@ -21,11 +23,13 @@ export default class Box {
     color = new T.Color(0xffffff),
     position = new T.Vector3(0, 0, 0),
     direction = "x",
+    rotation = 0
   }: BoxType) {
     this._color = color;
     this._transitionColor = transitionColor;
     this._position = position;
     this._direction = direction;
+    this._rotation = rotation;
     this._el = this.create();
   }
 
@@ -42,12 +46,13 @@ export default class Box {
   }
 
   animate(scalar: number) {
-    if (this._direction === "y") {
-      scalar *= -1;
-    }
+    // if (this._direction === "y") {
+    //   scalar *= -1;
+    // }
 
-    this._el.scale[this._direction] = scalar;
-    this._el.position[this._direction] = -scalar / 2;
+    this._el.scale[this._direction] = Math.max(scalar, 1);
+    this._el.rotation.z = this._rotation;
+    // this._el.position[this._direction] = -scalar / 2;
     this._el.material.color.lerpColors(
       this._color,
       this._transitionColor,
