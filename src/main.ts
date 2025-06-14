@@ -19,6 +19,7 @@ const themeManager = new ThemeManager("chaotic");
 
 const scene = new VisualizerScene();
 scene.instantiatePanel(numberOfFrequencies, themeManager.ThemeObject.direction);
+scene.instantiatePanel(numberOfFrequencies, 'z');
 scene.instantiateLight();
 scene.position.set(0, -0, 0);
 

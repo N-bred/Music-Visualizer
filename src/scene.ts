@@ -1,6 +1,6 @@
 import * as T from "three";
 import Panel from "./panel";
-import { type Direction } from "./box";
+import { type Direction } from "./themeManager";
 
 export default class VisualizerScene extends T.Scene {
   private _panels: Panel[] = [];
@@ -11,7 +11,9 @@ export default class VisualizerScene extends T.Scene {
   }
 
   instantiatePanel(quantity: number, direction: Direction) {
+    const length = this._panels.length;
     const panel = new Panel(quantity, direction);
+    panel.position.z = length;
     this.add(panel);
     this._panels.push(panel);
   }

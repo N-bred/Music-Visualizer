@@ -17,13 +17,12 @@ export default class Panel extends T.Group {
   setup() {
     const theme = ThemeManager.getTheme();
     if (theme) {
-      theme.setDirection(this._direction);
       for (let i = 0; i < this._quantity; ++i) {
         const angle = theme.calculateAngle(i, this._quantity);
         const box = new Box({
           color: theme.ThemeObject.color,
           transitionColor: theme.ThemeObject.transitionColor,
-          direction: theme.ThemeObject.direction,
+          direction: this._direction,
           position: theme.calculatePosition(i, 250, (angle * Math.PI) / 180),
           rotation: angle,
         });
