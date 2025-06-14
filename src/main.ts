@@ -17,10 +17,10 @@ audioManager.volume = 0.5;
 const scene = new VisualizerScene();
 scene.instantiatePanel(numberOfFrequencies, "y");
 scene.instantiateLight();
-scene.position.set(150, -100, 0);
+scene.position.set(0, -0, 0);
 
 const camera = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
-camera.position.set(0, 0, -150);
+camera.position.set(0, 0, -200);
 
 const renderer = new T.WebGLRenderer();
 renderer.setSize(innerWidth, innerHeight);
