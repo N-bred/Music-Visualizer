@@ -7,13 +7,15 @@ import ThemeManager from "./themeManager";
 
 const appContainer = document.querySelector("#app");
 const songsFolder = "public/songs/";
-const songNames = ["System of a Down - Forest.mp3"];
+const songNames = ["System of a Down - Forest.mp3", "Clavicula Nox.mp3"];
 
 const songList = songNames.map((song) => songsFolder + song);
 const numberOfFrequencies = 512 * (2 * 2);
 const audioManager = new AudioManager(songList, numberOfFrequencies);
-audioManager.setSong(0);
-audioManager.volume = 0.5;
+audioManager.setSong(1);
+audioManager.volume = 1;
+
+const allowZRotation = false;
 
 const themeManager = new ThemeManager(
   "chaotic",
@@ -23,11 +25,12 @@ const themeManager = new ThemeManager(
 
 const scene = new VisualizerScene();
 scene.instantiatePanel(numberOfFrequencies, "y");
+scene.instantiatePanel(numberOfFrequencies, "y");
 scene.instantiateLight();
 scene.position.set(0, -0, 0);
 
 const camera = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
-camera.position.set(0, 0, -450);
+camera.position.set(0, 0, 1200);
 camera.lookAt(scene.position);
 
 const renderer = new T.WebGLRenderer();
@@ -39,8 +42,10 @@ orbitControls.enableDamping = true;
 
 function update(_t?: number) {
   renderer.render(scene, camera);
-  scene.rotation.z = Math.cos(_t! / 10000);
-  scene.rotation.x = Math.sin(-_t! / 10000) * 5;
+  scene.rotation.z = -_t! / 10000;
+  if (allowZRotation) {
+    scene.rotation.x = Math.sin(-_t! / 100000) *1;
+  }
   scene.animatePanel(audioManager.fft);
   orbitControls.update();
 }

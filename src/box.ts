@@ -38,9 +38,11 @@ export default class Box {
 
     if (this._theme.ThemeObject.theme === "chaotic") {
       boxMesh.rotation.z = this._rotation;
+      // boxMesh.lookAt(new T.Vector3(0, 0, window.camera.position.z || 0));
     } else {
       boxGeometry.translate(0, 0.5, 0);
-      boxMesh.lookAt(new T.Vector3(0, 0, this._position.z));
+      // boxMesh.lookAt(new T.Vector3(0, 0, this._position.z));
+      boxMesh.lookAt(new T.Vector3(0, 0, 1));
     }
 
     return boxMesh;
@@ -48,7 +50,6 @@ export default class Box {
 
   animate(scalar: number) {
     this._el.scale[this._direction] = Math.max(scalar, 1);
-
     this._el.material.color.lerpColors(
       this._color,
       this._transitionColor,
