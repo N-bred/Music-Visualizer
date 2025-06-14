@@ -23,7 +23,7 @@ export default class Box {
     color = new T.Color(0xffffff),
     position = new T.Vector3(0, 0, 0),
     direction = "x",
-    rotation = 0
+    rotation = 0,
   }: BoxType) {
     this._color = color;
     this._transitionColor = transitionColor;
@@ -42,17 +42,12 @@ export default class Box {
     const boxMaterial = new T.MeshBasicMaterial({ color: this._color });
     const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
     boxMesh.position.copy(this._position);
+    boxMesh.rotation.z = this._rotation;
     return boxMesh;
   }
 
   animate(scalar: number) {
-    // if (this._direction === "y") {
-    //   scalar *= -1;
-    // }
-
     this._el.scale[this._direction] = Math.max(scalar, 1);
-    this._el.rotation.z = this._rotation;
-    // this._el.position[this._direction] = -scalar / 2;
     this._el.material.color.lerpColors(
       this._color,
       this._transitionColor,

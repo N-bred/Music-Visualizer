@@ -8,14 +8,14 @@ export default class Panel extends T.Group {
 
   constructor(quantity: number, direction: Direction) {
     super();
-    this._quantity = quantity;
+    this._quantity = quantity / 2;
     this._direction = direction;
     this.setup();
   }
 
   setup() {
-    for (let i = 0; i < this._quantity / 2; ++i) {
-      const angle = i * (this._quantity / 2 / (180 * 2));
+    for (let i = 0; i < this._quantity; ++i) {
+      const angle = i * (this._quantity / Math.PI * 2);
       // const angle = ((i * this._quantity) / Math.PI) * 2;
       const box = new Box({
         color: new T.Color(0xffffff),
@@ -25,7 +25,7 @@ export default class Panel extends T.Group {
         position: this.createPositionVectorRotated(
           i,
           250,
-          angle * (Math.PI / 180)
+          angle
         ),
         rotation: angle,
       });
