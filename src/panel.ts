@@ -1,5 +1,6 @@
-import Box, { type Direction } from "./box";
 import * as T from "three";
+import Box from "./box";
+import ThemeManager, { type Direction } from "./themeManager";
 
 export default class Panel extends T.Group {
   private _quantity: number;
@@ -14,39 +15,22 @@ export default class Panel extends T.Group {
   }
 
   setup() {
-    for (let i = 0; i < this._quantity; ++i) {
-      // const angle = i * ((2 * Math.PI) / this._quantity);
-      const angle = i * (this._quantity / (2 * 180));
-      const box = new Box({
-        color: new T.Color(0xffffff),
-        transitionColor: new T.Color(0x0000ff),
-        direction: this._direction,
-        position: this.createPositionVectorRotated(i, 250, angle  * Math.PI/180),
-        rotation: angle,
-      });
-      this.add(box.element);
-      this._boxes.push(box);
+    const theme = ThemeManager.getTheme();
+    if (theme) {
+      theme.setDirection(this._direction);
+      for (let i = 0; i < this._quantity; ++i) {
+        const angle = theme.calculateAngle(i, this._quantity);
+        const box = new Box({
+          color: theme.ThemeObject.color,
+          transitionColor: theme.ThemeObject.transitionColor,
+          direction: theme.ThemeObject.direction,
+          position: theme.calculatePosition(i, 250, (angle * Math.PI) / 180),
+          rotation: angle,
+        });
+        this.add(box.element);
+        this._boxes.push(box);
+      }
     }
-  }
-
-  createPositionVectorRotated(i: number, radius: number, angle: number) {
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius;
-    const z = i;
-    return new T.Vector3(x, y, z);
-  }
-
-  createPositionVector(direction: Direction, i: number): T.Vector3 {
-    if (direction === "x") {
-      return new T.Vector3(0, -i, 0);
-    }
-    if (direction === "y") {
-      return new T.Vector3(-i, 0, 0);
-    }
-    if (direction === "z") {
-      return new T.Vector3(-i, -i, 0);
-    }
-    return new T.Vector3(0, 0, 0);
   }
 
   animateBoxes(fft: Uint8Array<ArrayBufferLike>) {

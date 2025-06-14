@@ -1,8 +1,9 @@
-import { OrbitControls } from "three/examples/jsm/Addons.js";
 import "./style.css";
 import * as T from "three";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 import VisualizerScene from "./scene";
 import AudioManager from "./audioManager";
+import ThemeManager from "./themeManager";
 
 const appContainer = document.querySelector("#app");
 const songsFolder = "public/songs/";
@@ -14,8 +15,10 @@ const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(0);
 audioManager.volume = 0.5;
 
+const themeManager = new ThemeManager("chaotic");
+
 const scene = new VisualizerScene();
-scene.instantiatePanel(numberOfFrequencies, "y");
+scene.instantiatePanel(numberOfFrequencies, themeManager.ThemeObject.direction);
 scene.instantiateLight();
 scene.position.set(0, -0, 0);
 
@@ -57,7 +60,7 @@ window.addEventListener("keyup", (e) => {
       break;
     case "d":
       console.log(audioManager.fft);
-      console.log(scene.children)
+      console.log(scene.children);
       break;
     default:
       break;

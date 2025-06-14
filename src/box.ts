@@ -1,14 +1,5 @@
 import * as T from "three";
-
-export type Direction = "x" | "y" | "z";
-
-type BoxType = {
-  transitionColor?: T.Color;
-  position?: T.Vector3;
-  color?: T.Color;
-  direction?: Direction;
-  rotation?: number;
-};
+import ThemeManager, { type BoxType, type Direction } from "./themeManager";
 
 export default class Box {
   private _transitionColor: T.Color;
@@ -16,6 +7,7 @@ export default class Box {
   private _position: T.Vector3;
   private _direction: Direction;
   private _rotation: number;
+  private _theme: ThemeManager;
   private _el: T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
 
   constructor({
@@ -30,6 +22,7 @@ export default class Box {
     this._position = position;
     this._direction = direction;
     this._rotation = rotation;
+    this._theme = ThemeManager.getTheme()!;
     this._el = this.create();
   }
 
@@ -39,17 +32,23 @@ export default class Box {
 
   create() {
     const boxGeometry = new T.BoxGeometry(1, 1, 1);
-    // boxGeometry.translate(0,0,0.5);
     const boxMaterial = new T.MeshBasicMaterial({ color: this._color });
     const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
     boxMesh.position.copy(this._position);
-    // boxMesh.lookAt(new T.Vector3(0,0,this._position.z));
-    boxMesh.rotation.z = this._rotation;
+
+    if (this._theme.ThemeObject.theme === "chaotic") {
+      boxMesh.rotation.z = this._rotation;
+    } else {
+      boxGeometry.translate(0, 0.5, 0);
+      boxMesh.lookAt(new T.Vector3(0, 0, this._position.z));
+    }
+
     return boxMesh;
   }
 
   animate(scalar: number) {
-    this._el.scale.y = Math.max(scalar, 1);
+    this._el.scale["y"] = Math.max(scalar, 1);
+
     this._el.material.color.lerpColors(
       this._color,
       this._transitionColor,
