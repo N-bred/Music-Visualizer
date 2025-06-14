@@ -13,7 +13,8 @@ export default class VisualizerScene extends T.Scene {
   instantiatePanel(quantity: number, direction: Direction) {
     const length = this._panels.length;
     const panel = new Panel(quantity, direction);
-    panel.position.z = length;
+    panel.position.z = length * 25;
+    panel.rotation.z = 2 * length * (Math.PI / 2);
     this.add(panel);
     this._panels.push(panel);
   }
