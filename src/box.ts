@@ -1,11 +1,10 @@
 import * as T from "three";
-import ThemeManager, { type BoxType, type Direction } from "./themeManager";
+import ThemeManager, { type BoxType } from "./themeManager";
 
 export default class Box {
   private _transitionColor: T.Color;
   private _color: T.Color;
   private _position: T.Vector3;
-  private _direction: Direction;
   private _rotation: number;
   private _theme: ThemeManager;
   private _el: T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
@@ -14,13 +13,11 @@ export default class Box {
     transitionColor = new T.Color(0xff0000),
     color = new T.Color(0xffffff),
     position = new T.Vector3(0, 0, 0),
-    direction = "x",
     rotation = 0,
   }: BoxType) {
     this._color = color;
     this._transitionColor = transitionColor;
     this._position = position;
-    this._direction = direction;
     this._rotation = rotation;
     this._theme = ThemeManager.getTheme()!;
     this._el = this.create();
@@ -47,7 +44,7 @@ export default class Box {
   }
 
   animate(scalar: number) {
-    this._el.scale["y"] = Math.max(scalar, 1);
+    this._el.scale[this._theme.ThemeObject.direction] = Math.max(scalar, 1);
 
     this._el.material.color.lerpColors(
       this._color,
