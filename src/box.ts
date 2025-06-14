@@ -39,16 +39,17 @@ export default class Box {
 
   create() {
     const boxGeometry = new T.BoxGeometry(1, 1, 1);
-    boxGeometry.translate(0,0,0.5);
+    // boxGeometry.translate(0,0,0.5);
     const boxMaterial = new T.MeshBasicMaterial({ color: this._color });
     const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
     boxMesh.position.copy(this._position);
-    boxMesh.lookAt(new T.Vector3(0,0,0));
+    // boxMesh.lookAt(new T.Vector3(0,0,this._position.z));
+    boxMesh.rotation.z = this._rotation;
     return boxMesh;
   }
 
   animate(scalar: number) {
-    this._el.scale.z = Math.max(scalar, 1);
+    this._el.scale.y = Math.max(scalar, 1);
     this._el.material.color.lerpColors(
       this._color,
       this._transitionColor,
