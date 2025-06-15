@@ -24,7 +24,7 @@ canvas {
   position: fixed;
 }
 
-#app {
+.app {
   display: grid;
   background: var(--primary);
   position: relative;
@@ -47,13 +47,6 @@ canvas {
       "top-bar"
       "canvas-container"
       "player";
-  }
-
-  & > div {
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   .panel-songs,
@@ -85,6 +78,17 @@ canvas {
       transform: translateX(100%);
     }
   }
+}
+
+.panel-data,
+.panel-songs,
+.player,
+.top-bar,
+.canvas-container {
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .panel-songs {
@@ -119,17 +123,76 @@ canvas {
   font-weight: 300;
   background: var(--secondary);
 }
+
 .canvas-container {
   grid-area: canvas-container;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
   background: var(--secondary);
 }
+
 .player {
   grid-area: player;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
   background: var(--primary);
+  display: grid;
+  grid-template-columns: 2fr 8fr 2fr;
+  grid-template-areas: ". buttons-menu volume-menu";
+  place-items: center;
+
+  .buttons-menu {
+    grid-area: buttons-menu;
+    button {
+      all: unset;
+      cursor: pointer;
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background: #aaa;
+      color: #000;
+      padding: 20px;
+      margin: 0 15px;
+      aspect-ratio: 4/3;
+      font-size: 18px;
+
+      &:hover {
+        background: #999;
+      }
+
+      .hide {
+        display: none;
+      }
+    }
+  }
+
+  .volume-menu {
+    grid-area: volume-menu;
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+
+    input {
+      transform: scale(0.8);
+
+      &::-moz-range-thumb {
+        background: transparent;
+        color: transparent;
+        border: none;
+      }
+
+      &::-moz-range-progress {
+        background: #444;
+        border: none;
+        height: 100%;
+      }
+    }
+  }
 }
 
 .hamburger-button {

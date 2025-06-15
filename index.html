@@ -11,17 +11,27 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="./src/vendor/font-awesome-4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="app">
       <div class="top-bar">
         <p>TOP BAR</p>
-        <button id="hamburger-button-panel-songs" class="hamburger-button hamburger-button-panel-songs">
+        <button
+          id="hamburger-button-panel-songs"
+          class="hamburger-button hamburger-button-panel-songs"
+        >
           <span class="hamburger-button-line-1"></span>
           <span class="hamburger-button-line-2"></span>
           <span class="hamburger-button-line-3"></span>
         </button>
-        <button id="hamburger-button-panel-data" class="hamburger-button hamburger-button-panel-data">
+        <button
+          id="hamburger-button-panel-data"
+          class="hamburger-button hamburger-button-panel-data"
+        >
           <span class="hamburger-button-line-1"></span>
           <span class="hamburger-button-line-2"></span>
           <span class="hamburger-button-line-3"></span>
@@ -30,7 +40,35 @@
       <div class="panel-songs">PANEL SONGS</div>
       <div class="panel-data">PANEL DATA</div>
       <div class="canvas-container">CANVAS</div>
-      <div class="player">PLAYER</div>
+      <div class="player">
+        <div class="buttons-menu">
+          <button class="previous-button">
+            <i class="fa fa-step-backward" aria-hidden="true"></i>
+          </button>
+          <button class="play-button">
+            <i class="fa fa-play" aria-hidden="true"></i>
+          </button>
+          <button class="pause-button">
+            <i class="fa fa-pause" aria-hidden="true"></i>
+          </button>
+          <button class="next-button">
+            <i class="fa fa-step-forward" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="volume-menu">
+          <i class="fa fa-volume-down" aria-hidden="true"></i>
+          <input
+            type="range"
+            name="volume-button"
+            id="volumen-button"
+            min="0.0"
+            max="1.0"
+            step="0.1"
+            value="0.5"
+          />
+          <i class="fa fa-volume-up" aria-hidden="true"></i>
+        </div>
+      </div>
     </div>
     <script type="module" src="/src/style.ts"></script>
     <!-- <script type="module" src="/src/main.ts"></script> -->

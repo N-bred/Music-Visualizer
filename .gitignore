@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#Font Awesome
+/src/vendor/font-awesome-4.7.0/less
+/src/vendor/font-awesome-4.7.0/scss
+/src/vendor/font-awesome-4.7.0/HELP-US-OUT.txt
