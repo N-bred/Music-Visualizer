@@ -1,14 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Three JS Visualizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="app">
+      <div class="top-bar">
+        <p>TOP BAR</p>
+        <button id="hamburger-button-panel-songs" class="hamburger-button hamburger-button-panel-songs">
+          <span class="hamburger-button-line-1"></span>
+          <span class="hamburger-button-line-2"></span>
+          <span class="hamburger-button-line-3"></span>
+        </button>
+        <button id="hamburger-button-panel-data" class="hamburger-button hamburger-button-panel-data">
+          <span class="hamburger-button-line-1"></span>
+          <span class="hamburger-button-line-2"></span>
+          <span class="hamburger-button-line-3"></span>
+        </button>
+      </div>
+      <div class="panel-songs">PANEL SONGS</div>
+      <div class="panel-data">PANEL DATA</div>
+      <div class="canvas-container">CANVAS</div>
+      <div class="player">PLAYER</div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/style.ts"></script>
+    <!-- <script type="module" src="/src/main.ts"></script> -->
   </body>
 </html>
