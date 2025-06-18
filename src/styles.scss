@@ -161,7 +161,7 @@ canvas {
         background: #999;
       }
 
-      .hide {
+      &.hide {
         display: none;
       }
     }
@@ -179,18 +179,7 @@ canvas {
 
     input {
       transform: scale(0.8);
-
-      &::-moz-range-thumb {
-        background: transparent;
-        color: transparent;
-        border: none;
-      }
-
-      &::-moz-range-progress {
-        background: #444;
-        border: none;
-        height: 100%;
-      }
+      accent-color: #444;
     }
   }
 }

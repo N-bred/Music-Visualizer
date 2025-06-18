@@ -1,3 +1,4 @@
+import Player from "./player";
 import "./styles.scss";
 
 const panelSongs: HTMLDivElement = document.querySelector(".panel-songs")!;
@@ -41,3 +42,11 @@ const handleButtonClick = (
 
 handleButtonClick(panelSongsButton, panelSongs);
 handleButtonClick(panelDataButton, panelData);
+
+const player = new Player();
+
+window.addEventListener("keyup", (e) => {
+  if (e.key === "e") {
+    console.log(player.state);
+  }
+});
