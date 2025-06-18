@@ -17,11 +17,17 @@ export default class Player {
 
     this.playButton.addEventListener("click", () => this.handlePlayButton());
     this.pauseButton.addEventListener("click", () => this.handlePauseButton());
+    this.nextButton.addEventListener("click", () => this.handleNextButton());
+    this.previousButton.addEventListener("click", () =>
+      this.handlePreviousButton()
+    );
+    this.volumeRange.addEventListener("input", () => this.handleVolumeRange());
 
     // STATE
 
     this._state = {
       isPlaying: false,
+      volume: 0.5,
     };
   }
 
@@ -51,5 +57,14 @@ export default class Player {
       this.handlePlayButton();
       this._state.isPlaying = false;
     }
+  }
+
+  handleNextButton() {}
+
+  handlePreviousButton() {}
+
+  handleVolumeRange() {
+    const { value } = this.volumeRange;
+    this._state.volume = parseFloat(value);
   }
 }
