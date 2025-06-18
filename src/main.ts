@@ -6,15 +6,17 @@ import AudioManager from "./audioManager";
 import ThemeManager from "./themeManager";
 import {
   stateChangedName,
-  playSongName,
   changedVolumeName,
-  pauseSongName,
+  nextSongName,
+  previousSongName,
+  changedSongStateName,
 } from "./Events";
 import Player from "./player";
 
 let STATE = {
   isPlaying: false,
   volume: 0.5,
+  currentSong: 0,
 };
 
 const canvasContainer = document.querySelector(".canvas-container");
@@ -30,16 +32,12 @@ const songNames = ["System of a Down - Forest.mp3", "Clavicula Nox.mp3"];
 const songList = songNames.map((song) => songsFolder + song);
 const numberOfFrequencies = 512 * (2 * 2);
 const audioManager = new AudioManager(songList, numberOfFrequencies);
-audioManager.setSong(1);
+audioManager.setSong(STATE.currentSong);
 audioManager.volume = STATE.volume;
 
 const allowZRotation = false;
 
-const themeManager = new ThemeManager(
-  "chaotic",
-  new T.Color(0x2607a6),
-  new T.Color(0x5500ff)
-);
+new ThemeManager("chaotic", new T.Color(0x2607a6), new T.Color(0x5500ff));
 
 const scene = new VisualizerScene();
 scene.instantiatePanel(numberOfFrequencies, "y");
@@ -63,7 +61,7 @@ canvasContainer?.appendChild(renderer.domElement);
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
 
-const player = new Player();
+const player = new Player(songList);
 
 let isAnimationRunning = true;
 
@@ -93,16 +91,26 @@ window.addEventListener(stateChangedName, () => {
   STATE = { ...STATE, ...player.state };
 });
 
-window.addEventListener(playSongName, () => {
+window.addEventListener(changedSongStateName, () => {
   if (STATE.isPlaying) {
     audioManager.play();
+  } else {
+    audioManager.pause();
   }
 });
 
-window.addEventListener(pauseSongName, () => {
-  if (!STATE.isPlaying) {
-    audioManager.pause();
-  }
+window.addEventListener(previousSongName, async () => {
+  audioManager.pause();
+  await audioManager.setSong(STATE.currentSong);
+  player.handlePlayPauseButtonUI(true);
+  audioManager.play();
+});
+
+window.addEventListener(nextSongName, async () => {
+  audioManager.pause();
+  await audioManager.setSong(STATE.currentSong);
+  player.handlePlayPauseButtonUI(true);
+  audioManager.play();
 });
 
 window.addEventListener(changedVolumeName, () => {
@@ -115,9 +123,12 @@ window.addEventListener("keydown", (e) => {
       scene.animatePanel(audioManager.fft);
       break;
     case "d":
-      console.log(audioManager.fft);
-      console.log(scene.children);
-      console.log(scene.position);
+      // console.log(audioManager.fft);
+      // console.log(scene.children);
+      // console.log(scene.position);
+      console.log(player.state);
+      console.log(songList);
+      console.log(audioManager);
       break;
     case "p":
       if (isAnimationRunning) {

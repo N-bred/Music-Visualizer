@@ -1,11 +1,14 @@
 export const stateChangedName = "stateChanged";
 export const StateChangedEvent = new CustomEvent(stateChangedName);
 
-export const playSongName = "playSong";
-export const playSongEvent = new CustomEvent(playSongName);
+export const changedSongStateName = "changedSongState";
+export const changedSongStateEvent = new CustomEvent(changedSongStateName);
 
-export const pauseSongName = "pauseSong";
-export const pauseSongEvent = new CustomEvent(pauseSongName);
+export const previousSongName = "previousSong";
+export const previousSongEvent = new CustomEvent(previousSongName);
+
+export const nextSongName = "nextSong";
+export const nextSongEvent = new CustomEvent(nextSongName);
 
 export const changedVolumeName = "changedVolume";
 export const changedVolumeEvent = new CustomEvent(changedVolumeName);
