@@ -65,6 +65,8 @@ orbitControls.enableDamping = true;
 
 const player = new Player();
 
+let isAnimationRunning = true;
+
 function update(_t?: number) {
   renderer.render(scene, camera);
   scene.rotation.z = -_t! / 10000;
@@ -116,6 +118,15 @@ window.addEventListener("keydown", (e) => {
       console.log(audioManager.fft);
       console.log(scene.children);
       console.log(scene.position);
+      break;
+    case "p":
+      if (isAnimationRunning) {
+        renderer.setAnimationLoop(null);
+        isAnimationRunning = false;
+      } else {
+        renderer.setAnimationLoop(update);
+        isAnimationRunning = true;
+      }
       break;
     default:
       break;
