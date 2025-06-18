@@ -42,7 +42,7 @@ canvas {
 
   @media screen and (max-width: 768px) {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 9fr 2fr;
+    grid-template-rows: 1fr 8fr 3fr;
     grid-template-areas:
       "top-bar"
       "canvas-container"
@@ -141,8 +141,20 @@ canvas {
   grid-template-areas: ". buttons-menu volume-menu";
   place-items: center;
 
+  @media screen and (max-width: 768px) {
+    grid-template-rows: 100px 1fr;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "buttons-menu"
+      "volume-menu";
+  }
+
   .buttons-menu {
     grid-area: buttons-menu;
+
+    @media screen and (max-width: 768px) {
+      align-self: self-end;
+    }
     button {
       all: unset;
       cursor: pointer;

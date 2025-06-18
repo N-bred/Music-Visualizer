@@ -77,13 +77,14 @@ function update(_t?: number) {
 
 renderer.setAnimationLoop(update);
 
-
 // EVENTS
 
 window.addEventListener("resize", () => {
-  camera.aspect = innerWidth / innerHeight;
+  canvasSize.WIDTH = canvasContainer?.getBoundingClientRect().width || 0;
+  canvasSize.HEIGHT = canvasContainer?.getBoundingClientRect().height || 0;
+  camera.aspect = canvasSize.WIDTH / canvasSize.HEIGHT;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(canvasSize.WIDTH, canvasSize.HEIGHT);
 });
 
 window.addEventListener(stateChangedName, () => {
