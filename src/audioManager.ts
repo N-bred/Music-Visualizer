@@ -25,10 +25,6 @@ export default class AudioManager {
     this.sound.setVolume(newVolume);
   }
 
-  get isPlaying() {
-    return this.sound.isPlaying;
-  }
-
   play() {
     this.sound.play();
   }

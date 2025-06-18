@@ -1,11 +1,29 @@
-import "./style.css";
+import "./styles.scss";
 import * as T from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import VisualizerScene from "./scene";
 import AudioManager from "./audioManager";
 import ThemeManager from "./themeManager";
+import {
+  stateChangedName,
+  playSongName,
+  changedVolumeName,
+  pauseSongName,
+} from "./Events";
+import Player from "./player";
 
-const appContainer = document.querySelector("#app");
+let STATE = {
+  isPlaying: false,
+  volume: 0.5,
+};
+
+const canvasContainer = document.querySelector(".canvas-container");
+
+const canvasSize = {
+  WIDTH: canvasContainer?.getBoundingClientRect().width || 0,
+  HEIGHT: canvasContainer?.getBoundingClientRect().height || 0,
+};
+
 const songsFolder = "public/songs/";
 const songNames = ["System of a Down - Forest.mp3", "Clavicula Nox.mp3"];
 
@@ -13,7 +31,7 @@ const songList = songNames.map((song) => songsFolder + song);
 const numberOfFrequencies = 512 * (2 * 2);
 const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(1);
-audioManager.volume = 1;
+audioManager.volume = STATE.volume;
 
 const allowZRotation = false;
 
@@ -29,22 +47,29 @@ scene.instantiatePanel(numberOfFrequencies, "y");
 scene.instantiateLight();
 scene.position.set(0, -0, 0);
 
-const camera = new T.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 2000);
+const camera = new T.PerspectiveCamera(
+  75,
+  canvasSize.WIDTH / canvasSize.HEIGHT,
+  0.1,
+  2000
+);
 camera.position.set(0, 0, 1200);
 camera.lookAt(scene.position);
 
 const renderer = new T.WebGLRenderer();
-renderer.setSize(innerWidth, innerHeight);
-appContainer?.appendChild(renderer.domElement);
+renderer.setSize(canvasSize.WIDTH, canvasSize.HEIGHT);
+canvasContainer?.appendChild(renderer.domElement);
 
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
+
+const player = new Player();
 
 function update(_t?: number) {
   renderer.render(scene, camera);
   scene.rotation.z = -_t! / 10000;
   if (allowZRotation) {
-    scene.rotation.x = Math.sin(-_t! / 100000) *1;
+    scene.rotation.x = Math.sin(-_t! / 100000) * 1;
   }
   scene.animatePanel(audioManager.fft);
   orbitControls.update();
@@ -52,23 +77,39 @@ function update(_t?: number) {
 
 renderer.setAnimationLoop(update);
 
+
+// EVENTS
+
 window.addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });
 
+window.addEventListener(stateChangedName, () => {
+  STATE = { ...STATE, ...player.state };
+});
+
+window.addEventListener(playSongName, () => {
+  if (STATE.isPlaying) {
+    audioManager.play();
+  }
+});
+
+window.addEventListener(pauseSongName, () => {
+  if (!STATE.isPlaying) {
+    audioManager.pause();
+  }
+});
+
+window.addEventListener(changedVolumeName, () => {
+  audioManager.volume = STATE.volume;
+});
+
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "q":
       scene.animatePanel(audioManager.fft);
-      break;
-    case "p":
-      if (audioManager.isPlaying) {
-        audioManager.pause();
-      } else {
-        audioManager.play();
-      }
       break;
     case "d":
       console.log(audioManager.fft);

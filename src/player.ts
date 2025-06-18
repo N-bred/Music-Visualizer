@@ -1,3 +1,10 @@
+import {
+  StateChangedEvent,
+  playSongEvent,
+  pauseSongEvent,
+  changedVolumeEvent,
+} from "./Events";
+
 export default class Player {
   private playButton: HTMLButtonElement;
   private pauseButton: HTMLButtonElement;
@@ -45,6 +52,9 @@ export default class Player {
       this.handlePauseButton();
       this._state.isPlaying = true;
     }
+
+    window.dispatchEvent(StateChangedEvent);
+    window.dispatchEvent(playSongEvent);
   }
 
   handlePauseButton() {
@@ -57,14 +67,24 @@ export default class Player {
       this.handlePlayButton();
       this._state.isPlaying = false;
     }
+
+    window.dispatchEvent(StateChangedEvent);
+    window.dispatchEvent(pauseSongEvent);
   }
 
-  handleNextButton() {}
+  handleNextButton() {
+    window.dispatchEvent(StateChangedEvent);
+  }
 
-  handlePreviousButton() {}
+  handlePreviousButton() {
+    window.dispatchEvent(StateChangedEvent);
+  }
 
   handleVolumeRange() {
     const { value } = this.volumeRange;
     this._state.volume = parseFloat(value);
+
+    window.dispatchEvent(StateChangedEvent);
+    window.dispatchEvent(changedVolumeEvent);
   }
 }
