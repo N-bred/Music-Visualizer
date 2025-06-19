@@ -27,4 +27,6 @@ dist-ssr
 /src/vendor/font-awesome-4.7.0/less
 /src/vendor/font-awesome-4.7.0/scss
 /src/vendor/font-awesome-4.7.0/HELP-US-OUT.txt
-/public/songs
+
+#SONGS
+/public/songs/*
