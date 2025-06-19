@@ -1,0 +1,234 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  --primary: #000;
+  --secondary: #111;
+  --font-color: #fff;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  color: var(--font-color);
+}
+
+canvas {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+}
+
+.app {
+  display: grid;
+  background: var(--primary);
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  gap: 5px;
+  padding: 5px;
+  grid-template-columns: 2fr 8fr 2fr;
+  grid-template-rows: 0.5fr 10.5fr 1fr;
+  grid-template-areas:
+    "panel-songs top-bar panel-data"
+    "panel-songs canvas-container panel-data"
+    "player player player";
+
+  @media screen and (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 8fr 3fr;
+    grid-template-areas:
+      "top-bar"
+      "canvas-container"
+      "player";
+  }
+
+  .panel-songs,
+  .panel-data {
+    @media screen and (max-width: 768px) {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease-in-out;
+      z-index: 1;
+
+      &.active {
+        transform: translateX(0%);
+      }
+    }
+  }
+
+  .panel-songs {
+    @media screen and (max-width: 768px) {
+      left: 0;
+      transform: translateX(-100%);
+    }
+  }
+
+  .panel-data {
+    @media screen and (max-width: 768px) {
+      right: 0;
+      transform: translateX(100%);
+    }
+  }
+}
+
+.panel-data,
+.panel-songs,
+.player,
+.top-bar,
+.canvas-container {
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.panel-songs {
+  position: relative;
+  grid-area: panel-songs;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  background: var(--secondary);
+}
+
+.top-bar {
+  grid-area: top-bar;
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  font-style: normal;
+  position: relative;
+  z-index: 10;
+
+  background: var(--primary);
+
+  p {
+    text-align: center;
+    width: 100%;
+    flex-basis: 100%;
+  }
+}
+
+.panel-data {
+  position: relative;
+  grid-area: panel-data;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  background: var(--secondary);
+}
+
+.canvas-container {
+  grid-area: canvas-container;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  background: var(--secondary);
+}
+
+.player {
+  grid-area: player;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  background: var(--primary);
+  display: grid;
+  grid-template-columns: 2fr 8fr 2fr;
+  grid-template-areas: ". buttons-menu volume-menu";
+  place-items: center;
+
+  @media screen and (max-width: 768px) {
+    grid-template-rows: 100px 1fr;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "buttons-menu"
+      "volume-menu";
+  }
+
+  .buttons-menu {
+    grid-area: buttons-menu;
+
+    @media screen and (max-width: 768px) {
+      align-self: self-end;
+    }
+    button {
+      all: unset;
+      cursor: pointer;
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background: #aaa;
+      color: #000;
+      padding: 20px;
+      margin: 0 15px;
+      aspect-ratio: 4/3;
+      font-size: 18px;
+
+      &:hover {
+        background: #999;
+      }
+
+      &.hide {
+        display: none;
+      }
+    }
+  }
+
+  .volume-menu {
+    grid-area: volume-menu;
+    position: relative;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+
+    input {
+      transform: scale(0.8);
+      accent-color: #444;
+    }
+  }
+}
+
+.hamburger-button {
+  display: none;
+  @media screen and (max-width: 768px) {
+    all: unset;
+    display: inline-flex;
+    width: 20px;
+    position: absolute;
+    top: 50%;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 15px;
+    transform: translate(0, -50%);
+    z-index: 1;
+
+    &-panel-songs {
+      left: 0;
+    }
+
+    &-panel-data {
+      right: 0;
+    }
+  }
+
+  &-line {
+    &-1,
+    &-2,
+    &-3 {
+      width: 100%;
+      height: 2px;
+      background: #fff;
+      margin: 2px 0;
+    }
+  }
+}
