@@ -1,9 +1,8 @@
 import "./styles.scss";
 import * as T from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
-import VisualizerScene from "./scene";
+import ChaoticScene from "./scenes/chaoticScene";
 import AudioManager from "./audioManager";
-import ThemeManager from "./themeManager";
 import Player from "./player";
 import StateManager from "./stateManager";
 
@@ -11,6 +10,7 @@ const canvasContainer = document.querySelector(".canvas-container");
 const songsFolder = "public/songs/";
 const songNames = ["System of a Down - Forest.mp3", "Clavicula Nox.mp3"];
 const songList = songNames.map((song) => songsFolder + song);
+
 const stateManager = new StateManager({
   canvasContainer,
   isAnimationRunning: true,
@@ -22,13 +22,13 @@ const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(stateManager.state.currentSong);
 audioManager.volume = stateManager.state.volume;
 
-new ThemeManager("chaotic", new T.Color(0x2607a6), new T.Color(0x5500ff));
-
-const scene = new VisualizerScene();
-scene.instantiatePanel(numberOfFrequencies, "y");
-scene.instantiatePanel(numberOfFrequencies, "y");
-scene.instantiateLight();
+const scene = new ChaoticScene(numberOfFrequencies);
 scene.position.set(0, -0, 0);
+
+const light = new T.DirectionalLight(0xffffff, 1);
+light.position.set(5, 5, -10);
+light.target.position.set(0, 0, 0);
+scene.add(light);
 
 const camera = new T.PerspectiveCamera(
   75,
@@ -51,7 +51,7 @@ orbitControls.enableDamping = true;
 function update(_t?: number) {
   renderer.render(scene, camera);
   scene.rotation.z = -_t! / 10000;
-  scene.animatePanel(audioManager.fft);
+  scene.animate(audioManager.fft);
   orbitControls.update();
 }
 
@@ -61,9 +61,9 @@ stateManager.addProperty("audioManager", audioManager);
 stateManager.addProperty("camera", camera);
 stateManager.addProperty("player", player);
 stateManager.addProperty("renderer", renderer);
-stateManager.addProperty("scene", scene);
+stateManager.addProperty("currentScene", scene);
 stateManager.addProperty("updateFn", update);
-stateManager.init();
+stateManager.initializeEventHandlers();
 
 if (stateManager.state.isAnimationRunning) {
   renderer.setAnimationLoop(update);

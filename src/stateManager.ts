@@ -7,12 +7,12 @@ import {
   changedSongStateName,
 } from "./Events";
 import type AudioManager from "./audioManager";
-import type VisualizerScene from "./scene";
 import type Player from "./player";
+import type CustomScene from "./customScene";
 
 type StateManagerProps = {
   audioManager?: AudioManager;
-  scene?: VisualizerScene;
+  currentScene?: CustomScene;
   isAnimationRunning: boolean;
   renderer?: WebGLRenderer;
   camera?: PerspectiveCamera;
@@ -51,7 +51,7 @@ export default class StateManager {
     return this._state;
   }
 
-  init() {
+  initializeEventHandlers() {
     this.handleStateChanged();
     this.handlePlayerEvents();
     this.handleKeyboardEvents();
@@ -130,13 +130,8 @@ export default class StateManager {
   handleKeyboardEvents() {
     window.addEventListener("keydown", (e) => {
       switch (e.key) {
-        case "q":
-          this.props.scene!.animatePanel(this.props.audioManager!.fft);
-          break;
         case "d":
-          console.log(this.props.player!.state);
-          console.log(this.props.songList);
-          console.log(this.props.audioManager);
+          console.log(this.props.currentScene);
           break;
         case "p":
           if (this.props.isAnimationRunning) {
