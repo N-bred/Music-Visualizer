@@ -13,7 +13,7 @@ const songList = songNames.map((song) => songsFolder + song);
 
 const stateManager = new StateManager({
   canvasContainer,
-  isAnimationRunning: true,
+  isAnimationRunning: false,
   songList,
 });
 
