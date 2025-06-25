@@ -1,13 +1,14 @@
 import * as T from "three";
+import type { Song } from "./stateManager";
 
 export default class AudioManager {
   private listener: T.AudioListener;
   private sound: T.Audio;
   private audioLoader: T.AudioLoader;
   private analyser: T.AudioAnalyser;
-  private songList: string[];
+  private songList: Song[];
 
-  constructor(songList: string[], numberOfFrequencies: number) {
+  constructor(songList: Song[], numberOfFrequencies: number) {
     this.songList = songList;
     this.listener = new T.AudioListener();
     this.sound = new T.Audio(this.listener);
@@ -18,7 +19,7 @@ export default class AudioManager {
   async setSong(songIndex: number) {
     this.sound.stop(0);
     const song = this.songList[songIndex];
-    const buffer = await this.audioLoader.loadAsync(song);
+    const buffer = await this.audioLoader.loadAsync(song.src);
     this.sound.setBuffer(buffer);
   }
 

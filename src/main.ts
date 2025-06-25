@@ -4,16 +4,31 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import ChaoticScene from "./scenes/chaoticScene";
 import AudioManager from "./audioManager";
 import Player from "./player";
-import StateManager from "./stateManager";
+import StateManager, { type Song } from "./stateManager";
+import SongPanel from "./songPanel";
 
 const canvasContainer = document.querySelector(".canvas-container");
-const songsFolder = "public/songs/";
-const songNames = ["System of a Down - Forest.mp3", "Clavicula Nox.mp3"];
-const songList = songNames.map((song) => songsFolder + song);
+const songsFolder = "/public/songs/";
+
+const songs = [
+  {
+    songName: "Forest.mp3",
+    artistName: "System of a Down",
+  },
+  {
+    songName: "Clavicula Nox.mp3",
+    artistName: "Therion",
+  },
+];
+
+const songList: Song[] = songs.map((song) => ({
+  src: songsFolder + song.artistName + " - " + song.songName,
+  ...song,
+}));
 
 const stateManager = new StateManager({
   canvasContainer,
-  isAnimationRunning: false,
+  isAnimationRunning: true,
   songList,
 });
 
@@ -55,11 +70,13 @@ function update(_t?: number) {
   orbitControls.update();
 }
 
-const player = new Player(songList);
+const player = new Player(stateManager);
+const songPanel = new SongPanel(stateManager);
 
 stateManager.addProperty("audioManager", audioManager);
 stateManager.addProperty("camera", camera);
 stateManager.addProperty("player", player);
+stateManager.addProperty("songPanel", songPanel);
 stateManager.addProperty("renderer", renderer);
 stateManager.addProperty("currentScene", scene);
 stateManager.addProperty("updateFn", update);

@@ -263,6 +263,13 @@ canvas {
           &:hover {
             color: #dadada;
           }
+
+          &.active {
+            color: red;
+            &:hover {
+              color: red;
+            }
+          }
         }
       }
     }

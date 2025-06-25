@@ -41,23 +41,23 @@
         <div class="song-list-container">
           <h3>ALL SONGS</h3>
           <span class="divider"></span>
-          <ul>
+          <ul id="song-list">
             <li>
-              <a href="#">System of a down - Forest</a>
+              <a href="/public/songs/System of a Down - Forest.mp3" data-url="/public/songs/System of a Down - Forest.mp3">System of a down - Forest</a>
             </li>
             <li>
-              <a href="#">Therion - Clavicula Nox</a>
+              <a href="/public/songs/Therion - Clavicula Nox.mp3" data-url="/public/songs/Therion - Clavicula Nox.mp3">Therion - Clavicula Nox</a>
             </li>
           </ul>
         </div>
-        <div class="song-upload-container hide">
+        <div class="song-upload-container">
           <form id="uploadSongForm">
             <label for="artist-input">Artist Name</label>
-            <input type="text" name="artist-name" id="artist-input" placeholder="Please enter the artist name">
+            <input type="text" name="artist-name" id="artist-input" placeholder="Please enter the artist name" required>
             <label for="song-input">Song Name</label>
-            <input type="text" name="song-name" id="song-input" placeholder="Please enter the song name">
+            <input type="text" name="song-name" id="song-name-input" placeholder="Please enter the song name" required>
             <label for="song-file-input">Select a song</label>
-            <input type="file" name="song-file" id="song-file-input" accept="audio/*">
+            <input type="file" name="song-file" id="song-file-input" accept="audio/*" required>
             <button type="submit">Upload Song</button>
           </form>
         </div>
