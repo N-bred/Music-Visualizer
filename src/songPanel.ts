@@ -34,6 +34,10 @@ export default class SongPanel {
       this.handleFormSubmission(e);
     });
 
+    this.panelSwapButton.addEventListener("click", () =>
+      this.handlePanelSwapButton()
+    );
+
     this.handleSonglistItemsSetEvent();
 
     this.handleSongListStyles(this._currentSong);
@@ -50,6 +54,22 @@ export default class SongPanel {
 
   get state() {
     return this._state;
+  }
+
+  handlePanelSwapButton() {
+    const isShowingSongs = this.panelSwapButton.dataset.showingSongs;
+
+    if (isShowingSongs === "true") {
+      this.songListElement.parentElement?.classList.add("hide");
+      this.songUploadForm.parentElement?.classList.remove("hide");
+      this.panelSwapButton.textContent = this.panelSwapButton.dataset.songsText!;
+      this.panelSwapButton.dataset.showingSongs = "false";
+    } else {
+      this.songListElement.parentElement?.classList.remove("hide");
+      this.songUploadForm.parentElement?.classList.add("hide");
+      this.panelSwapButton.textContent = this.panelSwapButton.dataset.formText!;
+      this.panelSwapButton.dataset.showingSongs = "true";
+    }
   }
 
   handleCleanState() {
@@ -104,6 +124,7 @@ export default class SongPanel {
       this.handleRefreshUIState(this._state);
       this.handleCleanUIState();
       this.handleCleanState();
+      this.panelSwapButton.click();
     } else {
       alert("Song already in list");
     }
@@ -123,9 +144,7 @@ export default class SongPanel {
     e.preventDefault();
     const anchor = e.target as HTMLAnchorElement;
     const src = anchor.dataset?.url;
-    const songIndex = this._stateManager.state.songList.findIndex(
-      (song) => song.src === src
-    );
+    const songIndex = this._stateManager.state.songList.findIndex(song => song.src === src);
     this._stateManager.currentSong = songIndex;
     this.handleSongListStyles(songIndex);
 
@@ -138,9 +157,7 @@ export default class SongPanel {
       li.querySelector("a")?.classList.remove("active");
     });
 
-    const anchor = this.songListElement.children[currentSong]
-      .children[0] as HTMLAnchorElement;
-
+    const anchor = this.songListElement.children[currentSong].children[0] as HTMLAnchorElement;
     anchor.classList.add("active");
   }
 }

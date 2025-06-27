@@ -31,7 +31,7 @@ const songList: Song[] = songs.map((song) => ({
 
 const stateManager = new StateManager({
   canvasContainer,
-  isAnimationRunning: true,
+  isAnimationRunning: false,
   songList,
 });
 
