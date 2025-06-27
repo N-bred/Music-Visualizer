@@ -13,9 +13,10 @@ import type CustomScene from "./customScene";
 import type SongPanelType from "./songPanel";
 
 export type Song = {
-  src: string;
+  id: string;
   artistName: string;
   songName: string;
+  src?: string;
 };
 
 type StateManagerProps = {
@@ -154,6 +155,16 @@ export default class StateManager {
     });
   }
 
+  handleAddNewSong(newSong: Song) {
+    const found =
+      this.state.songList.findIndex((song) => song.id === newSong.id) !== -1;
+
+    if (found) return false;
+
+    this.state.songList.push({ ...newSong });
+    return true;
+  }
+
   handleSongPanelEvents() {
     this.handleSongPanelSongIndexChanged();
   }
@@ -163,8 +174,9 @@ export default class StateManager {
       switch (e.key) {
         case "d":
           console.log(this._state);
+          console.log(this.currentSong);
           break;
-        case "p":
+        case "]":
           if (this.props.isAnimationRunning) {
             this.props.renderer!.setAnimationLoop(null);
             this.props.isAnimationRunning = false;

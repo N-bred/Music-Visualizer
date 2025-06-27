@@ -6,18 +6,21 @@ import AudioManager from "./audioManager";
 import Player from "./player";
 import StateManager, { type Song } from "./stateManager";
 import SongPanel from "./songPanel";
+import { randomID } from "./utils";
 
 const canvasContainer = document.querySelector(".canvas-container");
 const songsFolder = "/public/songs/";
 
 const songs = [
   {
-    songName: "Forest.mp3",
+    id: randomID("System of a Down", "Forest.mp3"),
     artistName: "System of a Down",
+    songName: "Forest.mp3",
   },
   {
-    songName: "Clavicula Nox.mp3",
+    id: randomID("Therion", "Clavicula Nox.mp3"),
     artistName: "Therion",
+    songName: "Clavicula Nox.mp3",
   },
 ];
 

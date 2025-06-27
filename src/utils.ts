@@ -30,3 +30,7 @@ export function disposeObject(object: any) {
     object.parent.remove(object);
   }
 }
+
+export function randomID(artistName: string, songName: string) {
+  return artistName + songName;
+}

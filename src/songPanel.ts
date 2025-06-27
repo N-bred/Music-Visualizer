@@ -3,13 +3,9 @@ import {
   songUploadedEvent,
   changedSongIndexEvent,
 } from "./Events";
+import type { Song } from "./stateManager";
 import type StateManager from "./stateManager";
-
-type SongPanelState = {
-  artistName: string;
-  songName: string;
-  songFile: string;
-};
+import { randomID } from "./utils";
 
 export default class SongPanel {
   private artistInput: HTMLInputElement;
@@ -19,7 +15,7 @@ export default class SongPanel {
   private panelSwapButton: HTMLInputElement;
   private songListElement: HTMLUListElement;
   private _currentSong: number;
-  private _state: SongPanelState;
+  private _state: Song;
   private _stateManager: StateManager;
 
   constructor(stateManager: StateManager) {
@@ -45,9 +41,10 @@ export default class SongPanel {
     // STATE
 
     this._state = {
+      id: "",
       artistName: "",
       songName: "",
-      songFile: "",
+      src: "",
     };
   }
 
@@ -55,17 +52,61 @@ export default class SongPanel {
     return this._state;
   }
 
+  handleCleanState() {
+    this._state.id = "";
+    this._state.artistName = "";
+    this._state.songName = "";
+    this._state.src = "";
+  }
+
+  handleCleanUIState() {
+    this.songUploadForm.reset();
+  }
+
+  handleRefreshUIState(newSong: Song) {
+    const li = this.handleCreateNewListElement(newSong);
+    this.songListElement.appendChild(li);
+  }
+
+  handleCreateNewListElement(newSong: Song) {
+    const li = document.createElement("li");
+    const anchor = document.createElement("a");
+    anchor.href = newSong.src!;
+    anchor.dataset.url = newSong.src!;
+    anchor.textContent = `${newSong.artistName} - ${newSong.songName}`;
+    anchor.addEventListener("click", (e) => this.handleSongItemSetEvent(e));
+    li.appendChild(anchor);
+    return li;
+  }
+
   handleFormSubmission(e: Event) {
     e.preventDefault();
     const artistName = this.artistInput.value;
     const songName = this.songNameInput.value;
-    const songFile = this.songFileInput.value;
 
     this._state = {
+      id: randomID(artistName, songName),
       artistName,
       songName,
-      songFile,
     };
+
+    const { files } = this.songFileInput;
+
+    for (let i = 0; i < files!.length; ++i) {
+      const file = files![i];
+      const src = URL.createObjectURL(file);
+      this._state.src = src;
+    }
+
+    const result = this._stateManager.handleAddNewSong(this._state);
+
+    if (result) {
+      this.handleRefreshUIState(this._state);
+      this.handleCleanUIState();
+      this.handleCleanState();
+    } else {
+      alert("Song already in list");
+    }
 
     window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(songUploadedEvent);
