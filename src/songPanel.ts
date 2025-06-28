@@ -15,7 +15,7 @@ export default class SongPanel {
   private panelSwapButton: HTMLInputElement;
   private songListElement: HTMLUListElement;
   private _currentSong: number;
-  private _state: Song;
+  public _state: Song;
   private _stateManager: StateManager;
 
   constructor(stateManager: StateManager) {
@@ -62,7 +62,8 @@ export default class SongPanel {
     if (isShowingSongs === "true") {
       this.songListElement.parentElement?.classList.add("hide");
       this.songUploadForm.parentElement?.classList.remove("hide");
-      this.panelSwapButton.textContent = this.panelSwapButton.dataset.songsText!;
+      this.panelSwapButton.textContent =
+        this.panelSwapButton.dataset.songsText!;
       this.panelSwapButton.dataset.showingSongs = "false";
     } else {
       this.songListElement.parentElement?.classList.remove("hide");
@@ -118,19 +119,17 @@ export default class SongPanel {
       this._state.src = src;
     }
 
-    const result = this._stateManager.handleAddNewSong(this._state);
-
-    if (result) {
-      this.handleRefreshUIState(this._state);
-      this.handleCleanUIState();
-      this.handleCleanState();
-      this.panelSwapButton.click();
-    } else {
-      alert("Song already in list");
-    }
-
     window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(songUploadedEvent);
+  }
+
+  handlePostFormSubmission(succesful: boolean) {
+    if (!succesful) return alert("Song already in list");
+
+    this.handleRefreshUIState(this._state);
+    this.handleCleanUIState();
+    this.handleCleanState();
+    this.panelSwapButton.click();
   }
 
   handleSonglistItemsSetEvent() {
@@ -144,7 +143,9 @@ export default class SongPanel {
     e.preventDefault();
     const anchor = e.target as HTMLAnchorElement;
     const src = anchor.dataset?.url;
-    const songIndex = this._stateManager.state.songList.findIndex(song => song.src === src);
+    const songIndex = this._stateManager.state.songList.findIndex(
+      (song) => song.src === src
+    );
     this._stateManager.currentSong = songIndex;
     this.handleSongListStyles(songIndex);
 
@@ -157,7 +158,8 @@ export default class SongPanel {
       li.querySelector("a")?.classList.remove("active");
     });
 
-    const anchor = this.songListElement.children[currentSong].children[0] as HTMLAnchorElement;
+    const anchor = this.songListElement.children[currentSong]
+      .children[0] as HTMLAnchorElement;
     anchor.classList.add("active");
   }
 }

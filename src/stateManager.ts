@@ -7,6 +7,7 @@ import {
   changedSongStateName,
   changedSongIndexName,
   changedThemeIndexName,
+  songUploadedName,
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
@@ -159,18 +160,26 @@ export default class StateManager {
     });
   }
 
-  handleAddNewSong(newSong: Song) {
-    const found =
-      this.state.songList.findIndex((song) => song.id === newSong.id) !== -1;
+  handleAddNewSong() {
+    window.addEventListener(songUploadedName, () => {
+      const found =
+        this.state.songList.findIndex(
+          (song) => song.id === this.props.songPanel!._state.id
+        ) !== -1;
 
-    if (found) return false;
+      if (found) {
+        this.props.songPanel?.handlePostFormSubmission(false);
+        return;
+      }
 
-    this.state.songList.push({ ...newSong });
-    return true;
+      this.state.songList.push({ ...this.props.songPanel!._state });
+      this.props.songPanel?.handlePostFormSubmission(true);
+    });
   }
 
   handleSongPanelEvents() {
     this.handleSongPanelSongIndexChanged();
+    this.handleAddNewSong();
   }
 
   handleSceneChangeTheme() {
