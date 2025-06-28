@@ -6,11 +6,13 @@ import {
   previousSongName,
   changedSongStateName,
   changedSongIndexName,
+  changedThemeIndexName,
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
 import type CustomScene from "./customScene";
 import type SongPanelType from "./songPanel";
+import type PropertiesPanel from "./propertiesPanel";
 
 export type Song = {
   id: string;
@@ -29,6 +31,7 @@ type StateManagerProps = {
   songList: Song[];
   player?: PlayerType;
   songPanel?: SongPanelType;
+  propertiesPanel?: PropertiesPanel;
   canvasContainer: Element | null;
 };
 
@@ -71,6 +74,7 @@ export default class StateManager {
     this.handleStateChanged();
     this.handlePlayerEvents();
     this.handleSongPanelEvents();
+    this.handlePropertiesPanelEvents();
     this.handleKeyboardEvents();
     this.handleWindowResize();
   }
@@ -167,6 +171,28 @@ export default class StateManager {
 
   handleSongPanelEvents() {
     this.handleSongPanelSongIndexChanged();
+  }
+
+  handleSceneChangeTheme() {
+    window.addEventListener(changedThemeIndexName, () => {
+      this.props.currentScene?.changeTheme(
+        this.props.propertiesPanel!.state.themeIndex
+      );
+    });
+  }
+
+  handlePropertiesPanelEvents() {
+    this.handleSceneChangeTheme();
+  }
+
+  handlePopulateThemesDropdown() {
+    this.props.propertiesPanel?.populateDropdown(
+      this.props.currentScene!.themes
+    );
+  }
+
+  handlePropertiesPanelSetup() {
+    this.handlePopulateThemesDropdown();
   }
 
   handleKeyboardEvents() {

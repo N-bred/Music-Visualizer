@@ -3,9 +3,10 @@ import * as T from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import ChaoticScene from "./scenes/chaoticScene";
 import AudioManager from "./audioManager";
-import Player from "./player";
 import StateManager, { type Song } from "./stateManager";
+import Player from "./player";
 import SongPanel from "./songPanel";
+import PropertiesPanel from "./propertiesPanel";
 import { randomID } from "./utils";
 
 const canvasContainer = document.querySelector(".canvas-container");
@@ -75,14 +76,17 @@ function update(_t?: number) {
 
 const player = new Player(stateManager);
 const songPanel = new SongPanel(stateManager);
+const propertiesPanel = new PropertiesPanel(stateManager);
 
 stateManager.addProperty("audioManager", audioManager);
 stateManager.addProperty("camera", camera);
 stateManager.addProperty("player", player);
 stateManager.addProperty("songPanel", songPanel);
+stateManager.addProperty("propertiesPanel", propertiesPanel);
 stateManager.addProperty("renderer", renderer);
 stateManager.addProperty("currentScene", scene);
 stateManager.addProperty("updateFn", update);
+stateManager.handlePropertiesPanelSetup();
 stateManager.initializeEventHandlers();
 
 if (stateManager.state.isAnimationRunning) {

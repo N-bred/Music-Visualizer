@@ -337,3 +337,34 @@ canvas {
     height: 0;
   }
 }
+
+.panel-data {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: unset;
+  justify-content: flex-start;
+  padding: 0 1.5rem;
+  padding-top: 50px;
+}
+
+.properties-container {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+
+  label {
+    font-weight: bold;
+    margin: 10px 0 0;
+  }
+
+  select {
+    border: 2px solid #111;
+    background: #444;
+    padding: 5px;
+    color: #fff;
+    border-radius: 5px;
+    accent-color: red;
+    margin: 10px 0;
+  }
+}
