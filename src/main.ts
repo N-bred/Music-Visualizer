@@ -34,6 +34,9 @@ const stateManager = new StateManager({
   canvasContainer,
   isAnimationRunning: false,
   songList,
+  rotationEnabled: true,
+  panEnabled: true,
+  zoomEnabled: true,
 });
 
 const numberOfFrequencies = 512 * (2 * 2);
@@ -66,6 +69,9 @@ canvasContainer?.appendChild(renderer.domElement);
 
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true;
+orbitControls.enableRotate = stateManager.state.rotationEnabled;
+orbitControls.enablePan = stateManager.state.panEnabled;
+orbitControls.enableZoom = stateManager.state.zoomEnabled;
 
 function update(_t?: number) {
   renderer.render(scene, camera);
@@ -80,6 +86,7 @@ const propertiesPanel = new PropertiesPanel(stateManager);
 
 stateManager.addProperty("audioManager", audioManager);
 stateManager.addProperty("camera", camera);
+stateManager.addProperty("orbitControls", orbitControls);
 stateManager.addProperty("player", player);
 stateManager.addProperty("songPanel", songPanel);
 stateManager.addProperty("propertiesPanel", propertiesPanel);

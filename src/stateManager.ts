@@ -8,12 +8,16 @@ import {
   changedSongIndexName,
   changedThemeIndexName,
   songUploadedName,
+  changedRotationCheckboxName,
+  changedPanCheckboxName,
+  changedZoomCheckboxName,
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
 import type CustomScene from "./customScene";
 import type SongPanelType from "./songPanel";
 import type PropertiesPanel from "./propertiesPanel";
+import type { OrbitControls } from "three/examples/jsm/Addons.js";
 
 export type Song = {
   id: string;
@@ -25,7 +29,11 @@ export type Song = {
 type StateManagerProps = {
   audioManager?: AudioManager;
   currentScene?: CustomScene;
+  orbitControls?: OrbitControls;
   isAnimationRunning: boolean;
+  rotationEnabled: boolean;
+  panEnabled: boolean;
+  zoomEnabled: boolean;
   renderer?: WebGLRenderer;
   camera?: PerspectiveCamera;
   updateFn?: () => void;
@@ -43,6 +51,9 @@ type StateManagerState = {
   volume: number;
   currentSong: number;
   isAnimationRunning: boolean;
+  rotationEnabled: boolean;
+  panEnabled: boolean;
+  zoomEnabled: boolean;
   songList: Song[];
 };
 
@@ -59,6 +70,9 @@ export default class StateManager {
       volume: 0.5,
       currentSong: 0,
       isAnimationRunning: this.props.isAnimationRunning,
+      rotationEnabled: this.props.rotationEnabled,
+      panEnabled: this.props.rotationEnabled,
+      zoomEnabled: this.props.zoomEnabled,
       songList: this.props.songList,
     };
   }
@@ -192,12 +206,37 @@ export default class StateManager {
 
   handlePropertiesPanelEvents() {
     this.handleSceneChangeTheme();
+    this.handleRotationCheckbox();
+    this.handlePanCheckbox();
+    this.handleZoomCheckbox();
   }
 
   handlePopulateThemesDropdown() {
-    this.props.propertiesPanel?.populateDropdown(
+    this.props.propertiesPanel?.populateThemesDropdown(
       this.props.currentScene!.themes
     );
+  }
+
+  handleRotationCheckbox() {
+    window.addEventListener(changedRotationCheckboxName, () => {
+      this._state.rotationEnabled =
+        this.props.propertiesPanel!.state.rotationEnabled;
+      this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
+    });
+  }
+
+  handlePanCheckbox() {
+    window.addEventListener(changedPanCheckboxName, () => {
+      this._state.panEnabled = this.props.propertiesPanel!.state.panEnabled;
+      this.props.orbitControls!.enablePan = this._state.panEnabled;
+    });
+  }
+
+  handleZoomCheckbox() {
+    window.addEventListener(changedZoomCheckboxName, () => {
+      this._state.zoomEnabled = this.props.propertiesPanel!.state.zoomEnabled;
+      this.props.orbitControls!.enableZoom = this._state.zoomEnabled;
+    });
   }
 
   handlePropertiesPanelSetup() {

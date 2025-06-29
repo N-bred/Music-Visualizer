@@ -17,7 +17,20 @@ export const songUploadedName = "songUploaded";
 export const songUploadedEvent = new CustomEvent(songUploadedName);
 
 export const changedSongIndexName = "changedSongIndex";
-export const changedSongIndexEvent = new CustomEvent (changedSongIndexName);
+export const changedSongIndexEvent = new CustomEvent(changedSongIndexName);
 
 export const changedThemeIndexName = "changedThemeIndex";
-export const changedThemeIndexEvent = new CustomEvent (changedThemeIndexName);
+export const changedThemeIndexEvent = new CustomEvent(changedThemeIndexName);
+
+export const changedRotationCheckboxName = "changedRotationCheckbox";
+export const changedRotationCheckboxEvent = new CustomEvent(
+  changedRotationCheckboxName
+);
+
+export const changedPanCheckboxName = "changedPanCheckbox";
+export const changedPanCheckboxEvent = new CustomEvent(changedPanCheckboxName);
+
+export const changedZoomCheckboxName = "changedZoomCheckbox";
+export const changedZoomCheckboxEvent = new CustomEvent(
+  changedZoomCheckboxName
+);

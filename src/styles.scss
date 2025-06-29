@@ -33,12 +33,16 @@ canvas {
   overflow: hidden;
   gap: 5px;
   padding: 5px;
-  grid-template-columns: 2fr 8fr 2fr;
+  grid-template-columns: minmax(15%, 2fr) 8fr minmax(15%, 2fr);
   grid-template-rows: 0.5fr 10.5fr 1fr;
   grid-template-areas:
     "panel-songs top-bar panel-data"
     "panel-songs canvas-container panel-data"
     "player player player";
+
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: minmax(25%, 1fr) 10fr minmax(25%, 1fr);
+  }
 
   @media screen and (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -240,14 +244,70 @@ canvas {
   margin: 10px 0;
 }
 
+label {
+  font-weight: bold;
+  margin: 10px 0 0;
+}
+
+input {
+  padding: 10px 15px;
+  background: #000;
+  color: #fafafa;
+  border: none;
+  border-bottom: 1px solid #dadada;
+  border-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+
+  &:focus {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #fff;
+  }
+}
+
+button {
+  all: unset;
+  margin: 15px 0;
+  box-sizing: border-box;
+  background: #dadada;
+  color: #444;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:hover,
+  &:focus {
+    background: #cacaca;
+  }
+}
+
+select {
+  border: 2px solid #111;
+  background: #444;
+  padding: 5px;
+  color: #fff;
+  border-radius: 5px;
+  accent-color: red;
+  margin: 10px 0;
+}
+
+input[type="checkbox"] {
+  accent-color: #444;
+  margin: 15px 0 5px;
+  align-self: flex-start;
+}
+
 .panel-songs {
   display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: unset;
   justify-content: flex-start;
-  padding: 0 3.5rem;
-  padding-top: 50px;
 
   .song-list-container {
     ul {
@@ -275,56 +335,11 @@ canvas {
     }
   }
 
-  button {
-    all: unset;
-    box-sizing: border-box;
-    background: #dadada;
-    color: #444;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-weight: bold;
-
-    &:hover,
-    &:focus {
-      background: #cacaca;
-    }
-  }
-
   .song-upload-container {
     form {
       display: flex;
       flex-direction: column;
       gap: 10px;
-
-      label {
-        font-weight: bold;
-        margin: 10px 0 0;
-      }
-
-      input {
-        padding: 10px 15px;
-        background: #000;
-        color: #fafafa;
-        border: none;
-        border-bottom: 1px solid #dadada;
-        border-radius: 5px;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-
-        &:focus {
-          outline: none;
-          border: none;
-          border-bottom: 1px solid #fff;
-        }
-      }
-
-      button {
-        margin: 15px 0;
-      }
     }
   }
 }
@@ -344,27 +359,19 @@ canvas {
   gap: 20px;
   align-items: unset;
   justify-content: flex-start;
-  padding: 0 1.5rem;
-  padding-top: 50px;
 }
 
 .properties-container {
   display: flex;
   flex-direction: column;
   margin: 15px 0;
+}
 
-  label {
-    font-weight: bold;
-    margin: 10px 0 0;
-  }
+.panel-songs,
+.panel-data {
+  padding: 50px 1.5rem 0;
 
-  select {
-    border: 2px solid #111;
-    background: #444;
-    padding: 5px;
-    color: #fff;
-    border-radius: 5px;
-    accent-color: red;
-    margin: 10px 0;
+  @media screen and (max-width: 768px) {
+    padding: 50px 0.5rem 0;
   }
 }
