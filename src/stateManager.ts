@@ -7,6 +7,7 @@ import {
   changedSongStateName,
   changedSongIndexName,
   changedThemeIndexName,
+  changedSceneIndexName,
   songUploadedName,
   changedRotationCheckboxName,
   changedPanCheckboxName,
@@ -14,10 +15,10 @@ import {
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
-import type CustomScene from "./customScene";
 import type SongPanelType from "./songPanel";
 import type PropertiesPanel from "./propertiesPanel";
 import type { OrbitControls } from "three/examples/jsm/Addons.js";
+import type SceneManager from "./sceneManager";
 
 export type Song = {
   id: string;
@@ -28,9 +29,10 @@ export type Song = {
 
 type StateManagerProps = {
   audioManager?: AudioManager;
-  currentScene?: CustomScene;
+  sceneManager?: SceneManager;
   orbitControls?: OrbitControls;
   isAnimationRunning: boolean;
+  sceneIndex: number;
   rotationEnabled: boolean;
   panEnabled: boolean;
   zoomEnabled: boolean;
@@ -50,6 +52,7 @@ type StateManagerState = {
   isPlaying: Boolean;
   volume: number;
   currentSong: number;
+  sceneIndex: number;
   isAnimationRunning: boolean;
   rotationEnabled: boolean;
   panEnabled: boolean;
@@ -69,6 +72,7 @@ export default class StateManager {
       isPlaying: false,
       volume: 0.5,
       currentSong: 0,
+      sceneIndex: this.props.sceneIndex,
       isAnimationRunning: this.props.isAnimationRunning,
       rotationEnabled: this.props.rotationEnabled,
       panEnabled: this.props.rotationEnabled,
@@ -196,15 +200,24 @@ export default class StateManager {
     this.handleAddNewSong();
   }
 
+  handleSceneIndex() {
+    window.addEventListener(changedSceneIndexName, () => {
+      this.props.sceneManager!.setCurrentScene(
+        this.props.propertiesPanel!.state.sceneIndex
+      );
+    });
+  }
+
   handleSceneChangeTheme() {
     window.addEventListener(changedThemeIndexName, () => {
-      this.props.currentScene?.changeTheme(
+      this.props.sceneManager!.currentScene?.changeTheme(
         this.props.propertiesPanel!.state.themeIndex
       );
     });
   }
 
   handlePropertiesPanelEvents() {
+    this.handleSceneIndex();
     this.handleSceneChangeTheme();
     this.handleRotationCheckbox();
     this.handlePanCheckbox();
@@ -213,7 +226,13 @@ export default class StateManager {
 
   handlePopulateThemesDropdown() {
     this.props.propertiesPanel?.populateThemesDropdown(
-      this.props.currentScene!.themes
+      this.props.sceneManager!.currentScene!.themes
+    );
+  }
+
+  handlePopulateScenesDropdown() {
+    this.props.propertiesPanel?.populateScenesDropdown(
+      this.props.sceneManager!.scenes
     );
   }
 
@@ -241,6 +260,7 @@ export default class StateManager {
 
   handlePropertiesPanelSetup() {
     this.handlePopulateThemesDropdown();
+    this.handlePopulateScenesDropdown();
   }
 
   handleKeyboardEvents() {
@@ -249,6 +269,10 @@ export default class StateManager {
         case "d":
           console.log(this._state);
           console.log(this.currentSong);
+          console.log(this.props.propertiesPanel?.state.sceneIndex);
+          break;
+        case "p":
+          this.props.player?.handlePlayPauseButton();
           break;
         case "]":
           if (this.props.isAnimationRunning) {

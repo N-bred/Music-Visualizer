@@ -22,6 +22,9 @@ export const changedSongIndexEvent = new CustomEvent(changedSongIndexName);
 export const changedThemeIndexName = "changedThemeIndex";
 export const changedThemeIndexEvent = new CustomEvent(changedThemeIndexName);
 
+export const changedSceneIndexName = "changedSceneIndex";
+export const changedSceneIndexEvent = new CustomEvent(changedSceneIndexName);
+
 export const changedRotationCheckboxName = "changedRotationCheckbox";
 export const changedRotationCheckboxEvent = new CustomEvent(
   changedRotationCheckboxName

@@ -12,7 +12,7 @@ export default class CustomScene extends T.Scene {
   public currentTheme = 0;
   public themes: theme[] = [];
 
-  constructor(numberOfFrequencies: number, themes: theme[]) {
+  constructor(numberOfFrequencies: number, themes: theme[] = []) {
     super();
     this.numberOfFrequencies = numberOfFrequencies;
     this.themes = themes;
@@ -28,5 +28,9 @@ export default class CustomScene extends T.Scene {
   animate(fft: Uint8Array<ArrayBufferLike>) {
     console.log(fft);
     return;
+  }
+
+  destroy() {
+
   }
 }

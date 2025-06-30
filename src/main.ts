@@ -2,12 +2,14 @@ import "./styles.scss";
 import * as T from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import ChaoticScene from "./scenes/chaoticScene";
+import FlatCircleScene from "./scenes/flatCircle";
 import AudioManager from "./audioManager";
 import StateManager, { type Song } from "./stateManager";
 import Player from "./player";
 import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
 import { randomID } from "./utils";
+import SceneManager from "./sceneManager";
 
 const canvasContainer = document.querySelector(".canvas-container");
 const songsFolder = "/public/songs/";
@@ -32,11 +34,12 @@ const songList: Song[] = songs.map((song) => ({
 
 const stateManager = new StateManager({
   canvasContainer,
-  isAnimationRunning: false,
+  isAnimationRunning: true,
   songList,
   rotationEnabled: true,
   panEnabled: true,
   zoomEnabled: true,
+  sceneIndex: 1,
 });
 
 const numberOfFrequencies = 512 * (2 * 2);
@@ -44,13 +47,21 @@ const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(stateManager.state.currentSong);
 audioManager.volume = stateManager.state.volume;
 
-const scene = new ChaoticScene(numberOfFrequencies);
-scene.position.set(0, -0, 0);
+const sceneManager = new SceneManager({
+  scenes: [
+    { name: "Chaotic", sceneClass: ChaoticScene },
+    { name: "Flat Circle", sceneClass: FlatCircleScene },
+  ],
+  index: stateManager.state.sceneIndex,
+  numberOfFrequencies,
+});
+
+sceneManager.currentScene.position.set(0, -0, 0);
 
 const light = new T.DirectionalLight(0xffffff, 1);
 light.position.set(5, 5, -10);
 light.target.position.set(0, 0, 0);
-scene.add(light);
+sceneManager.currentScene.add(light);
 
 const camera = new T.PerspectiveCamera(
   75,
@@ -60,7 +71,7 @@ const camera = new T.PerspectiveCamera(
 );
 
 camera.position.set(0, 0, 1200);
-camera.lookAt(scene.position);
+camera.lookAt(sceneManager.currentScene.position);
 
 const renderer = new T.WebGLRenderer();
 
@@ -74,10 +85,17 @@ orbitControls.enablePan = stateManager.state.panEnabled;
 orbitControls.enableZoom = stateManager.state.zoomEnabled;
 
 function update(_t?: number) {
-  renderer.render(scene, camera);
-  scene.rotation.z = -_t! / 10000;
-  scene.animate(audioManager.fft);
+  renderer.render(sceneManager.currentScene, camera);
+  sceneManager.currentScene.rotation.z = -_t! / 10000;
+  sceneManager.currentScene.animate(audioManager.fft);
   orbitControls.update();
+}
+
+let firstRender = false;
+
+while (!firstRender) {
+  update();
+  firstRender = true;
 }
 
 const player = new Player(stateManager);
@@ -91,7 +109,7 @@ stateManager.addProperty("player", player);
 stateManager.addProperty("songPanel", songPanel);
 stateManager.addProperty("propertiesPanel", propertiesPanel);
 stateManager.addProperty("renderer", renderer);
-stateManager.addProperty("currentScene", scene);
+stateManager.addProperty("sceneManager", sceneManager);
 stateManager.addProperty("updateFn", update);
 stateManager.handlePropertiesPanelSetup();
 stateManager.initializeEventHandlers();

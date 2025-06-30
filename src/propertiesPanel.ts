@@ -4,10 +4,13 @@ import {
   changedRotationCheckboxEvent,
   changedPanCheckboxEvent,
   changedZoomCheckboxEvent,
+  changedSceneIndexEvent,
 } from "./Events";
 import type { theme } from "./customScene";
+import type { scene } from "./sceneManager";
 
 type PropertiesPanelState = {
+  sceneIndex: number;
   themeIndex: number;
   rotationEnabled: boolean;
   panEnabled: boolean;
@@ -15,6 +18,7 @@ type PropertiesPanelState = {
 };
 
 export default class PropertiesPanel {
+  private scenesDropdown: HTMLSelectElement;
   private themesDropdown: HTMLSelectElement;
   private rotationCheckbox: HTMLInputElement;
   private panCheckbox: HTMLInputElement;
@@ -23,6 +27,7 @@ export default class PropertiesPanel {
   private _state: PropertiesPanelState;
 
   constructor(stateManager: StateManager) {
+    this.scenesDropdown = document.querySelector("#scenes-dropdown")!;
     this.themesDropdown = document.querySelector("#themes-dropdown")!;
     this.rotationCheckbox = document.querySelector(
       "#enable-rotation-checkbox"
@@ -30,14 +35,19 @@ export default class PropertiesPanel {
     this.panCheckbox = document.querySelector("#enable-pan-checkbox")!;
     this.zoomCheckbox = document.querySelector("#enable-zoom-checkbox")!;
 
-    this.themesDropdown.selectedIndex = 0;
     this._stateManager = stateManager;
+
     this._state = {
+      sceneIndex: this._stateManager.state.sceneIndex,
       themeIndex: this.themesDropdown.options.selectedIndex,
       rotationEnabled: this._stateManager.state.rotationEnabled,
       panEnabled: this._stateManager.state.panEnabled,
       zoomEnabled: this._stateManager.state.zoomEnabled,
     };
+
+    this.scenesDropdown.addEventListener("change", () => {
+      this.handleScenesDropdown();
+    });
 
     this.themesDropdown.addEventListener("change", () => {
       this.handleThemesDropdown();
@@ -61,12 +71,38 @@ export default class PropertiesPanel {
   }
 
   populateThemesDropdown(themes: theme[]) {
+    for (const child of this.themesDropdown.children) {
+      child.remove();
+    }
+
     for (const theme of themes) {
       const option = document.createElement("option");
       option.value = theme.name;
       option.textContent = theme.name;
       this.themesDropdown.appendChild(option);
     }
+
+    this.themesDropdown.selectedIndex = 0;
+  }
+
+  populateScenesDropdown(scenes: scene[]) {
+    for (const child of this.scenesDropdown.children) {
+      child.remove();
+    }
+
+    for (const scene of scenes) {
+      const option = document.createElement("option");
+      option.value = scene.name;
+      option.textContent = scene.name;
+      this.scenesDropdown.appendChild(option);
+    }
+
+    this.scenesDropdown.selectedIndex = this._stateManager.state.sceneIndex;
+  }
+
+  handleScenesDropdown() {
+    this._state.sceneIndex = this.scenesDropdown.options.selectedIndex;
+    window.dispatchEvent(changedSceneIndexEvent);
   }
 
   handleThemesDropdown() {
