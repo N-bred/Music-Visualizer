@@ -4,7 +4,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import ChaoticScene from "./scenes/chaoticScene";
 import FlatCircleScene from "./scenes/flatCircle";
 import AudioManager from "./audioManager";
-import StateManager, { type Song } from "./stateManager";
+import StateManager, { type Song, type theme } from "./stateManager";
 import Player from "./player";
 import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
@@ -32,14 +32,29 @@ const songList: Song[] = songs.map((song) => ({
   ...song,
 }));
 
+const DEFAULT_THEMES: theme[] = [
+  {
+    name: "Purple",
+    color: new T.Color(0x2607a6),
+    transitionColor: new T.Color(0x5500ff),
+  },
+  {
+    name: "Pink",
+    color: new T.Color(0xff00ff),
+    transitionColor: new T.Color(0x00ff00),
+  },
+];
+
 const stateManager = new StateManager({
   canvasContainer,
-  isAnimationRunning: true,
+  isAnimationRunning: false,
   songList,
   rotationEnabled: true,
   panEnabled: true,
   zoomEnabled: true,
   sceneIndex: 1,
+  themeIndex: 0,
+  themes: DEFAULT_THEMES
 });
 
 const numberOfFrequencies = 512 * (2 * 2);
@@ -54,6 +69,8 @@ const sceneManager = new SceneManager({
   ],
   index: stateManager.state.sceneIndex,
   numberOfFrequencies,
+  themes: stateManager.state.themes,
+  currentThemeIndex: stateManager.state.themeIndex
 });
 
 sceneManager.currentScene.position.set(0, -0, 0);

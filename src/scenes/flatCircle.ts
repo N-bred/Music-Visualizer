@@ -1,27 +1,18 @@
 import * as T from "three";
 import CustomScene from "../customScene";
-import type { theme } from "../customScene";
+import type { theme } from "../stateManager";
 import { disposeObject } from "../utils";
-
-const DEFAULT_THEMES: theme[] = [
-  {
-    name: "Purple",
-    color: new T.Color(0x2607a6),
-    transitionColor: new T.Color(0x5500ff),
-  },
-  {
-    name: "Pink",
-    color: new T.Color(0xff00ff),
-    transitionColor: new T.Color(0x00ff00),
-  },
-];
 
 export default class FlatCircleScene extends CustomScene {
   private _groups: T.Group[] = [];
   private numberOfGroups: number;
 
-  constructor(numberOfFrequencies: number, themes: theme[] = DEFAULT_THEMES) {
-    super(numberOfFrequencies, themes);
+  constructor(
+    numberOfFrequencies: number,
+    themes: theme[],
+    currentThemeIndex: number
+  ) {
+    super(numberOfFrequencies, themes, currentThemeIndex);
     this.numberOfGroups = 2;
     this.setup();
   }
@@ -41,7 +32,7 @@ export default class FlatCircleScene extends CustomScene {
 
         const boxGeometry = new T.BoxGeometry(1, 1, 1);
         const boxMaterial = new T.MeshBasicMaterial({
-          color: this.themes[this.currentTheme].color,
+          color: this.themes[this.currentThemeIndex].color,
         });
         const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
 
@@ -70,8 +61,8 @@ export default class FlatCircleScene extends CustomScene {
         const scalar = fft[i];
         box.scale.x = Math.max(scalar, 1);
         box.material.color.lerpColors(
-          this.themes[this.currentTheme].color,
-          this.themes[this.currentTheme].transitionColor,
+          this.themes[this.currentThemeIndex].color,
+          this.themes[this.currentThemeIndex].transitionColor,
           Math.abs(scalar) / 195
         );
       }

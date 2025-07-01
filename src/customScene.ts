@@ -1,28 +1,28 @@
 import * as T from "three";
-
-export type theme = {
-  name: string;
-  color: T.Color;
-  transitionColor: T.Color;
-};
+import { type theme } from "./stateManager";
 
 export default class CustomScene extends T.Scene {
   public numberOfFrequencies: number;
   public quantity: number;
-  public currentTheme = 0;
+  public currentThemeIndex: number;
   public themes: theme[] = [];
 
-  constructor(numberOfFrequencies: number, themes: theme[] = []) {
+  constructor(
+    numberOfFrequencies: number,
+    themes: theme[],
+    currentThemeIndex: number
+  ) {
     super();
     this.numberOfFrequencies = numberOfFrequencies;
     this.themes = themes;
     this.quantity = numberOfFrequencies / 2;
+    this.currentThemeIndex = currentThemeIndex;
   }
 
   setup() {}
 
   changeTheme(themeIndex: number) {
-    this.currentTheme = themeIndex;
+    this.currentThemeIndex = themeIndex;
   }
 
   animate(fft: Uint8Array<ArrayBufferLike>) {
@@ -30,7 +30,5 @@ export default class CustomScene extends T.Scene {
     return;
   }
 
-  destroy() {
-
-  }
+  destroy() {}
 }

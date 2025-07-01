@@ -1,4 +1,4 @@
-import type { WebGLRenderer, PerspectiveCamera } from "three";
+import type { WebGLRenderer, PerspectiveCamera, Color } from "three";
 import {
   stateChangedName,
   changedVolumeName,
@@ -27,15 +27,23 @@ export type Song = {
   src?: string;
 };
 
+export type theme = {
+  name: string;
+  color: Color;
+  transitionColor: Color;
+};
+
 type StateManagerProps = {
   audioManager?: AudioManager;
   sceneManager?: SceneManager;
   orbitControls?: OrbitControls;
   isAnimationRunning: boolean;
   sceneIndex: number;
+  themeIndex: number;
   rotationEnabled: boolean;
   panEnabled: boolean;
   zoomEnabled: boolean;
+  themes: theme[];
   renderer?: WebGLRenderer;
   camera?: PerspectiveCamera;
   updateFn?: () => void;
@@ -53,11 +61,13 @@ type StateManagerState = {
   volume: number;
   currentSong: number;
   sceneIndex: number;
+  themeIndex: number;
   isAnimationRunning: boolean;
   rotationEnabled: boolean;
   panEnabled: boolean;
   zoomEnabled: boolean;
   songList: Song[];
+  themes: theme[];
 };
 
 export default class StateManager {
@@ -73,11 +83,13 @@ export default class StateManager {
       volume: 0.5,
       currentSong: 0,
       sceneIndex: this.props.sceneIndex,
+      themeIndex: this.props.themeIndex,
       isAnimationRunning: this.props.isAnimationRunning,
       rotationEnabled: this.props.rotationEnabled,
       panEnabled: this.props.rotationEnabled,
       zoomEnabled: this.props.zoomEnabled,
       songList: this.props.songList,
+      themes: this.props.themes,
     };
   }
 
@@ -202,17 +214,19 @@ export default class StateManager {
 
   handleSceneIndex() {
     window.addEventListener(changedSceneIndexName, () => {
-      this.props.sceneManager!.setCurrentScene(
-        this.props.propertiesPanel!.state.sceneIndex
-      );
+      this._state.sceneIndex = this.props.propertiesPanel!.state.sceneIndex;
+      this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
+      this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
     });
   }
 
   handleSceneChangeTheme() {
     window.addEventListener(changedThemeIndexName, () => {
+      this._state.themeIndex = this.props.propertiesPanel!.state.themeIndex;
       this.props.sceneManager!.currentScene?.changeTheme(
-        this.props.propertiesPanel!.state.themeIndex
+        this._state.themeIndex
       );
+      this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
     });
   }
 

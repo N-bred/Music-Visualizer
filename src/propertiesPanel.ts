@@ -6,7 +6,7 @@ import {
   changedZoomCheckboxEvent,
   changedSceneIndexEvent,
 } from "./Events";
-import type { theme } from "./customScene";
+import type { theme } from "./stateManager";
 import type { scene } from "./sceneManager";
 
 type PropertiesPanelState = {
@@ -39,7 +39,7 @@ export default class PropertiesPanel {
 
     this._state = {
       sceneIndex: this._stateManager.state.sceneIndex,
-      themeIndex: this.themesDropdown.options.selectedIndex,
+      themeIndex: this._stateManager.state.themeIndex,
       rotationEnabled: this._stateManager.state.rotationEnabled,
       panEnabled: this._stateManager.state.panEnabled,
       zoomEnabled: this._stateManager.state.zoomEnabled,
@@ -82,7 +82,7 @@ export default class PropertiesPanel {
       this.themesDropdown.appendChild(option);
     }
 
-    this.themesDropdown.selectedIndex = 0;
+    this.themesDropdown.selectedIndex = this._stateManager.state.themeIndex;
   }
 
   populateScenesDropdown(scenes: scene[]) {
