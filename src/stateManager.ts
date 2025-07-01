@@ -12,6 +12,7 @@ import {
   changedRotationCheckboxName,
   changedPanCheckboxName,
   changedZoomCheckboxName,
+  AddedNewThemeName,
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
@@ -236,18 +237,28 @@ export default class StateManager {
     this.handleRotationCheckbox();
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
+    this.handleAddCustomTheme();
   }
 
   handlePopulateThemesDropdown() {
-    this.props.propertiesPanel?.populateThemesDropdown(
-      this.props.sceneManager!.currentScene!.themes
-    );
+    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes);
   }
 
   handlePopulateScenesDropdown() {
     this.props.propertiesPanel?.populateScenesDropdown(
       this.props.sceneManager!.scenes
     );
+  }
+
+  handleAddCustomTheme() {
+    window.addEventListener(AddedNewThemeName, () => {
+      const isFound = this._state.themes.findIndex(
+        (theme) => theme.name === this.props.propertiesPanel?.customTheme.name
+      );
+      if (isFound !== -1) return;
+      this._state.themes.push(this.props.propertiesPanel?.customTheme!);
+      this.handlePopulateThemesDropdown();
+    });
   }
 
   handleRotationCheckbox() {

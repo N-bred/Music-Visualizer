@@ -294,6 +294,7 @@ select {
   border-radius: 5px;
   accent-color: red;
   margin: 10px 0;
+  width: 100%;
 }
 
 input[type="checkbox"] {
@@ -334,23 +335,18 @@ input[type="checkbox"] {
       }
     }
   }
-
-  .song-upload-container {
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-  }
 }
 
-.song-list-container,
-.song-upload-container {
-  &.hide {
-    transform: scale(0);
-    pointer-events: none;
-    height: 0;
-  }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hide {
+  transform: scale(0);
+  pointer-events: none;
+  height: 0;
 }
 
 .panel-data {
@@ -370,6 +366,11 @@ input[type="checkbox"] {
 .panel-songs,
 .panel-data {
   padding: 50px 1.5rem 0;
+  overflow-y: scroll;
+
+  button {
+    width: 100%;
+  }
 
   @media screen and (max-width: 768px) {
     padding: 50px 0.5rem 0;

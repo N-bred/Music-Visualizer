@@ -37,3 +37,6 @@ export const changedZoomCheckboxName = "changedZoomCheckbox";
 export const changedZoomCheckboxEvent = new CustomEvent(
   changedZoomCheckboxName
 );
+
+export const AddedNewThemeName = "AddedNewTheme";
+export const AddedNewThemeEvent = new CustomEvent(AddedNewThemeName);
