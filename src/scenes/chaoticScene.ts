@@ -6,6 +6,7 @@ import { disposeObject } from "../utils";
 export default class ChaoticScene extends CustomScene {
   private _groups: T.Group[] = [];
   private numberOfGroups: number;
+  private maxScalar: number;
 
   constructor(
     numberOfFrequencies: number,
@@ -14,6 +15,7 @@ export default class ChaoticScene extends CustomScene {
   ) {
     super(numberOfFrequencies, themes, currentThemeIndex);
     this.numberOfGroups = 2;
+    this.maxScalar = 0;
     this.setup();
   }
 
@@ -58,14 +60,15 @@ export default class ChaoticScene extends CustomScene {
           T.Object3DEventMap
         >;
         const scalar = fft[i];
-        box.scale.y = Math.max(scalar, 1);
+        box.scale.y = Math.max(scalar / 2, 1);
         box.material.color.lerpColors(
           this.themes[this.currentThemeIndex].color,
           this.themes[this.currentThemeIndex].transitionColor,
-          Math.abs(scalar) / 195
+          Math.abs(scalar) / this.maxScalar || 1
         );
       }
     }
+    this.maxScalar = fft[0];
   }
 
   destroy(): void {
