@@ -129,7 +129,14 @@
                 <button type="submit">Add custom color</button>
               </form>
             </div>
-            <button id="custom-themes-button" data-open="false" data-showing="Show all Colors" data-form="Add a Color">Add a Color</button>
+            <button
+              id="custom-themes-button"
+              data-open="false"
+              data-showing="Show all Colors"
+              data-form="Add a Color"
+            >
+              Add a Color
+            </button>
           </div>
           <span class="divider"></span>
           <label for="enable-rotation-checkbox">Enable camera rotation?</label>
@@ -157,6 +164,11 @@
       </div>
       <div class="canvas-container"></div>
       <div class="player">
+        <div class="progress-bar-container">
+          <span id="progress-bar-current-time">00:00</span>
+          <progress value="0" max="100" id="progress-bar" class="progress-bar">32%</progress>
+          <span id="progress-bar-total-duration">05:00</span>
+        </div>
         <div class="buttons-menu">
           <button class="previous-button">
             <i class="fa fa-step-backward" aria-hidden="true"></i>
