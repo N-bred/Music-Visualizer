@@ -324,6 +324,10 @@ export default class StateManager {
       if (isFound !== -1) return;
       this._state.themes.push(this.props.propertiesPanel?.customTheme!);
       this.handlePopulateThemesDropdown();
+      this._state.themeIndex = this._state.themes.length - 1;
+      this.props.propertiesPanel?.handleSelectThemeIndex(
+        this._state.themeIndex
+      );
     });
   }
 

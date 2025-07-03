@@ -166,6 +166,12 @@ export default class PropertiesPanel {
     window.dispatchEvent(changedZoomCheckboxEvent);
   }
 
+  handleSelectThemeIndex(index: number) {
+    this.themesDropdown.selectedIndex = index;
+    this._state.themeIndex = this.themesDropdown.selectedIndex = index;
+    window.dispatchEvent(changedThemeIndexEvent);
+  }
+
   handleCustomThemesForm(e: Event) {
     e.preventDefault();
 
