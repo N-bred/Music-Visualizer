@@ -13,6 +13,9 @@ import {
   changedPanCheckboxName,
   changedZoomCheckboxName,
   AddedNewThemeName,
+  progressBarClickedName,
+  songEndedName,
+  songChangedName,
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
@@ -67,6 +70,7 @@ type StateManagerState = {
   rotationEnabled: boolean;
   panEnabled: boolean;
   zoomEnabled: boolean;
+  playerProgressBarInterval: number;
   songList: Song[];
   themes: theme[];
 };
@@ -91,6 +95,7 @@ export default class StateManager {
       zoomEnabled: this.props.zoomEnabled,
       songList: this.props.songList,
       themes: this.props.themes,
+      playerProgressBarInterval: 0,
     };
   }
 
@@ -142,35 +147,90 @@ export default class StateManager {
     window.addEventListener(changedSongStateName, () => {
       if (this._state.isPlaying) {
         this.props.audioManager!.play();
+        this.handlePlayerProgressBarInterval(false);
       } else {
         this.props.audioManager!.pause();
+        this.handlePlayerProgressBarInterval(true);
       }
+    });
+  }
+
+  handlePlayerProgressBarInterval(removeInterval: boolean) {
+    if (removeInterval) {
+      clearInterval(this._state.playerProgressBarInterval);
+    } else {
+      this._state.playerProgressBarInterval = setInterval(() => {
+        const percentage =
+          this.props.audioManager?.currentTime! /
+          this.props.audioManager?.duration!;
+        const specificSecond = percentage * this.props.audioManager!.duration!;
+        this.props.player?.handleUpdateProgressBarUI(
+          specificSecond,
+          percentage
+        );
+      }, 1000);
+    }
+  }
+
+  handleSongEnded() {
+    window.addEventListener(songEndedName, () => {
+      this.handlePlayerProgressBarInterval(true);
+      this.props.audioManager?.stop();
+      this.props.player?.handlePlayPauseButtonUI(false);
+      this._state.isPlaying = false;
+      this.props.player?.handleUpdateProgressBarUI(0, 0);
     });
   }
 
   handlePlayerPreviousSong() {
     window.addEventListener(previousSongName, async () => {
-      this.props.audioManager!.pause();
+      this.props.audioManager!.stop();
+      this.handlePlayerProgressBarInterval(true);
+      this.props.player?.handleUpdateProgressBarUI(0, 0);
       this.props.songPanel?.handleSongListStyles(this._state.currentSong);
       await this.props.audioManager!.setSong(this._state.currentSong);
       this.props.player!.handlePlayPauseButtonUI(true);
       this.props.audioManager!.play();
+      this.handlePlayerProgressBarInterval(false);
     });
   }
 
   handlePlayerNextSong() {
     window.addEventListener(nextSongName, async () => {
-      this.props.audioManager!.pause();
+      this.props.audioManager!.stop();
+      this.handlePlayerProgressBarInterval(true);
+      this.props.player?.handleUpdateProgressBarUI(0, 0);
       this.props.songPanel?.handleSongListStyles(this._state.currentSong);
       await this.props.audioManager!.setSong(this._state.currentSong);
       this.props.player!.handlePlayPauseButtonUI(true);
       this.props.audioManager!.play();
+      this.handlePlayerProgressBarInterval(false);
     });
   }
 
   handlePlayerVolumeChanged() {
     window.addEventListener(changedVolumeName, () => {
+      this._state.volume = this.props.player!.state.volume;
       this.props.audioManager!.volume = this._state.volume;
+    });
+  }
+
+  handlePlayerProgressBarClicked() {
+    window.addEventListener(progressBarClickedName, () => {
+      const percentage = this.props.player!.state.progressBarClickPosition;
+      const specificSecond = percentage * this.props.audioManager!.duration!;
+      this.props.audioManager?.playFromSecond(specificSecond);
+      this.props.player?.handlePlayPauseButtonUI(true);
+      this._state.isPlaying = true;
+      this.props.player?.handleUpdateProgressBarUI(specificSecond, percentage);
+    });
+  }
+
+  handleSongChanged() {
+    window.addEventListener(songChangedName, () => {
+      this.props.player!.handleTotalDurationSpan(
+        this.props.audioManager!.duration!
+      );
     });
   }
 
@@ -179,15 +239,21 @@ export default class StateManager {
     this.handlePlayerNextSong();
     this.handlePlayerPreviousSong();
     this.handlePlayerVolumeChanged();
+    this.handlePlayerProgressBarClicked();
+    this.handleSongEnded();
+    this.handleSongChanged();
   }
 
   handleSongPanelSongIndexChanged() {
     window.addEventListener(changedSongIndexName, async () => {
-      this.props.audioManager!.pause();
+      this.props.audioManager!.stop();
+      this.handlePlayerProgressBarInterval(true);
+      this.props.player?.handleUpdateProgressBarUI(0, 0);
       await this.props.audioManager!.setSong(this._state.currentSong);
       this.props.player!.handlePlayPauseButtonUI(true);
       this._state.isPlaying = true;
       this.props.audioManager!.play();
+      this.handlePlayerProgressBarInterval(false);
     });
   }
 
@@ -292,9 +358,7 @@ export default class StateManager {
     window.addEventListener("keydown", (e) => {
       switch (e.key) {
         case "d":
-          console.log(this._state);
-          console.log(this.currentSong);
-          console.log(this.props.propertiesPanel?.state.sceneIndex);
+          console.log(this.props.audioManager?.currentTime);
           break;
         case "p":
           this.props.player?.handlePlayPauseButton();

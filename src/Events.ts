@@ -40,3 +40,12 @@ export const changedZoomCheckboxEvent = new CustomEvent(
 
 export const AddedNewThemeName = "AddedNewTheme";
 export const AddedNewThemeEvent = new CustomEvent(AddedNewThemeName);
+
+export const progressBarClickedName = "progressBarClicked";
+export const progressBarClickedEvent = new CustomEvent(progressBarClickedName);
+
+export const songEndedName = "songEnded";
+export const songEndedEvent = new CustomEvent(songEndedName);
+
+export const songChangedName = "songChanged";
+export const songChangedEvent = new CustomEvent(songChangedName);

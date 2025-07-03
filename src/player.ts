@@ -4,6 +4,7 @@ import {
   nextSongEvent,
   previousSongEvent,
   changedSongStateEvent,
+  progressBarClickedEvent,
 } from "./Events";
 
 import type StateManager from "./stateManager";
@@ -14,6 +15,10 @@ export default class Player {
   private previousButton: HTMLButtonElement;
   private nextButton: HTMLButtonElement;
   private volumeRange: HTMLInputElement;
+  private initialTimeSpan: HTMLSpanElement;
+  private totalTimeSpan: HTMLSpanElement;
+  private progressBar: HTMLProgressElement;
+  private _state;
   private _stateManager: StateManager;
 
   constructor(stateManager: StateManager) {
@@ -22,7 +27,20 @@ export default class Player {
     this.previousButton = document.querySelector(".previous-button")!;
     this.nextButton = document.querySelector(".next-button")!;
     this.volumeRange = document.querySelector("#volumen-button")!;
+    this.initialTimeSpan = document.querySelector(
+      "#progress-bar-current-time"
+    )!;
+    this.progressBar = document.querySelector("#progress-bar")!;
+    this.totalTimeSpan = document.querySelector(
+      "#progress-bar-total-duration"
+    )!;
+
     this._stateManager = stateManager;
+
+    this._state = {
+      volume: this._stateManager.state.volume,
+      progressBarClickPosition: 0,
+    };
 
     // EVENTS
 
@@ -37,6 +55,44 @@ export default class Player {
       this.handlePreviousButton()
     );
     this.volumeRange.addEventListener("input", () => this.handleVolumeRange());
+
+    this.progressBar.addEventListener("click", (e) => {
+      this.handleProgressBarClick(e);
+    });
+  }
+
+  get state() {
+    return this._state;
+  }
+
+  handleProgressBarClick(e: MouseEvent) {
+    const { width, left } = this.progressBar.getBoundingClientRect();
+    const mouseX = e.clientX;
+    this._state.progressBarClickPosition = (mouseX - left) / width;
+
+    window.dispatchEvent(StateChangedEvent);
+    window.dispatchEvent(progressBarClickedEvent);
+  }
+
+  handleUpdateProgressBarUI(second: number, percentage: number) {
+    const min = Math.floor(second / 60)
+      .toString()
+      .padStart(2, "0");
+    const sec = Math.floor(second % 60)
+      .toString()
+      .padStart(2, "0");
+    this.initialTimeSpan.textContent = `${min}:${sec}`;
+    this.progressBar.value = percentage * 100;
+  }
+
+  handleTotalDurationSpan(duration: number) {
+    const min = Math.floor(duration / 60)
+      .toString()
+      .padStart(2, "0");
+    const sec = Math.floor(duration % 60)
+      .toString()
+      .padStart(2, "0");
+    this.totalTimeSpan.textContent = `${min}:${sec}`;
   }
 
   handlePlayPauseButtonUI(showPlayButton: boolean) {
@@ -93,7 +149,7 @@ export default class Player {
 
   handleVolumeRange() {
     const { value } = this.volumeRange;
-    this._stateManager.state.volume = parseFloat(value);
+    this._state.volume = parseFloat(value);
 
     window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(changedVolumeEvent);
