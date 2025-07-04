@@ -151,6 +151,8 @@ export default class Player {
     const { value } = this.volumeRange;
     this._state.volume = parseFloat(value);
 
+    // Change 1
+
     window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(changedVolumeEvent);
   }
