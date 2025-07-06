@@ -155,6 +155,8 @@ export default class Player {
 
     // CHange 2
 
+    // Change 3
+
     window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(changedVolumeEvent);
   }
