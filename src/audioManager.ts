@@ -1,6 +1,6 @@
 import * as T from "three";
 import type { Song } from "./stateManager";
-import { songChangedEvent, songEndedEvent } from "./Events";
+import { songChangedEvent, songEndedEvent, stateChangedName } from "./Events";
 
 export default class AudioManager {
   private listener: T.AudioListener;
@@ -19,6 +19,11 @@ export default class AudioManager {
     this.analyser = new T.AudioAnalyser(this.sound, numberOfFrequencies);
     this._currentTime = 0;
     this.currentTimeInterval = 0;
+
+    window.addEventListener(stateChangedName, (e: CustomEventInit) => {
+      const { volume } = e.detail;
+      this.volume = volume;
+    });
   }
 
   async setSong(songIndex: number) {

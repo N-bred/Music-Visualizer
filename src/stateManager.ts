@@ -209,9 +209,12 @@ export default class StateManager {
   }
 
   handlePlayerVolumeChanged() {
-    window.addEventListener(changedVolumeName, () => {
-      this._state.volume = this.props.player!.state.volume;
-      this.props.audioManager!.volume = this._state.volume;
+    window.addEventListener(changedVolumeName, (e: CustomEventInit) => {
+      this._state.volume = e.detail.volume;
+
+      window.dispatchEvent(
+        new CustomEvent(stateChangedName, { detail: { ...this._state } })
+      );
     });
   }
 

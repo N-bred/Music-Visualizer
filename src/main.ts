@@ -47,7 +47,7 @@ const DEFAULT_THEMES: theme[] = [
 
 const stateManager = new StateManager({
   canvasContainer,
-  isAnimationRunning: true,
+  isAnimationRunning: false,
   songList,
   rotationEnabled: true,
   panEnabled: true,

@@ -1,6 +1,5 @@
 import {
-  StateChangedEvent,
-  changedVolumeEvent,
+  changedVolumeName,
   nextSongEvent,
   previousSongEvent,
   changedSongStateEvent,
@@ -70,7 +69,6 @@ export default class Player {
     const mouseX = e.clientX;
     this._state.progressBarClickPosition = (mouseX - left) / width;
 
-    window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(progressBarClickedEvent);
   }
 
@@ -114,7 +112,6 @@ export default class Player {
       this.handlePlayPauseButtonUI(true);
     }
 
-    window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(changedSongStateEvent);
   }
 
@@ -132,7 +129,6 @@ export default class Player {
       this._stateManager.state.isPlaying = true;
     }
 
-    window.dispatchEvent(StateChangedEvent);
     window.dispatchEvent(nextSongEvent);
   }
 
@@ -143,15 +139,19 @@ export default class Player {
       this._stateManager.state.isPlaying = true;
     }
 
-    window.dispatchEvent(StateChangedEvent);
+
     window.dispatchEvent(previousSongEvent);
   }
 
   handleVolumeRange() {
     const { value } = this.volumeRange;
-    this._state.volume = parseFloat(value);
 
-    window.dispatchEvent(StateChangedEvent);
-    window.dispatchEvent(changedVolumeEvent);
+    window.dispatchEvent(
+      new CustomEvent(changedVolumeName, {
+        detail: {
+          volume: parseFloat(value),
+        },
+      })
+    );
   }
 }

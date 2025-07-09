@@ -11,7 +11,6 @@ export const nextSongName = "nextSong";
 export const nextSongEvent = new CustomEvent(nextSongName);
 
 export const changedVolumeName = "changedVolume";
-export const changedVolumeEvent = new CustomEvent(changedVolumeName);
 
 export const songUploadedName = "songUploaded";
 export const songUploadedEvent = new CustomEvent(songUploadedName);
