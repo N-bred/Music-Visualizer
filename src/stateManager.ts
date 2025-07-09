@@ -183,15 +183,22 @@ export default class StateManager {
   }
 
   handlePlayerPreviousSong() {
-    window.addEventListener(previousSongName, async () => {
-      this.props.audioManager!.stop();
+    window.addEventListener(previousSongName, async (e: CustomEventInit) => {
+      const { isPlaying, currentSong } = e.detail;
+      this._state.currentSong = currentSong;
+      this._state.isPlaying = isPlaying;
+
       this.handlePlayerProgressBarInterval(true);
-      this.props.player?.handleUpdateProgressBarUI(0, 0);
+      this.props.player!.handleUpdateProgressBarUI(0, 0);
       this.props.songPanel?.handleSongListStyles(this._state.currentSong);
       await this.props.audioManager!.setSong(this._state.currentSong);
-      this.props.player!.handlePlayPauseButtonUI(true);
       this.props.audioManager!.play();
+      this.props.player!.handlePlayPauseButtonUI(true);
       this.handlePlayerProgressBarInterval(false);
+
+      window.dispatchEvent(
+        new CustomEvent(stateChangedName, { detail: { ...this._state } })
+      );
     });
   }
 
@@ -366,6 +373,7 @@ export default class StateManager {
       switch (e.key) {
         case "d":
           console.log(this.props.audioManager?.currentTime);
+          console.log(this._state);
           break;
         case "p":
           this.props.player?.handlePlayPauseButton();

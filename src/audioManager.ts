@@ -27,8 +27,7 @@ export default class AudioManager {
   }
 
   async setSong(songIndex: number) {
-    this.sound.stop(0);
-    this.sound.offset = 0;
+    this.stop();
     const song = this.songList[songIndex];
     const buffer = await this.audioLoader.loadAsync(song.src!);
     this.sound.setBuffer(buffer);

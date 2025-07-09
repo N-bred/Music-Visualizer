@@ -1,9 +1,9 @@
 import {
   changedVolumeName,
   nextSongEvent,
-  previousSongEvent,
   changedSongStateEvent,
   progressBarClickedEvent,
+  previousSongName,
 } from "./Events";
 
 import type StateManager from "./stateManager";
@@ -135,12 +135,15 @@ export default class Player {
   handlePreviousButton() {
     if (this._stateManager.state.currentSong - 1 < 0) return;
     if (this._stateManager.state.currentSong - 1 >= 0) {
-      this._stateManager.currentSong = this._stateManager.state.currentSong - 1;
-      this._stateManager.state.isPlaying = true;
+      window.dispatchEvent(
+        new CustomEvent(previousSongName, {
+          detail: {
+            currentSong: this._stateManager.state.currentSong - 1,
+            isPlaying: true,
+          },
+        })
+      );
     }
-
-
-    window.dispatchEvent(previousSongEvent);
   }
 
   handleVolumeRange() {
