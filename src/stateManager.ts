@@ -2,8 +2,6 @@ import type { WebGLRenderer, PerspectiveCamera, Color } from "three";
 import {
   stateChangedName,
   changedVolumeName,
-  nextSongName,
-  previousSongName,
   changedSongStateName,
   changedSongIndexName,
   changedThemeIndexName,
@@ -16,6 +14,7 @@ import {
   progressBarClickedName,
   songEndedName,
   songChangedName,
+  newSongSelectedName,
 } from "./Events";
 import type AudioManager from "./audioManager";
 import type PlayerType from "./player";
@@ -182,8 +181,8 @@ export default class StateManager {
     });
   }
 
-  handlePlayerPreviousSong() {
-    window.addEventListener(previousSongName, async (e: CustomEventInit) => {
+  handlePlayerNewSongSelected() {
+    window.addEventListener(newSongSelectedName, async (e: CustomEventInit) => {
       const { isPlaying, currentSong } = e.detail;
       this._state.currentSong = currentSong;
       this._state.isPlaying = isPlaying;
@@ -199,19 +198,6 @@ export default class StateManager {
       window.dispatchEvent(
         new CustomEvent(stateChangedName, { detail: { ...this._state } })
       );
-    });
-  }
-
-  handlePlayerNextSong() {
-    window.addEventListener(nextSongName, async () => {
-      this.props.audioManager!.stop();
-      this.handlePlayerProgressBarInterval(true);
-      this.props.player?.handleUpdateProgressBarUI(0, 0);
-      this.props.songPanel?.handleSongListStyles(this._state.currentSong);
-      await this.props.audioManager!.setSong(this._state.currentSong);
-      this.props.player!.handlePlayPauseButtonUI(true);
-      this.props.audioManager!.play();
-      this.handlePlayerProgressBarInterval(false);
     });
   }
 
@@ -246,8 +232,7 @@ export default class StateManager {
 
   handlePlayerEvents() {
     this.handlePlayerChangedSong();
-    this.handlePlayerNextSong();
-    this.handlePlayerPreviousSong();
+    this.handlePlayerNewSongSelected();
     this.handlePlayerVolumeChanged();
     this.handlePlayerProgressBarClicked();
     this.handleSongEnded();

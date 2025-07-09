@@ -4,8 +4,7 @@ export const StateChangedEvent = new CustomEvent(stateChangedName);
 export const changedSongStateName = "changedSongState";
 export const changedSongStateEvent = new CustomEvent(changedSongStateName);
 
-export const previousSongName = "previousSong";
-export const previousSongEvent = new CustomEvent(previousSongName);
+export const newSongSelectedName = "newSongSelected";
 
 export const nextSongName = "nextSong";
 export const nextSongEvent = new CustomEvent(nextSongName);
