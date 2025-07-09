@@ -1,10 +1,5 @@
-import {
-  changedVolumeName,
-  changedSongStateEvent,
-  progressBarClickedEvent,
-  newSongSelectedName,
-} from "./Events";
-
+import { calculateMinutesAndSeconds } from "./utils";
+import { changedVolumeName, newSongSelectedName, changedSongStateName, progressBarClickedName } from "./Events";
 import type StateManager from "./stateManager";
 
 export default class Player {
@@ -16,7 +11,6 @@ export default class Player {
   private initialTimeSpan: HTMLSpanElement;
   private totalTimeSpan: HTMLSpanElement;
   private progressBar: HTMLProgressElement;
-  private _state;
   private _stateManager: StateManager;
 
   constructor(stateManager: StateManager) {
@@ -25,70 +19,43 @@ export default class Player {
     this.previousButton = document.querySelector(".previous-button")!;
     this.nextButton = document.querySelector(".next-button")!;
     this.volumeRange = document.querySelector("#volumen-button")!;
-    this.initialTimeSpan = document.querySelector(
-      "#progress-bar-current-time"
-    )!;
+    this.initialTimeSpan = document.querySelector("#progress-bar-current-time")!;
     this.progressBar = document.querySelector("#progress-bar")!;
-    this.totalTimeSpan = document.querySelector(
-      "#progress-bar-total-duration"
-    )!;
-
+    this.totalTimeSpan = document.querySelector("#progress-bar-total-duration")!;
     this._stateManager = stateManager;
-
-    this._state = {
-      volume: this._stateManager.state.volume,
-      progressBarClickPosition: 0,
-    };
 
     // EVENTS
 
-    this.playButton.addEventListener("click", () =>
-      this.handlePlayPauseButton()
-    );
-    this.pauseButton.addEventListener("click", () =>
-      this.handlePlayPauseButton()
-    );
+    this.playButton.addEventListener("click", () => this.handlePlayPauseButton());
+    this.pauseButton.addEventListener("click", () => this.handlePlayPauseButton());
     this.nextButton.addEventListener("click", () => this.handleNextButton());
-    this.previousButton.addEventListener("click", () =>
-      this.handlePreviousButton()
-    );
+    this.previousButton.addEventListener("click", () => this.handlePreviousButton());
     this.volumeRange.addEventListener("input", () => this.handleVolumeRange());
-
-    this.progressBar.addEventListener("click", (e) => {
-      this.handleProgressBarClick(e);
-    });
-  }
-
-  get state() {
-    return this._state;
+    this.progressBar.addEventListener("click", (e) => this.handleProgressBarClick(e));
   }
 
   handleProgressBarClick(e: MouseEvent) {
     const { width, left } = this.progressBar.getBoundingClientRect();
     const mouseX = e.clientX;
-    this._state.progressBarClickPosition = (mouseX - left) / width;
 
-    window.dispatchEvent(progressBarClickedEvent);
+    window.dispatchEvent(
+      new CustomEvent(progressBarClickedName, {
+        detail: {
+          progressBarClickPosition: (mouseX - left) / width,
+          isPlaying: true,
+        },
+      })
+    );
   }
 
   handleUpdateProgressBarUI(second: number, percentage: number) {
-    const min = Math.floor(second / 60)
-      .toString()
-      .padStart(2, "0");
-    const sec = Math.floor(second % 60)
-      .toString()
-      .padStart(2, "0");
+    const { min, sec } = calculateMinutesAndSeconds(second);
     this.initialTimeSpan.textContent = `${min}:${sec}`;
     this.progressBar.value = percentage * 100;
   }
 
   handleTotalDurationSpan(duration: number) {
-    const min = Math.floor(duration / 60)
-      .toString()
-      .padStart(2, "0");
-    const sec = Math.floor(duration % 60)
-      .toString()
-      .padStart(2, "0");
+    const { min, sec } = calculateMinutesAndSeconds(duration);
     this.totalTimeSpan.textContent = `${min}:${sec}`;
   }
 
@@ -103,15 +70,16 @@ export default class Player {
   }
 
   handlePlayPauseButton() {
-    if (this._stateManager.state.isPlaying) {
-      this._stateManager.state.isPlaying = false;
-      this.handlePlayPauseButtonUI(false);
-    } else {
-      this._stateManager.state.isPlaying = true;
-      this.handlePlayPauseButtonUI(true);
-    }
+    const isPlaying = !this._stateManager.state.isPlaying;
+    this.handlePlayPauseButtonUI(isPlaying);
 
-    window.dispatchEvent(changedSongStateEvent);
+    window.dispatchEvent(
+      new CustomEvent(changedSongStateName, {
+        detail: {
+          isPlaying,
+        },
+      })
+    );
   }
 
   handleNextButton() {

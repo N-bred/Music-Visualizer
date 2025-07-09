@@ -34,3 +34,17 @@ export function disposeObject(object: any) {
 export function randomID(artistName: string, songName: string) {
   return artistName + songName;
 }
+
+export function calculateMinutesAndSeconds(duration: number) {
+  const min = Math.floor(duration / 60)
+    .toString()
+    .padStart(2, "0");
+  const sec = Math.floor(duration % 60)
+    .toString()
+    .padStart(2, "0");
+
+  return {
+    min,
+    sec,
+  };
+}

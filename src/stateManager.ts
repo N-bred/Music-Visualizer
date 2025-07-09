@@ -115,19 +115,14 @@ export default class StateManager {
     this.handleWindowResize();
   }
 
-  addProperty<K extends keyof StateManagerProps>(
-    key: K,
-    property: StateManagerProps[K]
-  ) {
+  addProperty<K extends keyof StateManagerProps>(key: K, property: StateManagerProps[K]) {
     this.props[key] = property;
   }
 
   handleWindowResize() {
     window.addEventListener("resize", () => {
-      this._state.WIDTH =
-        this.props.canvasContainer?.getBoundingClientRect().width || 0;
-      this._state.HEIGHT =
-        this.props.canvasContainer?.getBoundingClientRect().height || 0;
+      this._state.WIDTH = this.props.canvasContainer?.getBoundingClientRect().width || 0;
+      this._state.HEIGHT = this.props.canvasContainer?.getBoundingClientRect().height || 0;
       this.props.camera!.aspect = this._state.WIDTH / this._state.HEIGHT;
       this.props.camera!.updateProjectionMatrix();
       this.props.renderer!.setSize(this._state.WIDTH, this._state.HEIGHT);
@@ -143,7 +138,9 @@ export default class StateManager {
   }
 
   handlePlayerChangedSong() {
-    window.addEventListener(changedSongStateName, () => {
+    window.addEventListener(changedSongStateName, (e: CustomEventInit) => {
+      this._state.isPlaying = e.detail.isPlaying;
+
       if (this._state.isPlaying) {
         this.props.audioManager!.play();
         this.handlePlayerProgressBarInterval(false);
@@ -151,6 +148,8 @@ export default class StateManager {
         this.props.audioManager!.pause();
         this.handlePlayerProgressBarInterval(true);
       }
+
+      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
     });
   }
 
@@ -159,14 +158,9 @@ export default class StateManager {
       clearInterval(this._state.playerProgressBarInterval);
     } else {
       this._state.playerProgressBarInterval = setInterval(() => {
-        const percentage =
-          this.props.audioManager?.currentTime! /
-          this.props.audioManager?.duration!;
+        const percentage = this.props.audioManager?.currentTime! / this.props.audioManager?.duration!;
         const specificSecond = percentage * this.props.audioManager!.duration!;
-        this.props.player?.handleUpdateProgressBarUI(
-          specificSecond,
-          percentage
-        );
+        this.props.player?.handleUpdateProgressBarUI(specificSecond, percentage);
       }, 1000);
     }
   }
@@ -183,9 +177,8 @@ export default class StateManager {
 
   handlePlayerNewSongSelected() {
     window.addEventListener(newSongSelectedName, async (e: CustomEventInit) => {
-      const { isPlaying, currentSong } = e.detail;
-      this._state.currentSong = currentSong;
-      this._state.isPlaying = isPlaying;
+      this._state.currentSong = e.detail.currentSong;
+      this._state.isPlaying = e.detail.isPlaying;
 
       this.handlePlayerProgressBarInterval(true);
       this.props.player!.handleUpdateProgressBarUI(0, 0);
@@ -195,9 +188,7 @@ export default class StateManager {
       this.props.player!.handlePlayPauseButtonUI(true);
       this.handlePlayerProgressBarInterval(false);
 
-      window.dispatchEvent(
-        new CustomEvent(stateChangedName, { detail: { ...this._state } })
-      );
+      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
     });
   }
 
@@ -205,28 +196,27 @@ export default class StateManager {
     window.addEventListener(changedVolumeName, (e: CustomEventInit) => {
       this._state.volume = e.detail.volume;
 
-      window.dispatchEvent(
-        new CustomEvent(stateChangedName, { detail: { ...this._state } })
-      );
+      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
     });
   }
 
   handlePlayerProgressBarClicked() {
-    window.addEventListener(progressBarClickedName, () => {
-      const percentage = this.props.player!.state.progressBarClickPosition;
+    window.addEventListener(progressBarClickedName, (e: CustomEventInit) => {
+      const percentage = e.detail.progressBarClickPosition;
       const specificSecond = percentage * this.props.audioManager!.duration!;
+
+      this._state.isPlaying = e.detail.isPlaying;
       this.props.audioManager?.playFromSecond(specificSecond);
-      this.props.player?.handlePlayPauseButtonUI(true);
-      this._state.isPlaying = true;
+      this.props.player?.handlePlayPauseButtonUI(e.detail.isPlaying);
       this.props.player?.handleUpdateProgressBarUI(specificSecond, percentage);
+
+      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
     });
   }
 
   handleSongChanged() {
     window.addEventListener(songChangedName, () => {
-      this.props.player!.handleTotalDurationSpan(
-        this.props.audioManager!.duration!
-      );
+      this.props.player!.handleTotalDurationSpan(this.props.audioManager!.duration!);
     });
   }
 
@@ -254,10 +244,7 @@ export default class StateManager {
 
   handleAddNewSong() {
     window.addEventListener(songUploadedName, () => {
-      const found =
-        this.state.songList.findIndex(
-          (song) => song.id === this.props.songPanel!._state.id
-        ) !== -1;
+      const found = this.state.songList.findIndex((song) => song.id === this.props.songPanel!._state.id) !== -1;
 
       if (found) {
         this.props.songPanel?.handlePostFormSubmission(false);
@@ -285,9 +272,7 @@ export default class StateManager {
   handleSceneChangeTheme() {
     window.addEventListener(changedThemeIndexName, () => {
       this._state.themeIndex = this.props.propertiesPanel!.state.themeIndex;
-      this.props.sceneManager!.currentScene?.changeTheme(
-        this._state.themeIndex
-      );
+      this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
     });
   }
@@ -306,30 +291,23 @@ export default class StateManager {
   }
 
   handlePopulateScenesDropdown() {
-    this.props.propertiesPanel?.populateScenesDropdown(
-      this.props.sceneManager!.scenes
-    );
+    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes);
   }
 
   handleAddCustomTheme() {
     window.addEventListener(AddedNewThemeName, () => {
-      const isFound = this._state.themes.findIndex(
-        (theme) => theme.name === this.props.propertiesPanel?.customTheme.name
-      );
+      const isFound = this._state.themes.findIndex((theme) => theme.name === this.props.propertiesPanel?.customTheme.name);
       if (isFound !== -1) return;
       this._state.themes.push(this.props.propertiesPanel?.customTheme!);
       this.handlePopulateThemesDropdown();
       this._state.themeIndex = this._state.themes.length - 1;
-      this.props.propertiesPanel?.handleSelectThemeIndex(
-        this._state.themeIndex
-      );
+      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
     });
   }
 
   handleRotationCheckbox() {
     window.addEventListener(changedRotationCheckboxName, () => {
-      this._state.rotationEnabled =
-        this.props.propertiesPanel!.state.rotationEnabled;
+      this._state.rotationEnabled = this.props.propertiesPanel!.state.rotationEnabled;
       this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
     });
   }
