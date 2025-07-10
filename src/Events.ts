@@ -9,7 +9,6 @@ export const newSongSelectedName = "newSongSelected";
 export const changedVolumeName = "changedVolume";
 
 export const songUploadedName = "songUploaded";
-export const songUploadedEvent = new CustomEvent(songUploadedName);
 
 export const changedSongIndexName = "changedSongIndex";
 export const changedSongIndexEvent = new CustomEvent(changedSongIndexName);

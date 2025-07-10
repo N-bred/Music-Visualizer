@@ -14,21 +14,23 @@ import SceneManager from "./sceneManager";
 const canvasContainer = document.querySelector(".canvas-container");
 const songsFolder = "/public/songs/";
 
-const songs = [
+const songs: Song[] = [
   {
-    id: randomID("System of a Down", "Forest.mp3"),
+    id: randomID("System of a Down", "Forest"),
     artistName: "System of a Down",
-    songName: "Forest.mp3",
+    songName: "Forest",
+    fileName: "Forest.mp3",
   },
   {
-    id: randomID("Therion", "Clavicula Nox.mp3"),
+    id: randomID("Therion", "Clavicula Nox"),
     artistName: "Therion",
-    songName: "Clavicula Nox.mp3",
+    songName: "Clavicula Nox",
+    fileName: "Clavicula Nox.mp3",
   },
 ];
 
 const songList: Song[] = songs.map((song) => ({
-  src: songsFolder + song.artistName + " - " + song.songName,
+  src: songsFolder + song.artistName + " - " + song.fileName,
   ...song,
 }));
 
@@ -127,8 +129,9 @@ stateManager.addProperty("propertiesPanel", propertiesPanel);
 stateManager.addProperty("renderer", renderer);
 stateManager.addProperty("sceneManager", sceneManager);
 stateManager.addProperty("updateFn", update);
-stateManager.handlePropertiesPanelSetup();
 stateManager.initializeEventHandlers();
+stateManager.handlePropertiesPanelSetup();
+stateManager.handleSongsPanelSetup();
 
 if (stateManager.state.isAnimationRunning) {
   renderer.setAnimationLoop(update);

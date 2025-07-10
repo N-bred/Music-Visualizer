@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Nicolas Caballero (n-bred.github.com)"/>
     <title>Three JS Visualizer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,27 +12,18 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="./src/vendor/font-awesome-4.7.0/css/font-awesome.min.css"
-    />
+    <link rel="stylesheet" href="./src/vendor/font-awesome-4.7.0/css/font-awesome.min.css" />
   </head>
   <body>
     <div id="app" class="app">
       <div class="top-bar">
         <p>TOP BAR</p>
-        <button
-          id="hamburger-button-panel-songs"
-          class="hamburger-button hamburger-button-panel-songs"
-        >
+        <button id="hamburger-button-panel-songs" class="hamburger-button hamburger-button-panel-songs">
           <span class="hamburger-button-line-1"></span>
           <span class="hamburger-button-line-2"></span>
           <span class="hamburger-button-line-3"></span>
         </button>
-        <button
-          id="hamburger-button-panel-data"
-          class="hamburger-button hamburger-button-panel-data"
-        >
+        <button id="hamburger-button-panel-data" class="hamburger-button hamburger-button-panel-data">
           <span class="hamburger-button-line-1"></span>
           <span class="hamburger-button-line-2"></span>
           <span class="hamburger-button-line-3"></span>
@@ -41,58 +33,20 @@
         <div class="song-list-container">
           <h3>ALL SONGS</h3>
           <span class="divider"></span>
-          <ul id="song-list">
-            <li>
-              <a
-                href="/public/songs/System of a Down - Forest.mp3"
-                data-url="/public/songs/System of a Down - Forest.mp3"
-                >System of a down - Forest</a
-              >
-            </li>
-            <li>
-              <a
-                href="/public/songs/Therion - Clavicula Nox.mp3"
-                data-url="/public/songs/Therion - Clavicula Nox.mp3"
-                >Therion - Clavicula Nox</a
-              >
-            </li>
-          </ul>
+          <ul id="song-list"></ul>
         </div>
         <div class="song-upload-container hide">
           <form id="uploadSongForm">
             <label for="artist-input">Artist Name</label>
-            <input
-              type="text"
-              name="artist-name"
-              id="artist-input"
-              placeholder="Please enter the artist name"
-              required
-            />
+            <input type="text" name="artist-name" id="artist-input" placeholder="Please enter the artist name" required />
             <label for="song-input">Song Name</label>
-            <input
-              type="text"
-              name="song-name"
-              id="song-name-input"
-              placeholder="Please enter the song name"
-              required
-            />
+            <input type="text" name="song-name" id="song-name-input" placeholder="Please enter the song name" required />
             <label for="song-file-input">Select a song</label>
-            <input
-              type="file"
-              name="song-file"
-              id="song-file-input"
-              accept="audio/*"
-              required
-            />
+            <input type="file" name="song-file" id="song-file-input" accept="audio/*" required />
             <button type="submit">Upload Song</button>
           </form>
         </div>
-        <button
-          id="panel-song-swap-button"
-          data-showing-songs="true"
-          data-songs-text="Show All Songs"
-          data-form-text="Upload a Song"
-        >
+        <button id="panel-song-swap-button" data-showing-songs="true" data-songs-text="Show All Songs" data-form-text="Upload a Song">
           Upload a Song
         </button>
       </div>
@@ -109,66 +63,30 @@
             <div class="custom-theme-form-container hide">
               <form id="custom-theme-form">
                 <label for="custom-color-name">Color Name: </label>
-                <input
-                  type="text"
-                  name="custom-color-name"
-                  id="custom-color-name"
-                />
+                <input type="text" name="custom-color-name" id="custom-color-name" />
                 <label for="initial-color-input">Initial Color: </label>
-                <input
-                  type="color"
-                  name="initial-color"
-                  id="initial-color-input"
-                />
+                <input type="color" name="initial-color" id="initial-color-input" />
                 <label for="transition-color-input">Transition Color: </label>
-                <input
-                  type="color"
-                  name="transition-color"
-                  id="transition-color-input"
-                />
+                <input type="color" name="transition-color" id="transition-color-input" />
                 <button type="submit">Add custom color</button>
               </form>
             </div>
-            <button
-              id="custom-themes-button"
-              data-open="false"
-              data-showing="Show all Colors"
-              data-form="Add a Color"
-            >
-              Add a Color
-            </button>
+            <button id="custom-themes-button" data-open="false" data-showing="Show all Colors" data-form="Add a Color">Add a Color</button>
           </div>
           <span class="divider"></span>
           <label for="enable-rotation-checkbox">Enable camera rotation?</label>
-          <input
-            type="checkbox"
-            name="enable-rotation"
-            id="enable-rotation-checkbox"
-            checked
-          />
+          <input type="checkbox" name="enable-rotation" id="enable-rotation-checkbox" checked />
           <label for="enable-pan-checkbox">Enable camera pan?</label>
-          <input
-            type="checkbox"
-            name="enable-pan"
-            id="enable-pan-checkbox"
-            checked
-          />
+          <input type="checkbox" name="enable-pan" id="enable-pan-checkbox" checked />
           <label for="enable-zoom-checkbox">Enable camera zoom?</label>
-          <input
-            type="checkbox"
-            name="enable-zoom"
-            id="enable-zoom-checkbox"
-            checked
-          />
+          <input type="checkbox" name="enable-zoom" id="enable-zoom-checkbox" checked />
         </div>
       </div>
       <div class="canvas-container"></div>
       <div class="player">
         <div class="progress-bar-container">
           <span id="progress-bar-current-time">00:00</span>
-          <progress value="0" max="100" id="progress-bar" class="progress-bar">
-            0%
-          </progress>
+          <progress value="0" max="100" id="progress-bar" class="progress-bar">0%</progress>
           <span id="progress-bar-total-duration">00:00</span>
         </div>
         <div class="buttons-menu">
@@ -187,15 +105,7 @@
         </div>
         <div class="volume-menu">
           <i class="fa fa-volume-down" aria-hidden="true"></i>
-          <input
-            type="range"
-            name="volume-button"
-            id="volumen-button"
-            min="0.0"
-            max="1.0"
-            step="0.1"
-            value="0.5"
-          />
+          <input type="range" name="volume-button" id="volumen-button" min="0.0" max="1.0" step="0.1" value="0.5" />
           <i class="fa fa-volume-up" aria-hidden="true"></i>
         </div>
       </div>

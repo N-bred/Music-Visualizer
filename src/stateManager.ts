@@ -3,7 +3,6 @@ import {
   stateChangedName,
   changedVolumeName,
   changedSongStateName,
-  changedSongIndexName,
   changedThemeIndexName,
   changedSceneIndexName,
   songUploadedName,
@@ -27,6 +26,7 @@ export type Song = {
   id: string;
   artistName: string;
   songName: string;
+  fileName: string;
   src?: string;
 };
 
@@ -104,6 +104,10 @@ export default class StateManager {
 
   set currentSong(song: number) {
     this._state.currentSong = song;
+  }
+
+  get lastSongListIndex() {
+    return this._state.songList.length - 1;
   }
 
   initializeEventHandlers() {
@@ -184,9 +188,12 @@ export default class StateManager {
       this.props.player!.handleUpdateProgressBarUI(0, 0);
       this.props.songPanel?.handleSongListStyles(this._state.currentSong);
       await this.props.audioManager!.setSong(this._state.currentSong);
-      this.props.audioManager!.play();
-      this.props.player!.handlePlayPauseButtonUI(true);
-      this.handlePlayerProgressBarInterval(false);
+
+      if (this._state.isPlaying) {
+        this.props.audioManager!.play();
+        this.props.player!.handlePlayPauseButtonUI(true);
+        this.handlePlayerProgressBarInterval(false);
+      }
 
       window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
     });
@@ -229,35 +236,22 @@ export default class StateManager {
     this.handleSongChanged();
   }
 
-  handleSongPanelSongIndexChanged() {
-    window.addEventListener(changedSongIndexName, async () => {
-      this.props.audioManager!.stop();
-      this.handlePlayerProgressBarInterval(true);
-      this.props.player?.handleUpdateProgressBarUI(0, 0);
-      await this.props.audioManager!.setSong(this._state.currentSong);
-      this.props.player!.handlePlayPauseButtonUI(true);
-      this._state.isPlaying = true;
-      this.props.audioManager!.play();
-      this.handlePlayerProgressBarInterval(false);
-    });
-  }
-
   handleAddNewSong() {
-    window.addEventListener(songUploadedName, () => {
-      const found = this.state.songList.findIndex((song) => song.id === this.props.songPanel!._state.id) !== -1;
+    window.addEventListener(songUploadedName, ({ detail }: CustomEventInit<Song>) => {
+      const found = this.state.songList.findIndex((song) => song.id === detail!.id) !== -1;
 
       if (found) {
         this.props.songPanel?.handlePostFormSubmission(false);
         return;
       }
 
-      this.state.songList.push({ ...this.props.songPanel!._state });
+      this.state.songList.push(detail!);
+      this._state.currentSong = this.lastSongListIndex;
       this.props.songPanel?.handlePostFormSubmission(true);
     });
   }
 
   handleSongPanelEvents() {
-    this.handleSongPanelSongIndexChanged();
     this.handleAddNewSong();
   }
 
@@ -329,6 +323,14 @@ export default class StateManager {
   handlePropertiesPanelSetup() {
     this.handlePopulateThemesDropdown();
     this.handlePopulateScenesDropdown();
+  }
+
+  handlePopulateSongs() {
+    this.props.songPanel!.handleRefreshUIState(false);
+  }
+
+  handleSongsPanelSetup() {
+    this.handlePopulateSongs();
   }
 
   handleKeyboardEvents() {

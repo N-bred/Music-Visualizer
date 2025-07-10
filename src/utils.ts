@@ -32,7 +32,7 @@ export function disposeObject(object: any) {
 }
 
 export function randomID(artistName: string, songName: string) {
-  return artistName + songName;
+  return artistName + " " +  songName;
 }
 
 export function calculateMinutesAndSeconds(duration: number) {
