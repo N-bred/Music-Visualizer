@@ -54,7 +54,7 @@ const stateManager = new StateManager({
   zoomEnabled: true,
   sceneIndex: 0,
   themeIndex: 0,
-  themes: DEFAULT_THEMES
+  themes: DEFAULT_THEMES,
 });
 
 const numberOfFrequencies = 512 * (2 * 2);
@@ -70,7 +70,7 @@ const sceneManager = new SceneManager({
   index: stateManager.state.sceneIndex,
   numberOfFrequencies,
   themes: stateManager.state.themes,
-  currentThemeIndex: stateManager.state.themeIndex
+  currentThemeIndex: stateManager.state.themeIndex,
 });
 
 sceneManager.currentScene.position.set(0, -0, 0);
@@ -80,12 +80,7 @@ light.position.set(5, 5, -10);
 light.target.position.set(0, 0, 0);
 sceneManager.currentScene.add(light);
 
-const camera = new T.PerspectiveCamera(
-  75,
-  stateManager.state.WIDTH / stateManager.state.HEIGHT,
-  0.1,
-  2000
-);
+const camera = new T.PerspectiveCamera(75, stateManager.state.WIDTH / stateManager.state.HEIGHT, 0.1, 2000);
 
 camera.position.set(0, 0, 1200);
 camera.lookAt(sceneManager.currentScene.position);
@@ -101,11 +96,15 @@ orbitControls.enableRotate = stateManager.state.rotationEnabled;
 orbitControls.enablePan = stateManager.state.panEnabled;
 orbitControls.enableZoom = stateManager.state.zoomEnabled;
 
-function update(_t?: number) {
+let t = 0;
+
+function update() {
   renderer.render(sceneManager.currentScene, camera);
-  sceneManager.currentScene.rotation.z = -_t! / 10000;
+  sceneManager.currentScene.rotation.z = -t / 100;
   sceneManager.currentScene.animate(audioManager.fft);
   orbitControls.update();
+
+  t += 0.1;
 }
 
 let firstRender = false;
