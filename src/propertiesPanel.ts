@@ -9,6 +9,7 @@ import {
 } from "./Events";
 import type { theme } from "./stateManager";
 import type { scene } from "./sceneManager";
+import { populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
 
 export default class PropertiesPanel {
   private scenesDropdown: HTMLSelectElement;
@@ -49,41 +50,15 @@ export default class PropertiesPanel {
   }
 
   handleCustomThemesButton() {
-    const showingColorForm = this.customThemesButton.dataset.open === "true";
-    this.customThemesButton.dataset.open = `${!showingColorForm}`;
-
-    if (!showingColorForm) {
-      this.themesDropdownContainer.classList.add("hide");
-      this.customThemesFormContainer.classList.remove("hide");
-      this.customThemesButton.textContent = this.customThemesButton.dataset.showing!;
-    } else {
-      this.themesDropdownContainer.classList.remove("hide");
-      this.customThemesFormContainer.classList.add("hide");
-      this.customThemesButton.textContent = this.customThemesButton.dataset.form!;
-    }
+    switchPanels(this.customThemesButton, this.themesDropdownContainer, this.customThemesFormContainer);
   }
 
   populateThemesDropdown(themes: theme[], selectedIndex: number) {
-    this.populateDropdown(this.themesDropdown, themes, selectedIndex);
+    populateDropdown(this.themesDropdown, themes, selectedIndex);
   }
 
   populateScenesDropdown(scenes: scene[], selectedIndex: number) {
-    this.populateDropdown(this.scenesDropdown, scenes, selectedIndex);
-  }
-
-  populateDropdown<T extends scene | theme>(dropdown: HTMLSelectElement, selectables: T[], selectedIndex: number) {
-    while (dropdown.firstChild) {
-      dropdown.removeChild(dropdown.lastChild!);
-    }
-
-    for (const selectable of selectables) {
-      const option = document.createElement("option");
-      option.value = selectable.name;
-      option.textContent = selectable.name;
-      dropdown.appendChild(option);
-    }
-
-    dropdown.selectedIndex = selectedIndex;
+    populateDropdown(this.scenesDropdown, scenes, selectedIndex);
   }
 
   handleScenesDropdown() {

@@ -1,14 +1,15 @@
 import { newSongSelectedName, songUploadedName } from "./Events";
 import type { Song } from "./stateManager";
 import type StateManager from "./stateManager";
-import { randomID } from "./utils";
+import { randomID } from "./utils/utils";
+import { switchPanels } from "./utils/commonUIBehaviors";
 
 export default class SongPanel {
   private artistInput: HTMLInputElement;
   private songNameInput: HTMLInputElement;
   private songFileInput: HTMLInputElement;
   private songUploadForm: HTMLFormElement;
-  private panelSwapButton: HTMLInputElement;
+  private panelSwapButton: HTMLButtonElement;
   private songListElement: HTMLUListElement;
   private _stateManager: StateManager;
 
@@ -22,26 +23,13 @@ export default class SongPanel {
     this._stateManager = stateManager;
 
     // EVENTS
-
     this.songUploadForm.addEventListener("submit", (e) => this.handleFormSubmission(e));
     this.panelSwapButton.addEventListener("click", () => this.handlePanelSwapButton());
     this.handleSongListStyles(this._stateManager.state.currentSong);
   }
 
   handlePanelSwapButton() {
-    const isShowingSongs = this.panelSwapButton.dataset.showingSongs;
-
-    if (isShowingSongs === "true") {
-      this.songListElement.parentElement?.classList.add("hide");
-      this.songUploadForm.parentElement?.classList.remove("hide");
-      this.panelSwapButton.textContent = this.panelSwapButton.dataset.songsText!;
-      this.panelSwapButton.dataset.showingSongs = "false";
-    } else {
-      this.songListElement.parentElement?.classList.remove("hide");
-      this.songUploadForm.parentElement?.classList.add("hide");
-      this.panelSwapButton.textContent = this.panelSwapButton.dataset.formText!;
-      this.panelSwapButton.dataset.showingSongs = "true";
-    }
+    switchPanels(this.panelSwapButton, this.songUploadForm.parentElement!, this.songListElement.parentElement!);
   }
 
   handleFormSubmission(e: Event) {

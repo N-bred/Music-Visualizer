@@ -1,7 +1,7 @@
 import * as T from "three";
 import CustomScene from "../customScene";
 import type { theme } from "../stateManager";
-import { disposeObject } from "../utils";
+import { disposeObject } from "../utils/utils";
 
 export default class FlatCircleScene extends CustomScene {
   private _groups: T.Group[] = [];

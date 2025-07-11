@@ -1,4 +1,4 @@
-import { calculateMinutesAndSeconds } from "./utils";
+import { calculateMinutesAndSeconds } from "./utils/utils";
 import { changedVolumeName, newSongSelectedName, changedSongStateName, progressBarClickedName } from "./Events";
 import type StateManager from "./stateManager";
 

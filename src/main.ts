@@ -8,7 +8,7 @@ import StateManager, { type Song, type theme } from "./stateManager";
 import Player from "./player";
 import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
-import { randomID } from "./utils";
+import { randomID } from "./utils/utils";
 import SceneManager from "./sceneManager";
 
 const canvasContainer = document.querySelector(".canvas-container");

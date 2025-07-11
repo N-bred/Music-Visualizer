@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="Nicolas Caballero (n-bred.github.com)"/>
+    <meta name="author" content="Nicolas Caballero (n-bred.github.com)" />
     <title>Three JS Visualizer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -46,7 +46,7 @@
             <button type="submit">Upload Song</button>
           </form>
         </div>
-        <button id="panel-song-swap-button" data-showing-songs="true" data-songs-text="Show All Songs" data-form-text="Upload a Song">
+        <button id="panel-song-swap-button" data-open="true" data-first-panel-text="Show All Songs" data-second-panel-text="Upload a Song">
           Upload a Song
         </button>
       </div>
@@ -71,7 +71,9 @@
                 <button type="submit">Add custom color</button>
               </form>
             </div>
-            <button id="custom-themes-button" data-open="false" data-showing="Show all Colors" data-form="Add a Color">Add a Color</button>
+            <button id="custom-themes-button" data-open="false" data-first-panel-text="Show all Colors" data-second-panel-text="Add a Color">
+              Add a Color
+            </button>
           </div>
           <span class="divider"></span>
           <label for="enable-rotation-checkbox">Enable camera rotation?</label>
