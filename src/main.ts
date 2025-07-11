@@ -118,7 +118,7 @@ while (!firstRender) {
 
 const player = new Player(stateManager);
 const songPanel = new SongPanel(stateManager);
-const propertiesPanel = new PropertiesPanel(stateManager);
+const propertiesPanel = new PropertiesPanel();
 
 stateManager.addProperty("audioManager", audioManager);
 stateManager.addProperty("camera", camera);

@@ -256,16 +256,16 @@ export default class StateManager {
   }
 
   handleSceneIndex() {
-    window.addEventListener(changedSceneIndexName, () => {
-      this._state.sceneIndex = this.props.propertiesPanel!.state.sceneIndex;
+    window.addEventListener(changedSceneIndexName, (e: CustomEventInit) => {
+      this._state.sceneIndex = e.detail.sceneIndex;
       this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
     });
   }
 
   handleSceneChangeTheme() {
-    window.addEventListener(changedThemeIndexName, () => {
-      this._state.themeIndex = this.props.propertiesPanel!.state.themeIndex;
+    window.addEventListener(changedThemeIndexName, (e: CustomEventInit) => {
+      this._state.themeIndex = e.detail.themeIndex;
       this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
     });
@@ -281,18 +281,19 @@ export default class StateManager {
   }
 
   handlePopulateThemesDropdown() {
-    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes);
+    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
   }
 
   handlePopulateScenesDropdown() {
-    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes);
+    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
   }
 
   handleAddCustomTheme() {
-    window.addEventListener(AddedNewThemeName, () => {
-      const isFound = this._state.themes.findIndex((theme) => theme.name === this.props.propertiesPanel?.customTheme.name);
+    window.addEventListener(AddedNewThemeName, ({ detail }: CustomEventInit<theme>) => {
+      const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name);
       if (isFound !== -1) return;
-      this._state.themes.push(this.props.propertiesPanel?.customTheme!);
+
+      this._state.themes.push(detail!);
       this.handlePopulateThemesDropdown();
       this._state.themeIndex = this._state.themes.length - 1;
       this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
@@ -300,22 +301,22 @@ export default class StateManager {
   }
 
   handleRotationCheckbox() {
-    window.addEventListener(changedRotationCheckboxName, () => {
-      this._state.rotationEnabled = this.props.propertiesPanel!.state.rotationEnabled;
+    window.addEventListener(changedRotationCheckboxName, (e: CustomEventInit) => {
+      this._state.rotationEnabled = e.detail.rotationEnabled;
       this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
     });
   }
 
   handlePanCheckbox() {
-    window.addEventListener(changedPanCheckboxName, () => {
-      this._state.panEnabled = this.props.propertiesPanel!.state.panEnabled;
+    window.addEventListener(changedPanCheckboxName, (e: CustomEventInit) => {
+      this._state.panEnabled = e.detail.panEnabled;
       this.props.orbitControls!.enablePan = this._state.panEnabled;
     });
   }
 
   handleZoomCheckbox() {
-    window.addEventListener(changedZoomCheckboxName, () => {
-      this._state.zoomEnabled = this.props.propertiesPanel!.state.zoomEnabled;
+    window.addEventListener(changedZoomCheckboxName, (e: CustomEventInit) => {
+      this._state.zoomEnabled = e.detail.zoomEnabled;
       this.props.orbitControls!.enableZoom = this._state.zoomEnabled;
     });
   }
