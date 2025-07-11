@@ -29,7 +29,7 @@ export default class SongPanel {
   }
 
   handlePanelSwapButton() {
-    switchPanels(this.panelSwapButton, this.songUploadForm.parentElement!, this.songListElement.parentElement!);
+    switchPanels(this.panelSwapButton, this.songListElement.parentElement!, this.songUploadForm.parentElement!);
   }
 
   handleFormSubmission(e: Event) {

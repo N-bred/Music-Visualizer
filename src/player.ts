@@ -1,6 +1,7 @@
 import { calculateMinutesAndSeconds } from "./utils/utils";
 import { changedVolumeName, newSongSelectedName, changedSongStateName, progressBarClickedName } from "./Events";
 import type StateManager from "./stateManager";
+import { switchClasses } from "./utils/commonUIBehaviors";
 
 export default class Player {
   private playButton: HTMLButtonElement;
@@ -60,13 +61,7 @@ export default class Player {
   }
 
   handlePlayPauseButtonUI(showPlayButton: boolean) {
-    if (!showPlayButton) {
-      this.playButton.classList.remove("hide");
-      this.pauseButton.classList.add("hide");
-    } else {
-      this.playButton.classList.add("hide");
-      this.pauseButton.classList.remove("hide");
-    }
+    switchClasses(!showPlayButton, this.playButton, this.pauseButton);
   }
 
   handlePlayPauseButton() {
