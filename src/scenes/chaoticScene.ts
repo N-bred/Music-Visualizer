@@ -5,6 +5,7 @@ import { disposeObject } from "../utils/utils";
 
 const DEFAULT_VALUES = {
   boxSize: 1,
+  rotationSpeed: 100,
 };
 
 export default class ChaoticScene extends CustomScene {
@@ -47,7 +48,9 @@ export default class ChaoticScene extends CustomScene {
     }
   }
 
-  animate(fft: Uint8Array<ArrayBufferLike>): void {
+  animate(fft: Uint8Array<ArrayBufferLike>, delta: number): void {
+    this.background = this.themes[this.currentThemeIndex].backgroundColor;
+    this.rotation.z = -delta / DEFAULT_VALUES.rotationSpeed;
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
         const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
@@ -94,6 +97,18 @@ export default class ChaoticScene extends CustomScene {
         textContent: "Box Size: ",
         minValue: "0",
         onChange: (e) => this.handleNewBoxSize(e),
+      },
+      {
+        name: "rotationSpeed",
+        type: "number",
+        defaultValue: DEFAULT_VALUES.rotationSpeed.toString(),
+        required: true,
+        order: 2,
+        textContent: "Rotation Speed: ",
+        minValue: "1",
+        onChange: (e) => {
+          DEFAULT_VALUES.rotationSpeed = parseInt((e.target as HTMLInputElement).value);
+        },
       },
     ];
   }

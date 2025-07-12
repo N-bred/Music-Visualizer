@@ -50,7 +50,7 @@ export function calculateMinutesAndSeconds(duration: number) {
 
 export function createInputElementsFromSchema(schemas: Schema[]) {
   return schemas
-    .sort((a, b) => b.order - a.order)
+    .sort((a, b) => a.order - b.order)
     .map((schema) => {
       const input = document.createElement("input");
       const label = document.createElement("label");

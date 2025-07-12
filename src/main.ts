@@ -62,7 +62,7 @@ const stateManager = new StateManager({
   themes: DEFAULT_THEMES,
 });
 
-const numberOfFrequencies = 1024;
+const numberOfFrequencies = 1024 * 2;
 const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(stateManager.state.currentSong);
 audioManager.volume = stateManager.state.volume;
@@ -70,7 +70,7 @@ audioManager.volume = stateManager.state.volume;
 const sceneManager = new SceneManager({
   scenes: [
     { name: "Chaotic", sceneClass: ChaoticScene },
-    //{ name: "Flat Circle", sceneClass: FlatCircleScene },
+    { name: "Flat Circle", sceneClass: FlatCircleScene },
   ],
   index: stateManager.state.sceneIndex,
   numberOfFrequencies,
@@ -105,10 +105,8 @@ let t = 0;
 
 function update() {
   renderer.render(sceneManager.currentScene, camera);
-  sceneManager.currentScene.rotation.z = -t / 100;
-  sceneManager.currentScene.animate(audioManager.fft);
+  sceneManager.currentScene.animate(audioManager.fft, t);
   orbitControls.update();
-
   t += 0.1;
 }
 

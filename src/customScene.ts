@@ -25,15 +25,11 @@ export default class CustomScene extends T.Scene {
 
   changeTheme(themeIndex: number) {
     this.currentThemeIndex = themeIndex;
-    this.changeBackground();
   }
 
-  changeBackground() {
-    this.background = this.themes[this.currentThemeIndex].backgroundColor;
-  }
-
-  animate(fft: Uint8Array<ArrayBufferLike>) {
+  animate(fft: Uint8Array<ArrayBufferLike>, delta?: number) {
     console.log(fft);
+    console.log(delta);
     return;
   }
 

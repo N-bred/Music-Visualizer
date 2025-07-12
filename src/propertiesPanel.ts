@@ -123,25 +123,14 @@ export default class PropertiesPanel {
 
   handleScenesPropertiesForm(e: Event) {
     e.preventDefault();
-
-    window.dispatchEvent(
-      new CustomEvent<Theme>(AddedNewThemeName, {
-        detail: {
-          name: this.customColorName.value,
-          color: new T.Color(this.initialColorInput.value),
-          transitionColor: new T.Color(this.transitionColorInput.value),
-          backgroundColor: new T.Color(this.backgroundColorInput.value),
-        },
-      })
-    );
-
-    this.scenesPropertiesButton.click();
   }
 
   handleSceneSchemeChanged(scheme: Schema[]) {
     while (this.scenesPropertiesForm.firstChild) {
       this.scenesPropertiesForm.firstChild.remove();
     }
+
+    if (scheme.length < 1) return;
 
     const inputs = createInputElementsFromSchema(scheme);
 

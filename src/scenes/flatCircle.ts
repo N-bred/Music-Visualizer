@@ -1,7 +1,11 @@
 import * as T from "three";
 import CustomScene from "../customScene";
-import type { Theme } from "../types";
+import type { Schema, Theme } from "../types";
 import { disposeObject } from "../utils/utils";
+
+const DEFAULT_VALUES = {
+  radius: 250,
+};
 
 export default class FlatCircleScene extends CustomScene {
   private _groups: T.Group[] = [];
@@ -32,7 +36,7 @@ export default class FlatCircleScene extends CustomScene {
         });
         const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
 
-        const position = new T.Vector3(Math.cos(angle) * 250, Math.sin(angle) * 250, 0);
+        const position = new T.Vector3(Math.cos(angle) * DEFAULT_VALUES.radius, Math.sin(angle) * DEFAULT_VALUES.radius, 0);
 
         boxMesh.position.copy(position);
         boxMesh.rotation.z = angle;
@@ -43,6 +47,7 @@ export default class FlatCircleScene extends CustomScene {
   }
 
   animate(fft: Uint8Array<ArrayBufferLike>): void {
+    this.background = this.themes[this.currentThemeIndex].backgroundColor;
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
         const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
@@ -64,5 +69,33 @@ export default class FlatCircleScene extends CustomScene {
       }
     }
     this._groups = [];
+  }
+
+  changeRadius(e: Event) {
+    const value = parseInt((e.target as HTMLInputElement).value);
+
+    for (let j = 0; j < this.numberOfGroups; ++j) {
+      for (let i = 0; i < this.quantity; ++i) {
+        const factor = j % this.numberOfGroups === 0 ? -1 : 1;
+        const angle = factor * i * ((Math.PI * 2) / this.quantity);
+        const position = new T.Vector3(Math.cos(angle) * value, Math.sin(angle) * value, 0);
+        this._groups[j].children[i].position.copy(position);
+      }
+    }
+  }
+
+  scheme(): Schema[] {
+    return [
+      {
+        name: "Radius",
+        textContent: "Radius: ",
+        defaultValue: DEFAULT_VALUES.radius.toString(),
+        order: 1,
+        required: true,
+        type: "number",
+        minValue: "1",
+        onChange: (e) => this.changeRadius(e),
+      },
+    ];
   }
 }

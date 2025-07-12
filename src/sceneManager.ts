@@ -31,8 +31,6 @@ export default class SceneManager {
     this.currentScene.destroy();
     this.currentSceneIndex = index;
     this.currentScene = new this._scenes[index].sceneClass(this.numberOfFrequencies, this.themes, this.currentThemeIndex);
-    this.currentScene.scheme;
-
     window.dispatchEvent(new CustomEvent<Schema[] | never[]>(sceneSchemeInputChanged, { detail: this.currentScene.scheme() }));
   }
 

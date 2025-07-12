@@ -210,7 +210,6 @@ export default class StateManager {
   handleSceneSchemeChanged() {
     window.addEventListener(sceneSchemeInputChanged, (e: CustomEventInit<Schema[]>) => {
       const scheme = e.detail!;
-      if (scheme.length < 1) return;
       this.props.propertiesPanel!.handleSceneSchemeChanged(scheme);
     });
   }
