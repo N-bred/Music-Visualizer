@@ -7,8 +7,9 @@ import {
   changedZoomCheckboxName,
   changedSceneIndexName,
 } from "./Events";
-import type { Theme, Scene } from "./types";
+import type { Theme, Scene, Schema } from "./types";
 import { populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
+import { createInputElementsFromSchema } from "./utils/utils";
 
 export default class PropertiesPanel {
   private scenesDropdown: HTMLSelectElement;
@@ -60,20 +61,20 @@ export default class PropertiesPanel {
     this.scenesPropertiesForm.addEventListener("submit", (e) => this.handleScenesPropertiesForm(e));
   }
 
-  handleCustomThemesButton() {
-    switchPanels(this.customThemesButton, this.themesDropdownContainer, this.customThemesFormContainer);
-  }
-
   handleScenePropertiesButton() {
     switchPanels(this.scenesPropertiesButton, this.scenesDropdownContainer, this.scenesPropertiesContainer);
   }
 
-  populateThemesDropdown(themes: Theme[], selectedIndex: number) {
-    populateDropdown(this.themesDropdown, themes, selectedIndex);
+  handleCustomThemesButton() {
+    switchPanels(this.customThemesButton, this.themesDropdownContainer, this.customThemesFormContainer);
   }
 
   populateScenesDropdown(scenes: Scene[], selectedIndex: number) {
     populateDropdown(this.scenesDropdown, scenes, selectedIndex);
+  }
+
+  populateThemesDropdown(themes: Theme[], selectedIndex: number) {
+    populateDropdown(this.themesDropdown, themes, selectedIndex);
   }
 
   handleScenesDropdown() {
@@ -120,7 +121,7 @@ export default class PropertiesPanel {
     window.dispatchEvent(new CustomEvent(changedZoomCheckboxName, { detail: { zoomEnabled: this.zoomCheckbox.checked } }));
   }
 
-  handleCustomThemesForm(e: Event) {
+  handleScenesPropertiesForm(e: Event) {
     e.preventDefault();
 
     window.dispatchEvent(
@@ -134,11 +135,24 @@ export default class PropertiesPanel {
       })
     );
 
-    this.handleResetForm();
-    this.customThemesButton.click();
+    this.scenesPropertiesButton.click();
   }
 
-  handleScenesPropertiesForm(e: Event) {
+  handleSceneSchemeChanged(scheme: Schema[]) {
+    while (this.scenesPropertiesForm.firstChild) {
+      this.scenesPropertiesForm.firstChild.remove();
+    }
+
+    const inputs = createInputElementsFromSchema(scheme);
+
+    inputs.forEach(({ eventHandler, label, input }) => {
+      input.addEventListener("change", eventHandler);
+      this.scenesPropertiesForm.appendChild(label);
+      this.scenesPropertiesForm.appendChild(input);
+    });
+  }
+
+  handleCustomThemesForm(e: Event) {
     e.preventDefault();
 
     window.dispatchEvent(

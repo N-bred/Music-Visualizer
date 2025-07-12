@@ -1,7 +1,11 @@
 import * as T from "three";
 import CustomScene from "../customScene";
-import type { Theme } from "../types";
+import type { Schema, Theme } from "../types";
 import { disposeObject } from "../utils/utils";
+
+const DEFAULT_VALUES = {
+  boxSize: 1,
+};
 
 export default class ChaoticScene extends CustomScene {
   private _groups: T.Group[] = [];
@@ -27,7 +31,7 @@ export default class ChaoticScene extends CustomScene {
     for (let j = 0; j < this.numberOfGroups; ++j) {
       for (let i = 0; i < this.quantity; ++i) {
         const angle = i * (this.quantity / (2 * 180));
-        const boxGeometry = new T.BoxGeometry(1, 1, 1);
+        const boxGeometry = new T.BoxGeometry(DEFAULT_VALUES.boxSize);
         const boxMaterial = new T.MeshBasicMaterial({
           color: this.themes[this.currentThemeIndex].color,
         });
@@ -66,5 +70,31 @@ export default class ChaoticScene extends CustomScene {
       }
     }
     this._groups = [];
+  }
+
+  handleNewBoxSize(e: Event) {
+    const value = parseInt((e.target as HTMLInputElement).value);
+
+    for (const group of this._groups) {
+      for (let i = 0; i < group.children.length; ++i) {
+        const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
+        box.scale.set(value, value, value);
+      }
+    }
+  }
+
+  scheme(): Schema[] {
+    return [
+      {
+        name: "boxSize",
+        type: "number",
+        defaultValue: DEFAULT_VALUES.boxSize.toString(),
+        required: true,
+        order: 1,
+        textContent: "Box Size: ",
+        minValue: "0",
+        onChange: (e) => this.handleNewBoxSize(e),
+      },
+    ];
   }
 }

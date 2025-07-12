@@ -52,14 +52,29 @@ export function createInputElementsFromSchema(schemas: Schema[]) {
   return schemas
     .sort((a, b) => b.order - a.order)
     .map((schema) => {
-      const element = document.createElement("input");
-      element.type = schema.type;
-      element.name = schema.name;
-      element.id = schema.name;
-      element.required = schema.required;
-      element.value = schema.defaultValue;
+      const input = document.createElement("input");
+      const label = document.createElement("label");
+      label.htmlFor = schema.name;
+      label.textContent = schema.textContent;
+      input.type = schema.type;
+      input.name = schema.name;
+      input.id = schema.name;
+      input.required = schema.required;
+      input.value = schema.defaultValue;
+      input.textContent = schema.textContent;
+
+      if (schema.minValue) {
+        input.min = schema.minValue;
+      }
+
+      if (schema.maxValue) {
+        input.min = schema.maxValue;
+      }
+
       return {
-        element,
+        label,
+        input,
+        eventHandler: schema.onChange,
       };
     });
 }

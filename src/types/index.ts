@@ -13,6 +13,10 @@ export type Schema = {
   order: number;
   required: boolean;
   defaultValue: string;
+  textContent: string;
+  minValue?: string;
+  maxValue?: string;
+  onChange: (e: Event) => void;
 };
 
 export type Song = {
@@ -66,6 +70,7 @@ export type StateManagerState = {
   playerProgressBarInterval: number;
   songList: Song[];
   themes: Theme[];
+  sceneInputProperties: HTMLInputElement[];
 };
 
 export type Scene = {

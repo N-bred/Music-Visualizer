@@ -13,8 +13,9 @@ import {
   songEndedName,
   songChangedName,
   newSongSelectedName,
+  sceneSchemeInputChanged,
 } from "./Events";
-import type { StateManagerProps, StateManagerState, Theme, Song } from "./types";
+import type { StateManagerProps, StateManagerState, Theme, Song, Schema } from "./types";
 
 export default class StateManager {
   private props: StateManagerProps;
@@ -37,6 +38,7 @@ export default class StateManager {
       songList: this.props.songList,
       themes: this.props.themes,
       playerProgressBarInterval: 0,
+      sceneInputProperties: [],
     };
   }
 
@@ -205,6 +207,14 @@ export default class StateManager {
     });
   }
 
+  handleSceneSchemeChanged() {
+    window.addEventListener(sceneSchemeInputChanged, (e: CustomEventInit<Schema[]>) => {
+      const scheme = e.detail!;
+      if (scheme.length < 1) return;
+      this.props.propertiesPanel!.handleSceneSchemeChanged(scheme);
+    });
+  }
+
   handleSceneChangeTheme() {
     window.addEventListener(changedThemeIndexName, (e: CustomEventInit) => {
       this._state.themeIndex = e.detail.themeIndex;
@@ -216,6 +226,7 @@ export default class StateManager {
   handlePropertiesPanelEvents() {
     this.handleSceneIndex();
     this.handleSceneChangeTheme();
+    this.handleSceneSchemeChanged();
     this.handleRotationCheckbox();
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
@@ -266,6 +277,7 @@ export default class StateManager {
   handlePropertiesPanelSetup() {
     this.handlePopulateThemesDropdown();
     this.handlePopulateScenesDropdown();
+    this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
   }
 
   handlePopulateSongs() {

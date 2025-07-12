@@ -62,7 +62,7 @@ const stateManager = new StateManager({
   themes: DEFAULT_THEMES,
 });
 
-const numberOfFrequencies = 512;
+const numberOfFrequencies = 1024;
 const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(stateManager.state.currentSong);
 audioManager.volume = stateManager.state.volume;
