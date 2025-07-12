@@ -8,11 +8,7 @@ export default class ChaoticScene extends CustomScene {
   private numberOfGroups: number;
   private maxScalar: number;
 
-  constructor(
-    numberOfFrequencies: number,
-    themes: theme[],
-    currentThemeIndex: number
-  ) {
+  constructor(numberOfFrequencies: number, themes: theme[], currentThemeIndex: number) {
     super(numberOfFrequencies, themes, currentThemeIndex);
     this.numberOfGroups = 2;
     this.maxScalar = 0;
@@ -37,11 +33,7 @@ export default class ChaoticScene extends CustomScene {
         });
         const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
 
-        const position = new T.Vector3(
-          Math.cos((angle * Math.PI) / 180) * 250,
-          Math.sin((angle * Math.PI) / 180) * 250,
-          i
-        );
+        const position = new T.Vector3(Math.cos((angle * Math.PI) / 180) * 250, Math.sin((angle * Math.PI) / 180) * 250, i);
 
         boxMesh.position.copy(position);
         boxMesh.rotation.z = angle;
@@ -54,11 +46,7 @@ export default class ChaoticScene extends CustomScene {
   animate(fft: Uint8Array<ArrayBufferLike>): void {
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
-        const box = group.children[i] as T.Mesh<
-          T.BoxGeometry,
-          T.MeshBasicMaterial,
-          T.Object3DEventMap
-        >;
+        const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
         const scalar = fft[i];
         box.scale.y = Math.max(scalar / 2, 1);
         box.material.color.lerpColors(

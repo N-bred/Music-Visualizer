@@ -7,11 +7,7 @@ export default class FlatCircleScene extends CustomScene {
   private _groups: T.Group[] = [];
   private numberOfGroups: number;
 
-  constructor(
-    numberOfFrequencies: number,
-    themes: theme[],
-    currentThemeIndex: number
-  ) {
+  constructor(numberOfFrequencies: number, themes: theme[], currentThemeIndex: number) {
     super(numberOfFrequencies, themes, currentThemeIndex);
     this.numberOfGroups = 2;
     this.setup();
@@ -36,11 +32,7 @@ export default class FlatCircleScene extends CustomScene {
         });
         const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
 
-        const position = new T.Vector3(
-          Math.cos(angle) * 250,
-          Math.sin(angle) * 250,
-          0
-        );
+        const position = new T.Vector3(Math.cos(angle) * 250, Math.sin(angle) * 250, 0);
 
         boxMesh.position.copy(position);
         boxMesh.rotation.z = angle;
@@ -53,11 +45,7 @@ export default class FlatCircleScene extends CustomScene {
   animate(fft: Uint8Array<ArrayBufferLike>): void {
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
-        const box = group.children[i] as T.Mesh<
-          T.BoxGeometry,
-          T.MeshBasicMaterial,
-          T.Object3DEventMap
-        >;
+        const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
         const scalar = fft[i];
         box.scale.x = Math.max(scalar, 1);
         box.material.color.lerpColors(

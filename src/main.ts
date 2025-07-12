@@ -39,11 +39,13 @@ const DEFAULT_THEMES: theme[] = [
     name: "Purple",
     color: new T.Color(0x2607a6),
     transitionColor: new T.Color(0x5500ff),
+    backgroundColor: new T.Color(0x000000),
   },
   {
     name: "Pink",
     color: new T.Color(0xff00ff),
     transitionColor: new T.Color(0x00ff00),
+    backgroundColor: new T.Color(0x000000),
   },
 ];
 

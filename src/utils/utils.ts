@@ -1,4 +1,5 @@
 import * as T from "three";
+import type { schema } from "../types";
 
 export function disposeObject(object: any) {
   if (object.children) {
@@ -12,9 +13,7 @@ export function disposeObject(object: any) {
       object.geometry.dispose();
     }
     if (object.material) {
-      const materials: any[] = Array.isArray(object.material)
-        ? object.material
-        : [object.material];
+      const materials: any[] = Array.isArray(object.material) ? object.material : [object.material];
       materials.forEach((material) => {
         for (const key in material) {
           if (material[key] instanceof T.Texture) {
@@ -32,7 +31,7 @@ export function disposeObject(object: any) {
 }
 
 export function randomID(artistName: string, songName: string) {
-  return artistName + " " +  songName;
+  return artistName + " " + songName;
 }
 
 export function calculateMinutesAndSeconds(duration: number) {
@@ -47,4 +46,19 @@ export function calculateMinutesAndSeconds(duration: number) {
     min,
     sec,
   };
+}
+
+export function createInputElementsFromSchema(schemas: schema[]) {
+  return schemas
+    .map((schema) => {
+      const element = document.createElement("input");
+      element.type = schema.type;
+      element.name = schema.name;
+      element.id = schema.name;
+      return {
+        ...schema,
+        element,
+      };
+    })
+    .sort((a, b) => b.order - a.order);
 }

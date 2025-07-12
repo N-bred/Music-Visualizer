@@ -26,7 +26,6 @@ export default class Player {
     this._stateManager = stateManager;
 
     // EVENTS
-
     this.playButton.addEventListener("click", () => this.handlePlayPauseButton());
     this.pauseButton.addEventListener("click", () => this.handlePlayPauseButton());
     this.nextButton.addEventListener("click", () => this.handleNextButton());

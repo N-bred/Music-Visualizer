@@ -23,6 +23,7 @@ export default class PropertiesPanel {
   private customColorName: HTMLInputElement;
   private initialColorInput: HTMLInputElement;
   private transitionColorInput: HTMLInputElement;
+  private backgroundColorInput: HTMLInputElement;
   private customThemesForm: HTMLFormElement;
 
   constructor() {
@@ -37,6 +38,7 @@ export default class PropertiesPanel {
     this.customThemesButton = document.querySelector("#custom-themes-button")!;
     this.initialColorInput = document.querySelector("#initial-color-input")!;
     this.transitionColorInput = document.querySelector("#transition-color-input")!;
+    this.backgroundColorInput = document.querySelector("#background-color-input")!;
     this.customColorName = document.querySelector("#custom-color-name")!;
 
     // EVENTS
@@ -114,6 +116,7 @@ export default class PropertiesPanel {
           name: this.customColorName.value,
           color: new T.Color(this.initialColorInput.value),
           transitionColor: new T.Color(this.transitionColorInput.value),
+          backgroundColor: new T.Color(this.backgroundColorInput.value),
         },
       })
     );

@@ -34,6 +34,7 @@ export type theme = {
   name: string;
   color: Color;
   transitionColor: Color;
+  backgroundColor: Color;
 };
 
 type StateManagerProps = {
