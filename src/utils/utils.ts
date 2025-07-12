@@ -50,15 +50,16 @@ export function calculateMinutesAndSeconds(duration: number) {
 
 export function createInputElementsFromSchema(schemas: Schema[]) {
   return schemas
+    .sort((a, b) => b.order - a.order)
     .map((schema) => {
       const element = document.createElement("input");
       element.type = schema.type;
       element.name = schema.name;
       element.id = schema.name;
+      element.required = schema.required;
+      element.value = schema.defaultValue;
       return {
-        ...schema,
         element,
       };
-    })
-    .sort((a, b) => b.order - a.order);
+    });
 }

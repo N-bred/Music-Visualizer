@@ -70,7 +70,7 @@ audioManager.volume = stateManager.state.volume;
 const sceneManager = new SceneManager({
   scenes: [
     { name: "Chaotic", sceneClass: ChaoticScene },
-    { name: "Flat Circle", sceneClass: FlatCircleScene },
+    //{ name: "Flat Circle", sceneClass: FlatCircleScene },
   ],
   index: stateManager.state.sceneIndex,
   numberOfFrequencies,

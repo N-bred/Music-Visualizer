@@ -16,8 +16,12 @@ export default class PropertiesPanel {
   private rotationCheckbox: HTMLInputElement;
   private panCheckbox: HTMLInputElement;
   private zoomCheckbox: HTMLInputElement;
+  private scenesDropdownContainer: HTMLDivElement;
+  private scenesPropertiesContainer: HTMLDivElement;
   private themesDropdownContainer: HTMLDivElement;
   private customThemesFormContainer: HTMLDivElement;
+  private scenesPropertiesForm: HTMLFormElement;
+  private scenesPropertiesButton: HTMLButtonElement;
   private customThemesButton: HTMLButtonElement;
   private customColorName: HTMLInputElement;
   private initialColorInput: HTMLInputElement;
@@ -31,8 +35,12 @@ export default class PropertiesPanel {
     this.rotationCheckbox = document.querySelector("#enable-rotation-checkbox")!;
     this.panCheckbox = document.querySelector("#enable-pan-checkbox")!;
     this.zoomCheckbox = document.querySelector("#enable-zoom-checkbox")!;
+    this.scenesDropdownContainer = document.querySelector(".scenes-dropdown-container")!;
+    this.scenesPropertiesContainer = document.querySelector(".scenes-properties-container")!;
     this.themesDropdownContainer = document.querySelector(".themes-dropdown-container")!;
     this.customThemesFormContainer = document.querySelector(".custom-theme-form-container")!;
+    this.scenesPropertiesForm = document.querySelector("#scene-properties-form")!;
+    this.scenesPropertiesButton = document.querySelector("#scenes-properties-button")!;
     this.customThemesForm = document.querySelector("#custom-theme-form")!;
     this.customThemesButton = document.querySelector("#custom-themes-button")!;
     this.initialColorInput = document.querySelector("#initial-color-input")!;
@@ -48,10 +56,16 @@ export default class PropertiesPanel {
     this.zoomCheckbox.addEventListener("change", () => this.handleZoomCheckbox());
     this.customThemesButton.addEventListener("click", () => this.handleCustomThemesButton());
     this.customThemesForm.addEventListener("submit", (e) => this.handleCustomThemesForm(e));
+    this.scenesPropertiesButton.addEventListener("click", () => this.handleScenePropertiesButton());
+    this.scenesPropertiesForm.addEventListener("submit", (e) => this.handleScenesPropertiesForm(e));
   }
 
   handleCustomThemesButton() {
     switchPanels(this.customThemesButton, this.themesDropdownContainer, this.customThemesFormContainer);
+  }
+
+  handleScenePropertiesButton() {
+    switchPanels(this.scenesPropertiesButton, this.scenesDropdownContainer, this.scenesPropertiesContainer);
   }
 
   populateThemesDropdown(themes: Theme[], selectedIndex: number) {
@@ -107,6 +121,24 @@ export default class PropertiesPanel {
   }
 
   handleCustomThemesForm(e: Event) {
+    e.preventDefault();
+
+    window.dispatchEvent(
+      new CustomEvent<Theme>(AddedNewThemeName, {
+        detail: {
+          name: this.customColorName.value,
+          color: new T.Color(this.initialColorInput.value),
+          transitionColor: new T.Color(this.transitionColorInput.value),
+          backgroundColor: new T.Color(this.backgroundColorInput.value),
+        },
+      })
+    );
+
+    this.handleResetForm();
+    this.customThemesButton.click();
+  }
+
+  handleScenesPropertiesForm(e: Event) {
     e.preventDefault();
 
     window.dispatchEvent(

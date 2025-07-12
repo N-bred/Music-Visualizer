@@ -11,7 +11,8 @@ export type Schema = {
   name: string;
   type: string;
   order: number;
-  element?: HTMLInputElement;
+  required: boolean;
+  defaultValue: string;
 };
 
 export type Song = {
