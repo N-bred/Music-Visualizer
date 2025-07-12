@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { schema } from "../types";
+import type { Schema } from "../types";
 
 export function disposeObject(object: any) {
   if (object.children) {
@@ -48,7 +48,7 @@ export function calculateMinutesAndSeconds(duration: number) {
   };
 }
 
-export function createInputElementsFromSchema(schemas: schema[]) {
+export function createInputElementsFromSchema(schemas: Schema[]) {
   return schemas
     .map((schema) => {
       const element = document.createElement("input");

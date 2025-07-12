@@ -1,13 +1,13 @@
 import * as T from "three";
-import { type theme } from "./stateManager";
+import { type Theme } from "./types";
 
 export default class CustomScene extends T.Scene {
   public numberOfFrequencies: number;
   public quantity: number;
   public currentThemeIndex: number;
-  public themes: theme[] = [];
+  public themes: Theme[] = [];
 
-  constructor(numberOfFrequencies: number, themes: theme[], currentThemeIndex: number) {
+  constructor(numberOfFrequencies: number, themes: Theme[], currentThemeIndex: number) {
     super();
     this.numberOfFrequencies = numberOfFrequencies;
     this.themes = themes;

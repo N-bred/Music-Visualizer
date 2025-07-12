@@ -7,8 +7,7 @@ import {
   changedZoomCheckboxName,
   changedSceneIndexName,
 } from "./Events";
-import type { theme } from "./stateManager";
-import type { scene } from "./sceneManager";
+import type { Theme, Scene } from "./types";
 import { populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
 
 export default class PropertiesPanel {
@@ -55,11 +54,11 @@ export default class PropertiesPanel {
     switchPanels(this.customThemesButton, this.themesDropdownContainer, this.customThemesFormContainer);
   }
 
-  populateThemesDropdown(themes: theme[], selectedIndex: number) {
+  populateThemesDropdown(themes: Theme[], selectedIndex: number) {
     populateDropdown(this.themesDropdown, themes, selectedIndex);
   }
 
-  populateScenesDropdown(scenes: scene[], selectedIndex: number) {
+  populateScenesDropdown(scenes: Scene[], selectedIndex: number) {
     populateDropdown(this.scenesDropdown, scenes, selectedIndex);
   }
 
@@ -111,7 +110,7 @@ export default class PropertiesPanel {
     e.preventDefault();
 
     window.dispatchEvent(
-      new CustomEvent<theme>(AddedNewThemeName, {
+      new CustomEvent<Theme>(AddedNewThemeName, {
         detail: {
           name: this.customColorName.value,
           color: new T.Color(this.initialColorInput.value),

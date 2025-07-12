@@ -1,4 +1,3 @@
-import type { WebGLRenderer, PerspectiveCamera, Color } from "three";
 import {
   stateChangedName,
   changedVolumeName,
@@ -15,65 +14,7 @@ import {
   songChangedName,
   newSongSelectedName,
 } from "./Events";
-import type AudioManager from "./audioManager";
-import type PlayerType from "./player";
-import type SongPanelType from "./songPanel";
-import type PropertiesPanel from "./propertiesPanel";
-import type { OrbitControls } from "three/examples/jsm/Addons.js";
-import type SceneManager from "./sceneManager";
-
-export type Song = {
-  id: string;
-  artistName: string;
-  songName: string;
-  fileName: string;
-  src?: string;
-};
-
-export type theme = {
-  name: string;
-  color: Color;
-  transitionColor: Color;
-  backgroundColor: Color;
-};
-
-type StateManagerProps = {
-  audioManager?: AudioManager;
-  sceneManager?: SceneManager;
-  orbitControls?: OrbitControls;
-  isAnimationRunning: boolean;
-  sceneIndex: number;
-  themeIndex: number;
-  rotationEnabled: boolean;
-  panEnabled: boolean;
-  zoomEnabled: boolean;
-  themes: theme[];
-  renderer?: WebGLRenderer;
-  camera?: PerspectiveCamera;
-  updateFn?: () => void;
-  songList: Song[];
-  player?: PlayerType;
-  songPanel?: SongPanelType;
-  propertiesPanel?: PropertiesPanel;
-  canvasContainer: Element | null;
-};
-
-type StateManagerState = {
-  WIDTH: number;
-  HEIGHT: number;
-  isPlaying: Boolean;
-  volume: number;
-  currentSong: number;
-  sceneIndex: number;
-  themeIndex: number;
-  isAnimationRunning: boolean;
-  rotationEnabled: boolean;
-  panEnabled: boolean;
-  zoomEnabled: boolean;
-  playerProgressBarInterval: number;
-  songList: Song[];
-  themes: theme[];
-};
+import type { StateManagerProps, StateManagerState, Theme, Song } from "./types";
 
 export default class StateManager {
   private props: StateManagerProps;
@@ -290,7 +231,7 @@ export default class StateManager {
   }
 
   handleAddCustomTheme() {
-    window.addEventListener(AddedNewThemeName, ({ detail }: CustomEventInit<theme>) => {
+    window.addEventListener(AddedNewThemeName, ({ detail }: CustomEventInit<Theme>) => {
       const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name);
       if (isFound !== -1) return;
 

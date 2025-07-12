@@ -4,7 +4,8 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import ChaoticScene from "./scenes/chaoticScene";
 import FlatCircleScene from "./scenes/flatCircle";
 import AudioManager from "./audioManager";
-import StateManager, { type Song, type theme } from "./stateManager";
+import StateManager from "./stateManager";
+import type { Song, Theme } from "./types";
 import Player from "./player";
 import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
@@ -34,7 +35,7 @@ const songList: Song[] = songs.map((song) => ({
   ...song,
 }));
 
-const DEFAULT_THEMES: theme[] = [
+const DEFAULT_THEMES: Theme[] = [
   {
     name: "Purple",
     color: new T.Color(0x2607a6),
@@ -61,7 +62,7 @@ const stateManager = new StateManager({
   themes: DEFAULT_THEMES,
 });
 
-const numberOfFrequencies = 512 * (2 * 2);
+const numberOfFrequencies = 512;
 const audioManager = new AudioManager(songList, numberOfFrequencies);
 audioManager.setSong(stateManager.state.currentSong);
 audioManager.volume = stateManager.state.volume;

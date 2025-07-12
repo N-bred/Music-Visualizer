@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { Song } from "./stateManager";
+import type { Song } from "./types";
 import { songChangedEvent, songEndedEvent, stateChangedName } from "./Events";
 
 export default class AudioManager {

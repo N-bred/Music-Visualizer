@@ -1,13 +1,13 @@
 import * as T from "three";
 import CustomScene from "../customScene";
-import type { theme } from "../stateManager";
+import type { Theme } from "../types";
 import { disposeObject } from "../utils/utils";
 
 export default class FlatCircleScene extends CustomScene {
   private _groups: T.Group[] = [];
   private numberOfGroups: number;
 
-  constructor(numberOfFrequencies: number, themes: theme[], currentThemeIndex: number) {
+  constructor(numberOfFrequencies: number, themes: Theme[], currentThemeIndex: number) {
     super(numberOfFrequencies, themes, currentThemeIndex);
     this.numberOfGroups = 2;
     this.setup();

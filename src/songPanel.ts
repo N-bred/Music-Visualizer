@@ -1,5 +1,5 @@
 import { newSongSelectedName, songUploadedName } from "./Events";
-import type { Song } from "./stateManager";
+import type { Song } from "./types";
 import type StateManager from "./stateManager";
 import { randomID } from "./utils/utils";
 import { switchPanels } from "./utils/commonUIBehaviors";
