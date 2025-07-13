@@ -1,6 +1,5 @@
 import type CustomScene from "./customScene";
-import { sceneSchemeInputChanged } from "./Events";
-import type { Theme, Scene, SceneManagerProps, Schema } from "./types";
+import type { Theme, Scene, SceneManagerProps } from "./types";
 
 export default class SceneManager {
   private _scenes: Scene[] = [];
@@ -31,7 +30,6 @@ export default class SceneManager {
     this.currentScene.destroy();
     this.currentSceneIndex = index;
     this.currentScene = new this._scenes[index].sceneClass(this.numberOfFrequencies, this.themes, this.currentThemeIndex);
-    window.dispatchEvent(new CustomEvent<Schema[] | never[]>(sceneSchemeInputChanged, { detail: this.currentScene.scheme() }));
   }
 
   setNumberOfFrequencies(n: number) {

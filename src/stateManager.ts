@@ -13,9 +13,8 @@ import {
   songEndedName,
   songChangedName,
   newSongSelectedName,
-  sceneSchemeInputChanged,
 } from "./Events";
-import type { StateManagerProps, StateManagerState, Theme, Song, Schema } from "./types";
+import type { StateManagerProps, StateManagerState, Theme, Song } from "./types";
 
 export default class StateManager {
   private props: StateManagerProps;
@@ -204,13 +203,8 @@ export default class StateManager {
       this._state.sceneIndex = e.detail.sceneIndex;
       this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
-    });
-  }
-
-  handleSceneSchemeChanged() {
-    window.addEventListener(sceneSchemeInputChanged, (e: CustomEventInit<Schema[]>) => {
-      const scheme = e.detail!;
-      this.props.propertiesPanel!.handleSceneSchemeChanged(scheme);
+      const schema = this.props.sceneManager!.currentScene.scheme();
+      this.props.propertiesPanel!.handleSceneSchemeChanged(schema);
     });
   }
 
@@ -225,7 +219,6 @@ export default class StateManager {
   handlePropertiesPanelEvents() {
     this.handleSceneIndex();
     this.handleSceneChangeTheme();
-    this.handleSceneSchemeChanged();
     this.handleRotationCheckbox();
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
