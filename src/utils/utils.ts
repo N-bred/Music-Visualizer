@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { Schema } from "../types";
+import type { Schema, Song } from "../types";
 
 export function disposeObject(object: any) {
   if (object.children) {
@@ -77,4 +77,11 @@ export function createInputElementsFromSchema(schemas: Schema[]) {
         eventHandler: schema.onChange,
       };
     });
+}
+
+export function createSongList(songs: Song[], songsFolder: string) {
+  return songs.map((song) => ({
+    src: songsFolder + song.artistName + " - " + song.fileName,
+    ...song,
+  }));
 }

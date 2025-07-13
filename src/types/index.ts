@@ -34,46 +34,41 @@ export type Theme = {
   backgroundColor: Color;
 };
 
-export type StateManagerProps = {
-  audioManager?: AudioManager;
-  sceneManager?: SceneManager;
-  orbitControls?: OrbitControls;
+export type State = {
   isAnimationRunning: boolean;
-  sceneIndex: number;
-  themeIndex: number;
+  songList: Song[];
   rotationEnabled: boolean;
   panEnabled: boolean;
   zoomEnabled: boolean;
-  themes: Theme[];
-  renderer?: WebGLRenderer;
-  camera?: PerspectiveCamera;
-  updateFn?: () => void;
-  songList: Song[];
-  player?: PlayerType;
-  songPanel?: SongPanelType;
-  propertiesPanel?: PropertiesPanel;
-  canvasContainer: Element | null;
+  sceneIndex: number;
+  themeIndex: number;
   numberOfFrequencies: number;
+  themes: Theme[];
+  currentSong: number;
+  volume: number;
+  width: number;
+  height: number;
+  isPlaying: boolean;
+  playerProgressBarInterval: number;
+  sceneInputProperties: [];
 };
 
-export type StateManagerState = {
-  WIDTH: number;
-  HEIGHT: number;
-  isPlaying: Boolean;
-  volume: number;
-  currentSong: number;
-  sceneIndex: number;
-  themeIndex: number;
-  isAnimationRunning: boolean;
-  rotationEnabled: boolean;
-  panEnabled: boolean;
-  zoomEnabled: boolean;
-  playerProgressBarInterval: number;
-  songList: Song[];
-  themes: Theme[];
-  sceneInputProperties: HTMLInputElement[];
-  numberOfFrequencies: number;
+export type StateManagerChildren = {
+  player: PlayerType;
+  songPanel: SongPanelType;
+  propertiesPanel: PropertiesPanel;
 };
+
+export type StateManagerProps = {
+  canvasContainer: HTMLDivElement;
+  audioManager: AudioManager;
+  sceneManager: SceneManager;
+  camera: PerspectiveCamera;
+  orbitControls: OrbitControls;
+  renderer: WebGLRenderer;
+  updateFn: () => void;
+  state: State;
+} & StateManagerChildren;
 
 export type Scene = {
   name: string;

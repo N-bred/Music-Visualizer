@@ -1,6 +1,5 @@
-import { newSongSelectedName, songUploadedName } from "./Events";
+import { newSongSelectedName, songUploadedName, stateChangedName } from "./Events";
 import type { Song } from "./types";
-import type StateManager from "./stateManager";
 import { randomID } from "./utils/utils";
 import { switchPanels } from "./utils/commonUIBehaviors";
 
@@ -11,21 +10,28 @@ export default class SongPanel {
   private songUploadForm: HTMLFormElement;
   private panelSwapButton: HTMLButtonElement;
   private songListElement: HTMLUListElement;
-  private _stateManager: StateManager;
+  private currentSong: number;
+  private songList: Song[];
 
-  constructor(stateManager: StateManager) {
+  constructor({ currentSong, songList }: { currentSong: number; songList: Song[] }) {
     this.artistInput = document.querySelector("#artist-input")!;
     this.songNameInput = document.querySelector("#song-name-input")!;
     this.songFileInput = document.querySelector("#song-file-input")!;
     this.songUploadForm = document.querySelector("#uploadSongForm")!;
     this.panelSwapButton = document.querySelector("#panel-song-swap-button")!;
     this.songListElement = document.querySelector("#song-list")!;
-    this._stateManager = stateManager;
+    this.currentSong = currentSong;
+    this.songList = songList;
 
     // EVENTS
     this.songUploadForm.addEventListener("submit", (e) => this.handleFormSubmission(e));
     this.panelSwapButton.addEventListener("click", () => this.handlePanelSwapButton());
-    this.handleSongListStyles(this._stateManager.state.currentSong);
+    this.handleSongListStyles(this.currentSong);
+
+    window.addEventListener(stateChangedName, (e: CustomEventInit) => {
+      this.currentSong = e.detail.currentSong;
+      this.songList = e.detail.songList;
+    });
   }
 
   handlePanelSwapButton() {
@@ -61,9 +67,11 @@ export default class SongPanel {
   }
 
   handleRefreshUIState(autoplay: boolean) {
-    this.songListElement.innerHTML = "";
+    while (this.songListElement.firstChild) {
+      this.songListElement.firstChild.remove();
+    }
 
-    this._stateManager.state.songList.forEach((song) => {
+    this.songList.forEach((song) => {
       const li = this.handleCreateNewListElement(song);
       this.songListElement.appendChild(li);
     });
@@ -71,7 +79,7 @@ export default class SongPanel {
     window.dispatchEvent(
       new CustomEvent(newSongSelectedName, {
         detail: {
-          currentSong: this._stateManager.state.currentSong,
+          currentSong: this.currentSong,
           isPlaying: autoplay,
         },
       })
@@ -90,7 +98,7 @@ export default class SongPanel {
     e.preventDefault();
     const anchor = e.target as HTMLAnchorElement;
     const src = anchor.dataset?.url;
-    const songIndex = this._stateManager.state.songList.findIndex((song) => song.src === src);
+    const songIndex = this.songList.findIndex((song) => song.src === src);
     this.handleSongListStyles(songIndex);
 
     window.dispatchEvent(

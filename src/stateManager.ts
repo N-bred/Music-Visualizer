@@ -14,32 +14,20 @@ import {
   songChangedName,
   newSongSelectedName,
 } from "./Events";
-import type { StateManagerProps, StateManagerState, Theme, Song } from "./types";
+import type { Theme, Song, StateManagerProps, State } from "./types";
 
 export default class StateManager {
   private props: StateManagerProps;
-  private _state: StateManagerState;
+  private _state: State;
 
   constructor(props: StateManagerProps) {
     this.props = props;
-    this._state = {
-      WIDTH: this.props.canvasContainer?.getBoundingClientRect().width || 0,
-      HEIGHT: this.props.canvasContainer?.getBoundingClientRect().height || 0,
-      isPlaying: false,
-      volume: 0.5,
-      currentSong: 0,
-      sceneIndex: this.props.sceneIndex,
-      themeIndex: this.props.themeIndex,
-      isAnimationRunning: this.props.isAnimationRunning,
-      rotationEnabled: this.props.rotationEnabled,
-      panEnabled: this.props.rotationEnabled,
-      zoomEnabled: this.props.zoomEnabled,
-      songList: this.props.songList,
-      themes: this.props.themes,
-      playerProgressBarInterval: 0,
-      sceneInputProperties: [],
-      numberOfFrequencies: this.props.numberOfFrequencies,
-    };
+    this._state = props.state;
+
+    this.initializeEventHandlers();
+    this.handleSongsPanelSetup();
+    this.handlePropertiesPanelSetup();
+    this.updateState({});
   }
 
   get state() {
@@ -47,47 +35,58 @@ export default class StateManager {
   }
 
   set currentSong(song: number) {
-    this._state.currentSong = song;
+    this.updateState({ currentSong: song });
   }
 
   get lastSongListIndex() {
     return this._state.songList.length - 1;
   }
 
-  initializeEventHandlers() {
-    this.handleStateChanged();
-    this.handlePlayerEvents();
-    this.handleSongPanelEvents();
-    this.handlePropertiesPanelEvents();
-    this.handleKeyboardEvents();
-    this.handleWindowResize();
+  get lastThemeIndex() {
+    return this._state.themes.length - 1;
   }
 
-  addProperty<K extends keyof StateManagerProps>(key: K, property: StateManagerProps[K]) {
-    this.props[key] = property;
+  updateState(newState: Partial<State>) {
+    this._state = { ...this._state, ...newState };
+    window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
   }
 
-  handleWindowResize() {
-    window.addEventListener("resize", () => {
-      this._state.WIDTH = this.props.canvasContainer?.getBoundingClientRect().width || 0;
-      this._state.HEIGHT = this.props.canvasContainer?.getBoundingClientRect().height || 0;
-      this.props.camera!.aspect = this._state.WIDTH / this._state.HEIGHT;
-      this.props.camera!.updateProjectionMatrix();
-      this.props.renderer!.setSize(this._state.WIDTH, this._state.HEIGHT);
-    });
+  handlePopulateSongs() {
+    this.props.songPanel!.handleRefreshUIState(false);
   }
 
-  handleStateChanged(fn?: (state: StateManagerState) => void) {
-    window.addEventListener(stateChangedName, () => {
-      if (fn) {
-        fn(this._state);
-      }
-    });
+  handleSongsPanelSetup() {
+    this.handlePopulateSongs();
+  }
+
+  handlePropertiesPanelSetup() {
+    this.handlePopulateThemesDropdown();
+    this.handlePopulateScenesDropdown();
+    this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
+  }
+
+  handlePopulateThemesDropdown() {
+    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
+  }
+
+  handlePopulateScenesDropdown() {
+    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
+  }
+
+  // Player Panel
+
+  handlePlayerEvents() {
+    this.handlePlayerChangedSong();
+    this.handlePlayerNewSongSelected();
+    this.handlePlayerVolumeChanged();
+    this.handlePlayerProgressBarClicked();
+    this.handleSongEnded();
+    this.handleSongChanged();
   }
 
   handlePlayerChangedSong() {
     window.addEventListener(changedSongStateName, (e: CustomEventInit) => {
-      this._state.isPlaying = e.detail.isPlaying;
+      this.updateState({ isPlaying: e.detail!.isPlaying });
 
       if (this._state.isPlaying) {
         this.props.audioManager!.play();
@@ -96,8 +95,44 @@ export default class StateManager {
         this.props.audioManager!.pause();
         this.handlePlayerProgressBarInterval(true);
       }
+    });
+  }
 
-      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
+  handlePlayerNewSongSelected() {
+    window.addEventListener(newSongSelectedName, async (e: CustomEventInit) => {
+      this.updateState({
+        currentSong: e.detail.currentSong,
+        isPlaying: e.detail.isPlaying,
+      });
+
+      this.handlePlayerProgressBarInterval(true);
+      this.props.player!.handleUpdateProgressBarUI(0, 0);
+      this.props.songPanel?.handleSongListStyles(this._state.currentSong);
+      await this.props.audioManager!.setSong(this._state.currentSong);
+
+      if (this._state.isPlaying) {
+        this.props.audioManager!.play();
+        this.props.player!.handlePlayPauseButtonUI(true);
+        this.handlePlayerProgressBarInterval(false);
+      }
+    });
+  }
+
+  handlePlayerVolumeChanged() {
+    window.addEventListener(changedVolumeName, (e: CustomEventInit) => {
+      this.updateState({ volume: e.detail.volume });
+    });
+  }
+
+  handlePlayerProgressBarClicked() {
+    window.addEventListener(progressBarClickedName, (e: CustomEventInit) => {
+      const percentage = e.detail.progressBarClickPosition;
+      const specificSecond = percentage * this.props.audioManager!.duration!;
+
+      this.updateState({ isPlaying: e.detail.isPlaying });
+      this.props.audioManager?.playFromSecond(specificSecond);
+      this.props.player?.handlePlayPauseButtonUI(e.detail.isPlaying);
+      this.props.player?.handleUpdateProgressBarUI(specificSecond, percentage);
     });
   }
 
@@ -118,50 +153,8 @@ export default class StateManager {
       this.handlePlayerProgressBarInterval(true);
       this.props.audioManager?.stop();
       this.props.player?.handlePlayPauseButtonUI(false);
-      this._state.isPlaying = false;
+      this.updateState({ isPlaying: false });
       this.props.player?.handleUpdateProgressBarUI(0, 0);
-    });
-  }
-
-  handlePlayerNewSongSelected() {
-    window.addEventListener(newSongSelectedName, async (e: CustomEventInit) => {
-      this._state.currentSong = e.detail.currentSong;
-      this._state.isPlaying = e.detail.isPlaying;
-
-      this.handlePlayerProgressBarInterval(true);
-      this.props.player!.handleUpdateProgressBarUI(0, 0);
-      this.props.songPanel?.handleSongListStyles(this._state.currentSong);
-      await this.props.audioManager!.setSong(this._state.currentSong);
-
-      if (this._state.isPlaying) {
-        this.props.audioManager!.play();
-        this.props.player!.handlePlayPauseButtonUI(true);
-        this.handlePlayerProgressBarInterval(false);
-      }
-
-      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
-    });
-  }
-
-  handlePlayerVolumeChanged() {
-    window.addEventListener(changedVolumeName, (e: CustomEventInit) => {
-      this._state.volume = e.detail.volume;
-
-      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
-    });
-  }
-
-  handlePlayerProgressBarClicked() {
-    window.addEventListener(progressBarClickedName, (e: CustomEventInit) => {
-      const percentage = e.detail.progressBarClickPosition;
-      const specificSecond = percentage * this.props.audioManager!.duration!;
-
-      this._state.isPlaying = e.detail.isPlaying;
-      this.props.audioManager?.playFromSecond(specificSecond);
-      this.props.player?.handlePlayPauseButtonUI(e.detail.isPlaying);
-      this.props.player?.handleUpdateProgressBarUI(specificSecond, percentage);
-
-      window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
     });
   }
 
@@ -171,51 +164,31 @@ export default class StateManager {
     });
   }
 
-  handlePlayerEvents() {
-    this.handlePlayerChangedSong();
-    this.handlePlayerNewSongSelected();
-    this.handlePlayerVolumeChanged();
-    this.handlePlayerProgressBarClicked();
-    this.handleSongEnded();
-    this.handleSongChanged();
+  // Songs Panel
+
+  handleSongPanelEvents() {
+    this.handleAddNewSong();
   }
 
   handleAddNewSong() {
     window.addEventListener(songUploadedName, ({ detail }: CustomEventInit<Song>) => {
-      const found = this.state.songList.findIndex((song) => song.id === detail!.id) !== -1;
+      const found = this._state.songList.findIndex((song) => song.id === detail!.id) !== -1;
 
       if (found) {
         this.props.songPanel?.handlePostFormSubmission(false);
         return;
       }
 
-      this.state.songList.push(detail!);
-      this._state.currentSong = this.lastSongListIndex;
+      this.updateState({
+        songList: [...this._state.songList, detail!],
+        currentSong: this.lastSongListIndex + 1,
+      });
+
       this.props.songPanel?.handlePostFormSubmission(true);
     });
   }
 
-  handleSongPanelEvents() {
-    this.handleAddNewSong();
-  }
-
-  handleSceneIndex() {
-    window.addEventListener(changedSceneIndexName, (e: CustomEventInit) => {
-      this._state.sceneIndex = e.detail.sceneIndex;
-      this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
-      this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
-      const schema = this.props.sceneManager!.currentScene.scheme();
-      this.props.propertiesPanel!.handleSceneSchemeChanged(schema);
-    });
-  }
-
-  handleSceneChangeTheme() {
-    window.addEventListener(changedThemeIndexName, (e: CustomEventInit) => {
-      this._state.themeIndex = e.detail.themeIndex;
-      this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
-      this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
-    });
-  }
+  // Properties Panel
 
   handlePropertiesPanelEvents() {
     this.handleSceneIndex();
@@ -226,12 +199,43 @@ export default class StateManager {
     this.handleAddCustomTheme();
   }
 
-  handlePopulateThemesDropdown() {
-    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
+  handleSceneIndex() {
+    window.addEventListener(changedSceneIndexName, (e: CustomEventInit) => {
+      this.updateState({ sceneIndex: e.detail.sceneIndex });
+      this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
+      this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
+      const schema = this.props.sceneManager!.currentScene.scheme();
+      this.props.propertiesPanel!.handleSceneSchemeChanged(schema);
+    });
   }
 
-  handlePopulateScenesDropdown() {
-    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
+  handleSceneChangeTheme() {
+    window.addEventListener(changedThemeIndexName, (e: CustomEventInit) => {
+      this.updateState({ themeIndex: e.detail.themeIndex });
+      this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
+      this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
+    });
+  }
+
+  handleRotationCheckbox() {
+    window.addEventListener(changedRotationCheckboxName, (e: CustomEventInit) => {
+      this.updateState({ rotationEnabled: e.detail.rotationEnabled });
+      this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
+    });
+  }
+
+  handlePanCheckbox() {
+    window.addEventListener(changedPanCheckboxName, (e: CustomEventInit) => {
+      this.updateState({ panEnabled: e.detail.panEnabled });
+      this.props.orbitControls!.enablePan = this._state.panEnabled;
+    });
+  }
+
+  handleZoomCheckbox() {
+    window.addEventListener(changedZoomCheckboxName, (e: CustomEventInit) => {
+      this.updateState({ zoomEnabled: e.detail.zoomEnabled });
+      this.props.orbitControls!.enableZoom = this._state.zoomEnabled;
+    });
   }
 
   handleAddCustomTheme() {
@@ -239,46 +243,35 @@ export default class StateManager {
       const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name);
       if (isFound !== -1) return;
 
-      this._state.themes.push(detail!);
+      this.updateState({
+        themes: [...this._state.themes, detail!],
+        themeIndex: this.lastThemeIndex + 1,
+      });
       this.handlePopulateThemesDropdown();
-      this._state.themeIndex = this._state.themes.length - 1;
       this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
     });
   }
 
-  handleRotationCheckbox() {
-    window.addEventListener(changedRotationCheckboxName, (e: CustomEventInit) => {
-      this._state.rotationEnabled = e.detail.rotationEnabled;
-      this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
+  // Events
+
+  initializeEventHandlers() {
+    this.handlePlayerEvents();
+    this.handleSongPanelEvents();
+    this.handlePropertiesPanelEvents();
+    this.handleKeyboardEvents();
+    this.handleWindowResize();
+  }
+
+  handleWindowResize() {
+    window.addEventListener("resize", () => {
+      this.updateState({
+        width: this.props.canvasContainer.getBoundingClientRect().width || 0,
+        height: this.props.canvasContainer.getBoundingClientRect().height || 0,
+      });
+      this.props.camera!.aspect = this._state.width / this._state.height;
+      this.props.camera!.updateProjectionMatrix();
+      this.props.renderer!.setSize(this._state.width, this._state.height);
     });
-  }
-
-  handlePanCheckbox() {
-    window.addEventListener(changedPanCheckboxName, (e: CustomEventInit) => {
-      this._state.panEnabled = e.detail.panEnabled;
-      this.props.orbitControls!.enablePan = this._state.panEnabled;
-    });
-  }
-
-  handleZoomCheckbox() {
-    window.addEventListener(changedZoomCheckboxName, (e: CustomEventInit) => {
-      this._state.zoomEnabled = e.detail.zoomEnabled;
-      this.props.orbitControls!.enableZoom = this._state.zoomEnabled;
-    });
-  }
-
-  handlePropertiesPanelSetup() {
-    this.handlePopulateThemesDropdown();
-    this.handlePopulateScenesDropdown();
-    this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
-  }
-
-  handlePopulateSongs() {
-    this.props.songPanel!.handleRefreshUIState(false);
-  }
-
-  handleSongsPanelSetup() {
-    this.handlePopulateSongs();
   }
 
   handleKeyboardEvents() {
@@ -292,12 +285,12 @@ export default class StateManager {
           this.props.player?.handlePlayPauseButton();
           break;
         case "]":
-          if (this.props.isAnimationRunning) {
+          if (this.state.isAnimationRunning) {
             this.props.renderer!.setAnimationLoop(null);
-            this.props.isAnimationRunning = false;
+            this.updateState({ isAnimationRunning: false });
           } else {
             this.props.renderer!.setAnimationLoop(this.props.updateFn!);
-            this.props.isAnimationRunning = true;
+            this.updateState({ isAnimationRunning: true });
           }
           break;
         default:

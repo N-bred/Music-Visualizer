@@ -21,8 +21,8 @@ export default class AudioManager {
     this.currentTimeInterval = 0;
 
     window.addEventListener(stateChangedName, (e: CustomEventInit) => {
-      const { volume } = e.detail;
-      this.volume = volume;
+      this.volume = e.detail.volume;
+      this.songList = e.detail.songList;
     });
   }
 

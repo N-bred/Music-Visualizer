@@ -1,5 +1,6 @@
 import * as T from "three";
 import { type Schema, type Theme } from "./types";
+import { stateChangedName } from "./Events";
 
 export default class CustomScene extends T.Scene {
   public numberOfFrequencies: number;
@@ -17,6 +18,10 @@ export default class CustomScene extends T.Scene {
     this.currentThemeIndex = currentThemeIndex;
     this.currentTheme = themes[currentThemeIndex];
     this.inputs = [];
+
+    window.addEventListener(stateChangedName, (e: CustomEventInit) => {
+      this.themes = e.detail.themes;
+    });
   }
 
   setup() {}
