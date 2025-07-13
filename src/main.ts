@@ -59,23 +59,23 @@ const stateManager = new StateManager({
   zoomEnabled: true,
   sceneIndex: 0,
   themeIndex: 0,
+  numberOfFrequencies: 1024 * 2,
   themes: DEFAULT_THEMES,
 });
 
-const numberOfFrequencies = 1024 * 2;
-const audioManager = new AudioManager(songList, numberOfFrequencies);
+const audioManager = new AudioManager(songList, stateManager.state.numberOfFrequencies);
 audioManager.setSong(stateManager.state.currentSong);
 audioManager.volume = stateManager.state.volume;
 
 const sceneManager = new SceneManager({
   scenes: [
-    { name: "Chaotic", sceneClass: ChaoticScene },
-    { name: "Flat Circle", sceneClass: FlatCircleScene },
+    { name: "Chaotic", scene: new ChaoticScene(stateManager.state.numberOfFrequencies, stateManager.state.themes, stateManager.state.themeIndex) },
+    {
+      name: "Flat Circle",
+      scene: new FlatCircleScene(stateManager.state.numberOfFrequencies, stateManager.state.themes, stateManager.state.themeIndex),
+    },
   ],
   index: stateManager.state.sceneIndex,
-  numberOfFrequencies,
-  themes: stateManager.state.themes,
-  currentThemeIndex: stateManager.state.themeIndex,
 });
 
 sceneManager.currentScene.position.set(0, -0, 0);

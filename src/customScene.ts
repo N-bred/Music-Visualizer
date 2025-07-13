@@ -32,6 +32,4 @@ export default class CustomScene extends T.Scene {
     console.log(delta);
     return;
   }
-
-  destroy() {}
 }

@@ -1,7 +1,6 @@
 import * as T from "three";
 import CustomScene from "../customScene";
 import type { Schema, Theme } from "../types";
-import { disposeObject } from "../utils/utils";
 
 const DEFAULT_VALUES = {
   radius: 250,
@@ -60,15 +59,6 @@ export default class FlatCircleScene extends CustomScene {
         );
       }
     }
-  }
-
-  destroy(): void {
-    for (const group of this._groups) {
-      for (let i = 0; i < group.children.length; ++i) {
-        disposeObject(group.children[i]);
-      }
-    }
-    this._groups = [];
   }
 
   changeRadius(e: Event) {

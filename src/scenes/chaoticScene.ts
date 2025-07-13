@@ -1,7 +1,6 @@
 import * as T from "three";
 import CustomScene from "../customScene";
 import type { Schema, Theme } from "../types";
-import { disposeObject } from "../utils/utils";
 
 const DEFAULT_VALUES = {
   boxSize: 1,
@@ -64,15 +63,6 @@ export default class ChaoticScene extends CustomScene {
       }
     }
     this.maxScalar = fft[0];
-  }
-
-  destroy(): void {
-    for (const group of this._groups) {
-      for (let i = 0; i < group.children.length; ++i) {
-        disposeObject(group.children[i]);
-      }
-    }
-    this._groups = [];
   }
 
   handleNewBoxSize(e: Event) {

@@ -53,6 +53,7 @@ export type StateManagerProps = {
   songPanel?: SongPanelType;
   propertiesPanel?: PropertiesPanel;
   canvasContainer: Element | null;
+  numberOfFrequencies: number;
 };
 
 export type StateManagerState = {
@@ -71,17 +72,15 @@ export type StateManagerState = {
   songList: Song[];
   themes: Theme[];
   sceneInputProperties: HTMLInputElement[];
+  numberOfFrequencies: number;
 };
 
 export type Scene = {
   name: string;
-  sceneClass: typeof CustomScene;
+  scene: CustomScene;
 };
 
 export type SceneManagerProps = {
   scenes: Scene[];
   index: number;
-  numberOfFrequencies: number;
-  themes: Theme[];
-  currentThemeIndex: number;
 };

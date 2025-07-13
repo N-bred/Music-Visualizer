@@ -38,6 +38,7 @@ export default class StateManager {
       themes: this.props.themes,
       playerProgressBarInterval: 0,
       sceneInputProperties: [],
+      numberOfFrequencies: this.props.numberOfFrequencies,
     };
   }
 
