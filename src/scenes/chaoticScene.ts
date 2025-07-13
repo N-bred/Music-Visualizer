@@ -33,7 +33,7 @@ export default class ChaoticScene extends CustomScene {
         const angle = i * (this.quantity / (2 * 180));
         const boxGeometry = new T.BoxGeometry(DEFAULT_VALUES.boxSize);
         const boxMaterial = new T.MeshBasicMaterial({
-          color: this.themes[this.currentThemeIndex].color,
+          color: this.currentTheme.color,
         });
         const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
 
@@ -48,18 +48,14 @@ export default class ChaoticScene extends CustomScene {
   }
 
   animate(fft: Uint8Array<ArrayBufferLike>, delta: number): void {
-    this.background = this.themes[this.currentThemeIndex].backgroundColor;
+    this.background = this.currentTheme.backgroundColor;
     this.rotation.z = -delta / DEFAULT_VALUES.rotationSpeed;
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
         const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
         const scalar = fft[i];
         box.scale.y = Math.max(scalar / 2, 1);
-        box.material.color.lerpColors(
-          this.themes[this.currentThemeIndex].color,
-          this.themes[this.currentThemeIndex].transitionColor,
-          Math.abs(scalar) / this.maxScalar || 1
-        );
+        box.material.color.lerpColors(this.currentTheme.color, this.currentTheme.transitionColor, Math.abs(scalar) / this.maxScalar || 1);
       }
     }
     this.maxScalar = fft[0];

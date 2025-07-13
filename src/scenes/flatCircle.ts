@@ -31,7 +31,7 @@ export default class FlatCircleScene extends CustomScene {
 
         const boxGeometry = new T.BoxGeometry(1, 1, 1);
         const boxMaterial = new T.MeshBasicMaterial({
-          color: this.themes[this.currentThemeIndex].color,
+          color: this.currentTheme.color,
         });
         const boxMesh = new T.Mesh(boxGeometry, boxMaterial);
 
@@ -46,17 +46,13 @@ export default class FlatCircleScene extends CustomScene {
   }
 
   animate(fft: Uint8Array<ArrayBufferLike>): void {
-    this.background = this.themes[this.currentThemeIndex].backgroundColor;
+    this.background = this.currentTheme.backgroundColor;
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
         const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
         const scalar = fft[i];
         box.scale.x = Math.max(scalar, 1);
-        box.material.color.lerpColors(
-          this.themes[this.currentThemeIndex].color,
-          this.themes[this.currentThemeIndex].transitionColor,
-          Math.abs(scalar) / 195
-        );
+        box.material.color.lerpColors(this.currentTheme.color, this.currentTheme.transitionColor, Math.abs(scalar) / 195);
       }
     }
   }
