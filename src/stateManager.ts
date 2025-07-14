@@ -203,6 +203,7 @@ export default class StateManager {
 
   handleSceneIndex() {
     window.addEventListener(changedSceneIndexEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.sceneIndex.set(e.detail.sceneIndex);
       this.updateState({ sceneIndex: e.detail.sceneIndex });
       this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);

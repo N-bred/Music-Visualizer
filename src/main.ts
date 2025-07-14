@@ -53,6 +53,8 @@ const PERSISTED_VALUES: PersistedValues = {
   panEnabled: useLocalStorage<boolean>("panEnabled", true),
   zoomEnabled: useLocalStorage<boolean>("zoomEnabled", true),
   volume: useLocalStorage<number>("volume", 0.5),
+  sceneIndex: useLocalStorage<number>("sceneIndex", 0),
+  themeIndex: useLocalStorage<number>("themeIndex", 0),
 };
 
 const DEFAULT_STATE: State = {
@@ -61,7 +63,7 @@ const DEFAULT_STATE: State = {
   rotationEnabled: PERSISTED_VALUES.rotationEnabled.value,
   panEnabled: PERSISTED_VALUES.panEnabled.value,
   zoomEnabled: PERSISTED_VALUES.zoomEnabled.value,
-  sceneIndex: 0,
+  sceneIndex: PERSISTED_VALUES.sceneIndex.value,
   themeIndex: 0,
   numberOfFrequencies: 1024 * 2,
   themes: DEFAULT_THEMES,
