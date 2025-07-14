@@ -1,5 +1,5 @@
 import { calculateMinutesAndSeconds } from "./utils/utils";
-import { changedVolumeName, newSongSelectedName, changedSongStateName, progressBarClickedName, stateChangedName } from "./Events";
+import { changedVolumeEvent, newSongSelectedEvent, changedSongStateEvent, progressBarClickedEvent, stateChangedEvent } from "./Events";
 import { switchClasses } from "./utils/commonUIBehaviors";
 import type { Song } from "./types";
 
@@ -37,7 +37,7 @@ export default class Player {
     this.volumeRange.addEventListener("input", () => this.handleVolumeRange());
     this.progressBar.addEventListener("click", (e) => this.handleProgressBarClick(e));
 
-    window.addEventListener(stateChangedName, (e: CustomEventInit) => {
+    window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
       this.isPlaying = e.detail.isPlaying;
       this.currentSong = e.detail.currentSong;
       this.songList = e.detail.songList;
@@ -49,7 +49,7 @@ export default class Player {
     const mouseX = e.clientX;
 
     window.dispatchEvent(
-      new CustomEvent(progressBarClickedName, {
+      new CustomEvent(progressBarClickedEvent, {
         detail: {
           progressBarClickPosition: (mouseX - left) / width,
           isPlaying: true,
@@ -78,7 +78,7 @@ export default class Player {
     this.handlePlayPauseButtonUI(isPlaying);
 
     window.dispatchEvent(
-      new CustomEvent(changedSongStateName, {
+      new CustomEvent(changedSongStateEvent, {
         detail: {
           isPlaying,
         },
@@ -90,7 +90,7 @@ export default class Player {
     if (this.currentSong + 1 > this.songList.length - 1) return;
     if (this.currentSong + 1 <= this.songList.length - 1) {
       window.dispatchEvent(
-        new CustomEvent(newSongSelectedName, {
+        new CustomEvent(newSongSelectedEvent, {
           detail: {
             currentSong: this.currentSong + 1,
             isPlaying: true,
@@ -104,7 +104,7 @@ export default class Player {
     if (this.currentSong - 1 < 0) return;
     if (this.currentSong - 1 >= 0) {
       window.dispatchEvent(
-        new CustomEvent(newSongSelectedName, {
+        new CustomEvent(newSongSelectedEvent, {
           detail: {
             currentSong: this.currentSong - 1,
             isPlaying: true,
@@ -118,7 +118,7 @@ export default class Player {
     const { value } = this.volumeRange;
 
     window.dispatchEvent(
-      new CustomEvent(changedVolumeName, {
+      new CustomEvent(changedVolumeEvent, {
         detail: {
           volume: parseFloat(value),
         },

@@ -1,4 +1,4 @@
-import { newSongSelectedName, songUploadedName, stateChangedName } from "./Events";
+import { newSongSelectedEvent, songUploadedEvent, stateChangedEvent } from "./Events";
 import type { Song } from "./types";
 import { randomID } from "./utils/utils";
 import { switchPanels } from "./utils/commonUIBehaviors";
@@ -28,7 +28,7 @@ export default class SongPanel {
     this.panelSwapButton.addEventListener("click", () => this.handlePanelSwapButton());
     this.handleSongListStyles(this.currentSong);
 
-    window.addEventListener(stateChangedName, (e: CustomEventInit) => {
+    window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
       this.currentSong = e.detail.currentSong;
       this.songList = e.detail.songList;
     });
@@ -43,7 +43,7 @@ export default class SongPanel {
     const { files } = this.songFileInput;
 
     window.dispatchEvent(
-      new CustomEvent(songUploadedName, {
+      new CustomEvent(songUploadedEvent, {
         detail: {
           id: randomID(this.artistInput.value, this.songNameInput.value),
           artistName: this.artistInput.value,
@@ -77,7 +77,7 @@ export default class SongPanel {
     });
 
     window.dispatchEvent(
-      new CustomEvent(newSongSelectedName, {
+      new CustomEvent(newSongSelectedEvent, {
         detail: {
           currentSong: this.currentSong,
           isPlaying: autoplay,
@@ -102,7 +102,7 @@ export default class SongPanel {
     this.handleSongListStyles(songIndex);
 
     window.dispatchEvent(
-      new CustomEvent(newSongSelectedName, {
+      new CustomEvent(newSongSelectedEvent, {
         detail: {
           currentSong: songIndex,
           isPlaying: true,

@@ -1,18 +1,18 @@
 import {
-  stateChangedName,
-  changedVolumeName,
-  changedSongStateName,
-  changedThemeIndexName,
-  changedSceneIndexName,
-  songUploadedName,
-  changedRotationCheckboxName,
-  changedPanCheckboxName,
-  changedZoomCheckboxName,
-  AddedNewThemeName,
-  progressBarClickedName,
-  songEndedName,
-  songChangedName,
-  newSongSelectedName,
+  stateChangedEvent,
+  changedVolumeEvent,
+  changedSongStateEvent,
+  changedThemeIndexEvent,
+  changedSceneIndexEvent,
+  songUploadedEvent,
+  changedRotationCheckboxEvent,
+  changedPanCheckboxEvent,
+  changedZoomCheckboxEvent,
+  AddedNewThemeEvent,
+  progressBarClickedEvent,
+  songEndedEvent,
+  songChangedEvent,
+  newSongSelectedEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
 
@@ -48,7 +48,7 @@ export default class StateManager {
 
   updateState(newState: Partial<State>) {
     this._state = { ...this._state, ...newState };
-    window.dispatchEvent(new CustomEvent(stateChangedName, { detail: { ...this._state } }));
+    window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
   }
 
   handlePopulateSongs() {
@@ -85,7 +85,7 @@ export default class StateManager {
   }
 
   handlePlayerChangedSong() {
-    window.addEventListener(changedSongStateName, (e: CustomEventInit) => {
+    window.addEventListener(changedSongStateEvent, (e: CustomEventInit) => {
       this.updateState({ isPlaying: e.detail!.isPlaying });
 
       if (this._state.isPlaying) {
@@ -99,7 +99,7 @@ export default class StateManager {
   }
 
   handlePlayerNewSongSelected() {
-    window.addEventListener(newSongSelectedName, async (e: CustomEventInit) => {
+    window.addEventListener(newSongSelectedEvent, async (e: CustomEventInit) => {
       this.updateState({
         currentSong: e.detail.currentSong,
         isPlaying: e.detail.isPlaying,
@@ -119,13 +119,13 @@ export default class StateManager {
   }
 
   handlePlayerVolumeChanged() {
-    window.addEventListener(changedVolumeName, (e: CustomEventInit) => {
+    window.addEventListener(changedVolumeEvent, (e: CustomEventInit) => {
       this.updateState({ volume: e.detail.volume });
     });
   }
 
   handlePlayerProgressBarClicked() {
-    window.addEventListener(progressBarClickedName, (e: CustomEventInit) => {
+    window.addEventListener(progressBarClickedEvent, (e: CustomEventInit) => {
       const percentage = e.detail.progressBarClickPosition;
       const specificSecond = percentage * this.props.audioManager!.duration!;
 
@@ -149,7 +149,7 @@ export default class StateManager {
   }
 
   handleSongEnded() {
-    window.addEventListener(songEndedName, () => {
+    window.addEventListener(songEndedEvent, () => {
       this.handlePlayerProgressBarInterval(true);
       this.props.audioManager?.stop();
       this.props.player?.handlePlayPauseButtonUI(false);
@@ -159,7 +159,7 @@ export default class StateManager {
   }
 
   handleSongChanged() {
-    window.addEventListener(songChangedName, () => {
+    window.addEventListener(songChangedEvent, () => {
       this.props.player!.handleTotalDurationSpan(this.props.audioManager!.duration!);
     });
   }
@@ -171,7 +171,7 @@ export default class StateManager {
   }
 
   handleAddNewSong() {
-    window.addEventListener(songUploadedName, ({ detail }: CustomEventInit<Song>) => {
+    window.addEventListener(songUploadedEvent, ({ detail }: CustomEventInit<Song>) => {
       const found = this._state.songList.findIndex((song) => song.id === detail!.id) !== -1;
 
       if (found) {
@@ -200,7 +200,7 @@ export default class StateManager {
   }
 
   handleSceneIndex() {
-    window.addEventListener(changedSceneIndexName, (e: CustomEventInit) => {
+    window.addEventListener(changedSceneIndexEvent, (e: CustomEventInit) => {
       this.updateState({ sceneIndex: e.detail.sceneIndex });
       this.props.sceneManager!.setCurrentScene(this._state.sceneIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
@@ -210,7 +210,7 @@ export default class StateManager {
   }
 
   handleSceneChangeTheme() {
-    window.addEventListener(changedThemeIndexName, (e: CustomEventInit) => {
+    window.addEventListener(changedThemeIndexEvent, (e: CustomEventInit) => {
       this.updateState({ themeIndex: e.detail.themeIndex });
       this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
@@ -218,28 +218,28 @@ export default class StateManager {
   }
 
   handleRotationCheckbox() {
-    window.addEventListener(changedRotationCheckboxName, (e: CustomEventInit) => {
+    window.addEventListener(changedRotationCheckboxEvent, (e: CustomEventInit) => {
       this.updateState({ rotationEnabled: e.detail.rotationEnabled });
       this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
     });
   }
 
   handlePanCheckbox() {
-    window.addEventListener(changedPanCheckboxName, (e: CustomEventInit) => {
+    window.addEventListener(changedPanCheckboxEvent, (e: CustomEventInit) => {
       this.updateState({ panEnabled: e.detail.panEnabled });
       this.props.orbitControls!.enablePan = this._state.panEnabled;
     });
   }
 
   handleZoomCheckbox() {
-    window.addEventListener(changedZoomCheckboxName, (e: CustomEventInit) => {
+    window.addEventListener(changedZoomCheckboxEvent, (e: CustomEventInit) => {
       this.updateState({ zoomEnabled: e.detail.zoomEnabled });
       this.props.orbitControls!.enableZoom = this._state.zoomEnabled;
     });
   }
 
   handleAddCustomTheme() {
-    window.addEventListener(AddedNewThemeName, ({ detail }: CustomEventInit<Theme>) => {
+    window.addEventListener(AddedNewThemeEvent, ({ detail }: CustomEventInit<Theme>) => {
       const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name);
       if (isFound !== -1) return;
 

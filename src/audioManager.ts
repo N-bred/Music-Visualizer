@@ -1,6 +1,6 @@
 import * as T from "three";
 import type { Song } from "./types";
-import { songChangedEvent, songEndedEvent, stateChangedName } from "./Events";
+import { songChangedEvent, songEndedEvent, stateChangedEvent } from "./Events";
 
 export default class AudioManager {
   private listener: T.AudioListener;
@@ -20,7 +20,7 @@ export default class AudioManager {
     this._currentTime = 0;
     this.currentTimeInterval = 0;
 
-    window.addEventListener(stateChangedName, (e: CustomEventInit) => {
+    window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
       this.volume = e.detail.volume;
       this.songList = e.detail.songList;
     });
@@ -32,10 +32,10 @@ export default class AudioManager {
     const buffer = await this.audioLoader.loadAsync(song.src!);
     this.sound.setBuffer(buffer);
 
-    window.dispatchEvent(songChangedEvent);
+    window.dispatchEvent(new CustomEvent(songChangedEvent));
 
     this.sound.onEnded = () => {
-      window.dispatchEvent(songEndedEvent);
+      window.dispatchEvent(new CustomEvent(songEndedEvent));
     };
   }
 

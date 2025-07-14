@@ -1,11 +1,11 @@
 import * as T from "three";
 import {
-  AddedNewThemeName,
-  changedThemeIndexName,
-  changedRotationCheckboxName,
-  changedPanCheckboxName,
-  changedZoomCheckboxName,
-  changedSceneIndexName,
+  AddedNewThemeEvent,
+  changedThemeIndexEvent,
+  changedRotationCheckboxEvent,
+  changedPanCheckboxEvent,
+  changedZoomCheckboxEvent,
+  changedSceneIndexEvent,
 } from "./Events";
 import type { Theme, Scene, Schema } from "./types";
 import { populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
@@ -79,7 +79,7 @@ export default class PropertiesPanel {
 
   handleScenesDropdown() {
     window.dispatchEvent(
-      new CustomEvent(changedSceneIndexName, {
+      new CustomEvent(changedSceneIndexEvent, {
         detail: {
           sceneIndex: this.scenesDropdown.options.selectedIndex,
         },
@@ -89,7 +89,7 @@ export default class PropertiesPanel {
 
   handleThemesDropdown() {
     window.dispatchEvent(
-      new CustomEvent(changedThemeIndexName, {
+      new CustomEvent(changedThemeIndexEvent, {
         detail: {
           themeIndex: this.themesDropdown.options.selectedIndex,
         },
@@ -101,7 +101,7 @@ export default class PropertiesPanel {
     this.themesDropdown.selectedIndex = index;
 
     window.dispatchEvent(
-      new CustomEvent(changedThemeIndexName, {
+      new CustomEvent(changedThemeIndexEvent, {
         detail: {
           themeIndex: index,
         },
@@ -110,15 +110,15 @@ export default class PropertiesPanel {
   }
 
   handleRotationCheckbox() {
-    window.dispatchEvent(new CustomEvent(changedRotationCheckboxName, { detail: { rotationEnabled: this.rotationCheckbox.checked } }));
+    window.dispatchEvent(new CustomEvent(changedRotationCheckboxEvent, { detail: { rotationEnabled: this.rotationCheckbox.checked } }));
   }
 
   handlePanCheckbox() {
-    window.dispatchEvent(new CustomEvent(changedPanCheckboxName, { detail: { panEnabled: this.panCheckbox.checked } }));
+    window.dispatchEvent(new CustomEvent(changedPanCheckboxEvent, { detail: { panEnabled: this.panCheckbox.checked } }));
   }
 
   handleZoomCheckbox() {
-    window.dispatchEvent(new CustomEvent(changedZoomCheckboxName, { detail: { zoomEnabled: this.zoomCheckbox.checked } }));
+    window.dispatchEvent(new CustomEvent(changedZoomCheckboxEvent, { detail: { zoomEnabled: this.zoomCheckbox.checked } }));
   }
 
   handleScenesPropertiesForm(e: Event) {
@@ -145,7 +145,7 @@ export default class PropertiesPanel {
     e.preventDefault();
 
     window.dispatchEvent(
-      new CustomEvent<Theme>(AddedNewThemeName, {
+      new CustomEvent<Theme>(AddedNewThemeEvent, {
         detail: {
           name: this.customColorName.value,
           color: new T.Color(this.initialColorInput.value),
