@@ -7,17 +7,45 @@ import type { OrbitControls } from "three/examples/jsm/Addons.js";
 import type SceneManager from "../sceneManager";
 import CustomScene from "../customScene";
 
+type HTMLInputTypes =
+  | "button"
+  | "checkbox"
+  | "color"
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "file"
+  | "hidden"
+  | "image"
+  | "month"
+  | "number"
+  | "password"
+  | "radio"
+  | "range"
+  | "reset"
+  | "search"
+  | "submit"
+  | "tel"
+  | "text"
+  | "time"
+  | "url"
+  | "week";
+
 export type Schema = {
+  id: string;
+  localStorageId: string;
   name: string;
-  type: string;
+  type: HTMLInputTypes;
   order: number;
-  required: boolean;
-  defaultValue: string;
+  required: HTMLInputElement["required"];
+  defaultValue: string | number;
   textContent: string;
-  minValue?: string;
-  maxValue?: string;
-  onChange: (e: Event) => void;
+  minValue?: string | number;
+  maxValue?: string | number;
+  eventHandler: (e: Event) => void;
 };
+
+export type InputEventMap<S extends readonly { readonly id: string }[]> = { [K in S[number]["id"]]: Schema["eventHandler"] };
 
 export type Song = {
   id: string;

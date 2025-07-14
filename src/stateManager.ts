@@ -50,28 +50,29 @@ export default class StateManager {
     this._state = { ...this._state, ...newState };
     window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
   }
+  
+  handleSongsPanelSetup() {
+    this.handlePopulateSongs();
+  }
 
   handlePopulateSongs() {
     this.props.songPanel!.handleRefreshUIState(false);
   }
 
-  handleSongsPanelSetup() {
-    this.handlePopulateSongs();
-  }
-
   handlePropertiesPanelSetup() {
-    this.handlePopulateThemesDropdown();
     this.handlePopulateScenesDropdown();
+    this.handlePopulateThemesDropdown();
     this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
+  }
+  
+  handlePopulateScenesDropdown() {
+    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
   }
 
   handlePopulateThemesDropdown() {
     this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
   }
 
-  handlePopulateScenesDropdown() {
-    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
-  }
 
   // Player Panel
 

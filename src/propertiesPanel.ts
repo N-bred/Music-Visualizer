@@ -132,12 +132,12 @@ export default class PropertiesPanel {
 
     if (scheme.length < 1) return;
 
-    const inputs = createInputElementsFromSchema(scheme);
+    const results = createInputElementsFromSchema(scheme);
 
-    inputs.forEach(({ eventHandler, label, input }) => {
-      input.addEventListener("change", eventHandler);
-      this.scenesPropertiesForm.appendChild(label);
-      this.scenesPropertiesForm.appendChild(input);
+    results.forEach((result) => {
+      result.input.addEventListener("change", result.eventHandler);
+      this.scenesPropertiesForm.appendChild(result.label);
+      this.scenesPropertiesForm.appendChild(result.input);
     });
   }
 

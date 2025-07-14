@@ -48,7 +48,11 @@ export function calculateMinutesAndSeconds(duration: number) {
   };
 }
 
-export function createInputElementsFromSchema(schemas: Schema[]) {
+export function createInputElementsFromSchema(schemas: Schema[]): {
+  label: HTMLLabelElement;
+  input: HTMLInputElement;
+  eventHandler: Schema["eventHandler"];
+}[] {
   return schemas
     .sort((a, b) => a.order - b.order)
     .map((schema) => {
@@ -60,21 +64,21 @@ export function createInputElementsFromSchema(schemas: Schema[]) {
       input.name = schema.name;
       input.id = schema.name;
       input.required = schema.required;
-      input.value = schema.defaultValue;
+      input.value = schema.defaultValue.toString();
       input.textContent = schema.textContent;
 
       if (schema.minValue) {
-        input.min = schema.minValue;
+        input.min = schema.minValue.toString();
       }
 
       if (schema.maxValue) {
-        input.min = schema.maxValue;
+        input.min = schema.maxValue.toString();
       }
 
       return {
         label,
         input,
-        eventHandler: schema.onChange,
+        eventHandler: schema.eventHandler,
       };
     });
 }
@@ -84,4 +88,22 @@ export function createSongList(songs: Song[], songsFolder: string) {
     src: songsFolder + song.artistName + " - " + song.fileName,
     ...song,
   }));
+}
+
+export function useLocalStorage<K extends string | number>(key: string, defaultValue: K): { value: K; set: (newValue: K) => { value: K } } {
+  const set = (newValue: K) => {
+    localStorage.setItem(key, newValue.toString());
+    return {
+      value: newValue,
+    };
+  };
+
+  const stored = localStorage.getItem(key);
+  if (stored !== null) {
+    const value = typeof defaultValue === "number" ? (parseFloat(stored) as K) : (stored as K);
+    return { value, set };
+  }
+
+  localStorage.setItem(key, defaultValue.toString());
+  return { value: defaultValue, set };
 }

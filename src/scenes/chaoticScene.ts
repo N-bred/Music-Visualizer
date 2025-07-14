@@ -1,11 +1,46 @@
 import * as T from "three";
 import CustomScene from "../customScene";
-import type { Schema, Theme } from "../types";
+import type { Schema, Theme, InputEventMap } from "../types";
+import { useLocalStorage } from "../utils/utils";
+
+const SCENE_NAME = "ChaoticScene";
+
+const INPUT_IDS = {
+  boxSizeInput: "BoxSizeInput",
+  RotationSpeedInput: "RotationSpeedInput",
+};
 
 const DEFAULT_VALUES = {
-  boxSize: 1,
-  rotationSpeed: 100,
+  boxSize: useLocalStorage<number>(SCENE_NAME + INPUT_IDS.boxSizeInput, 1),
+  rotationSpeed: useLocalStorage<number>(SCENE_NAME + INPUT_IDS.RotationSpeedInput, 100),
 };
+
+const DEFAULT_SCHEMAS = [
+  {
+    id: INPUT_IDS.boxSizeInput,
+    localStorageId: SCENE_NAME + INPUT_IDS.boxSizeInput,
+    name: "boxSize",
+    type: "number",
+    defaultValue: DEFAULT_VALUES.boxSize.value,
+    required: true,
+    order: 1,
+    textContent: "Box Size: ",
+    minValue: 0,
+    eventHandler: () => {},
+  },
+  {
+    id: INPUT_IDS.RotationSpeedInput,
+    localStorageId: SCENE_NAME + INPUT_IDS.RotationSpeedInput,
+    name: "rotationSpeed",
+    type: "number",
+    defaultValue: DEFAULT_VALUES.rotationSpeed.value,
+    required: true,
+    order: 2,
+    textContent: "Rotation Speed: ",
+    minValue: 1,
+    eventHandler: () => {},
+  },
+] as const;
 
 export default class ChaoticScene extends CustomScene {
   private _groups: T.Group[] = [];
@@ -31,7 +66,7 @@ export default class ChaoticScene extends CustomScene {
     for (let j = 0; j < this.numberOfGroups; ++j) {
       for (let i = 0; i < this.quantity; ++i) {
         const angle = i * (this.quantity / (2 * 180));
-        const boxGeometry = new T.BoxGeometry(DEFAULT_VALUES.boxSize);
+        const boxGeometry = new T.BoxGeometry(1, 1, 1);
         const boxMaterial = new T.MeshBasicMaterial({
           color: this.currentTheme.color,
         });
@@ -41,6 +76,7 @@ export default class ChaoticScene extends CustomScene {
 
         boxMesh.position.copy(position);
         boxMesh.rotation.z = angle;
+        boxMesh.scale.set(DEFAULT_VALUES.boxSize.value, DEFAULT_VALUES.boxSize.value, DEFAULT_VALUES.boxSize.value);
 
         this._groups[j].add(boxMesh);
       }
@@ -49,7 +85,7 @@ export default class ChaoticScene extends CustomScene {
 
   animate(fft: Uint8Array<ArrayBufferLike>, delta: number): void {
     this.background = this.currentTheme.backgroundColor;
-    this.rotation.z = -delta / DEFAULT_VALUES.rotationSpeed;
+    this.rotation.z = -delta / DEFAULT_VALUES.rotationSpeed.value;
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
         const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
@@ -61,41 +97,29 @@ export default class ChaoticScene extends CustomScene {
     this.maxScalar = fft[0];
   }
 
-  handleNewBoxSize(e: Event) {
-    const value = parseInt((e.target as HTMLInputElement).value);
-
+  handleNewBoxSize = (e: Event) => {
+    const { value } = DEFAULT_VALUES.boxSize.set(parseFloat((e.target as HTMLInputElement).value));
     for (const group of this._groups) {
       for (let i = 0; i < group.children.length; ++i) {
         const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
         box.scale.set(value, value, value);
       }
     }
+  };
+
+  handleSpeedInput = (e: Event) => {
+    const { value } = DEFAULT_VALUES.rotationSpeed.set(parseInt((e.target as HTMLInputElement).value));
+    DEFAULT_VALUES.rotationSpeed.value = value;
+  };
+
+  inputEventMap(): InputEventMap<typeof DEFAULT_SCHEMAS> {
+    return {
+      BoxSizeInput: this.handleNewBoxSize,
+      RotationSpeedInput: this.handleSpeedInput,
+    };
   }
 
   scheme(): Schema[] {
-    return [
-      {
-        name: "boxSize",
-        type: "number",
-        defaultValue: DEFAULT_VALUES.boxSize.toString(),
-        required: true,
-        order: 1,
-        textContent: "Box Size: ",
-        minValue: "0",
-        onChange: (e) => this.handleNewBoxSize(e),
-      },
-      {
-        name: "rotationSpeed",
-        type: "number",
-        defaultValue: DEFAULT_VALUES.rotationSpeed.toString(),
-        required: true,
-        order: 2,
-        textContent: "Rotation Speed: ",
-        minValue: "1",
-        onChange: (e) => {
-          DEFAULT_VALUES.rotationSpeed = parseInt((e.target as HTMLInputElement).value);
-        },
-      },
-    ];
+    return DEFAULT_SCHEMAS.map((schema) => ({ ...schema, eventHandler: this.inputEventMap()[schema.id] }));
   }
 }
