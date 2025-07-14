@@ -9,8 +9,8 @@ import FlatCircleScene from "./scenes/flatCircle";
 import Player from "./player";
 import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
-import { createSongList, randomID } from "./utils/utils";
-import type { Song, State, Theme } from "./types";
+import { createSongList, randomID, useLocalStorage } from "./utils/utils";
+import type { PersistedValues, Song, State, Theme } from "./types";
 
 const canvasContainer = document.querySelector(".canvas-container")! as HTMLDivElement;
 
@@ -48,18 +48,25 @@ const DEFAULT_SONGS: Song[] = [
 
 const songList = createSongList(DEFAULT_SONGS, SONGS_FOLDER);
 
+const PERSISTED_VALUES: PersistedValues = {
+  rotationEnabled: useLocalStorage<boolean>("rotationEnabled", true),
+  panEnabled: useLocalStorage<boolean>("panEnabled", true),
+  zoomEnabled: useLocalStorage<boolean>("zoomEnabled", true),
+  volume: useLocalStorage<number>("volume", 0.5),
+};
+
 const DEFAULT_STATE: State = {
   isAnimationRunning: false,
   songList,
-  rotationEnabled: true,
-  panEnabled: true,
-  zoomEnabled: true,
+  rotationEnabled: PERSISTED_VALUES.rotationEnabled.value,
+  panEnabled: PERSISTED_VALUES.panEnabled.value,
+  zoomEnabled: PERSISTED_VALUES.zoomEnabled.value,
   sceneIndex: 0,
   themeIndex: 0,
   numberOfFrequencies: 1024 * 2,
   themes: DEFAULT_THEMES,
   currentSong: 0,
-  volume: 0.5,
+  volume: PERSISTED_VALUES.volume.value,
   width: canvasContainer.getBoundingClientRect().width || 0,
   height: canvasContainer.getBoundingClientRect().height || 0,
   isPlaying: false,
@@ -113,6 +120,7 @@ function update() {
 
 const stateManager = new StateManager({
   state: { ...DEFAULT_STATE },
+  persistedValues: PERSISTED_VALUES,
 
   // Helpers
   canvasContainer,

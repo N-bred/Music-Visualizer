@@ -34,3 +34,11 @@ export function populateDropdown<T extends { name: string }>(dropdown: HTMLSelec
 
   dropdown.selectedIndex = selectedIndex;
 }
+
+export function alternateCheckedPropertie(condition: string, element: HTMLInputElement) {
+  if (condition === "true") {
+    element.checked = true;
+  } else {
+    element.checked = false;
+  }
+}

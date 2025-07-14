@@ -6,9 +6,10 @@ import {
   changedPanCheckboxEvent,
   changedZoomCheckboxEvent,
   changedSceneIndexEvent,
+  stateChangedEvent,
 } from "./Events";
 import type { Theme, Scene, Schema } from "./types";
-import { populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
+import { alternateCheckedPropertie, populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
 import { createInputElementsFromSchema } from "./utils/utils";
 
 export default class PropertiesPanel {
@@ -59,6 +60,12 @@ export default class PropertiesPanel {
     this.customThemesForm.addEventListener("submit", (e) => this.handleCustomThemesForm(e));
     this.scenesPropertiesButton.addEventListener("click", () => this.handleScenePropertiesButton());
     this.scenesPropertiesForm.addEventListener("submit", (e) => this.handleScenesPropertiesForm(e));
+
+    window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
+      this.rotationCheckbox.dataset.enabled = e.detail.rotationEnabled;
+      this.panCheckbox.dataset.enabled = e.detail.panEnabled;
+      this.zoomCheckbox.dataset.enabled = e.detail.zoomEnabled;
+    });
   }
 
   handleScenePropertiesButton() {
@@ -123,6 +130,12 @@ export default class PropertiesPanel {
 
   handleScenesPropertiesForm(e: Event) {
     e.preventDefault();
+  }
+
+  handleOrbitControlsProperties() {
+    alternateCheckedPropertie(this.rotationCheckbox.dataset.enabled!, this.rotationCheckbox);
+    alternateCheckedPropertie(this.panCheckbox.dataset.enabled!, this.panCheckbox);
+    alternateCheckedPropertie(this.zoomCheckbox.dataset.enabled!, this.zoomCheckbox);
   }
 
   handleSceneSchemeChanged(scheme: Schema[]) {

@@ -90,20 +90,29 @@ export function createSongList(songs: Song[], songsFolder: string) {
   }));
 }
 
-export function useLocalStorage<K extends string | number>(key: string, defaultValue: K): { value: K; set: (newValue: K) => { value: K } } {
+export function useLocalStorage<K extends string | number | boolean>(
+  key: string,
+  defaultValue: K
+): {
+  value: K extends number ? number : K extends boolean ? boolean : string;
+  set: (newValue: K) => { value: K extends number ? number : K extends boolean ? boolean : string };
+} {
   const set = (newValue: K) => {
     localStorage.setItem(key, newValue.toString());
-    return {
-      value: newValue,
-    };
+    return { value: newValue as any };
   };
 
   const stored = localStorage.getItem(key);
   if (stored !== null) {
-    const value = typeof defaultValue === "number" ? (parseFloat(stored) as K) : (stored as K);
-    return { value, set };
+    if (typeof defaultValue === "number") {
+      return { value: parseFloat(stored) as any, set };
+    } else if (typeof defaultValue === "boolean") {
+      return { value: (stored === "true") as any, set };
+    } else {
+      return { value: stored as any, set };
+    }
   }
 
   localStorage.setItem(key, defaultValue.toString());
-  return { value: defaultValue, set };
+  return { value: defaultValue as any, set };
 }

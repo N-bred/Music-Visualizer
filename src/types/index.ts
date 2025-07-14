@@ -86,6 +86,13 @@ export type StateManagerChildren = {
   propertiesPanel: PropertiesPanel;
 };
 
+export type PersistedValues = {
+  rotationEnabled: { value: any; set: (newValue: any) => void };
+  panEnabled: { value: any; set: (newValue: any) => void };
+  zoomEnabled: { value: any; set: (newValue: any) => void };
+  volume: { value: any; set: (newValue: any) => void };
+};
+
 export type StateManagerProps = {
   canvasContainer: HTMLDivElement;
   audioManager: AudioManager;
@@ -95,6 +102,7 @@ export type StateManagerProps = {
   renderer: WebGLRenderer;
   updateFn: () => void;
   state: State;
+  persistedValues: PersistedValues;
 } & StateManagerChildren;
 
 export type Scene = {

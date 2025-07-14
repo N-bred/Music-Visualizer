@@ -50,7 +50,7 @@ export default class StateManager {
     this._state = { ...this._state, ...newState };
     window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
   }
-  
+
   handleSongsPanelSetup() {
     this.handlePopulateSongs();
   }
@@ -62,9 +62,10 @@ export default class StateManager {
   handlePropertiesPanelSetup() {
     this.handlePopulateScenesDropdown();
     this.handlePopulateThemesDropdown();
+    this.props.propertiesPanel.handleOrbitControlsProperties();
     this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
   }
-  
+
   handlePopulateScenesDropdown() {
     this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
   }
@@ -72,7 +73,6 @@ export default class StateManager {
   handlePopulateThemesDropdown() {
     this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
   }
-
 
   // Player Panel
 
@@ -121,6 +121,7 @@ export default class StateManager {
 
   handlePlayerVolumeChanged() {
     window.addEventListener(changedVolumeEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.volume.set(e.detail.volume);
       this.updateState({ volume: e.detail.volume });
     });
   }
@@ -220,6 +221,7 @@ export default class StateManager {
 
   handleRotationCheckbox() {
     window.addEventListener(changedRotationCheckboxEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.rotationEnabled.set(e.detail.rotationEnabled);
       this.updateState({ rotationEnabled: e.detail.rotationEnabled });
       this.props.orbitControls!.enableRotate = this._state.rotationEnabled;
     });
@@ -227,6 +229,7 @@ export default class StateManager {
 
   handlePanCheckbox() {
     window.addEventListener(changedPanCheckboxEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.panEnabled.set(e.detail.panEnabled);
       this.updateState({ panEnabled: e.detail.panEnabled });
       this.props.orbitControls!.enablePan = this._state.panEnabled;
     });
@@ -234,6 +237,7 @@ export default class StateManager {
 
   handleZoomCheckbox() {
     window.addEventListener(changedZoomCheckboxEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.zoomEnabled.set(e.detail.zoomEnabled);
       this.updateState({ zoomEnabled: e.detail.zoomEnabled });
       this.props.orbitControls!.enableZoom = this._state.zoomEnabled;
     });
