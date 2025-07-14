@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { Schema, Song } from "../types";
+import type { Schema, Song, Theme } from "../types";
 
 export function disposeObject(object: any) {
   if (object.children) {
@@ -90,15 +90,20 @@ export function createSongList(songs: Song[], songsFolder: string) {
   }));
 }
 
-export function useLocalStorage<K extends string | number | boolean>(
+export function useLocalStorage<K extends string | number | boolean | object>(
   key: string,
   defaultValue: K
 ): {
-  value: K extends number ? number : K extends boolean ? boolean : string;
-  set: (newValue: K) => { value: K extends number ? number : K extends boolean ? boolean : string };
+  value: K extends object ? object : K extends number ? number : K extends boolean ? boolean : string;
+  set: (newValue: K) => { value: K extends object ? object : K extends number ? number : K extends boolean ? boolean : string };
 } {
   const set = (newValue: K) => {
-    localStorage.setItem(key, newValue.toString());
+    if (typeof newValue === "object") {
+      localStorage.setItem(key, JSON.stringify(newValue));
+    } else {
+      localStorage.setItem(key, newValue.toString());
+    }
+
     return { value: newValue as any };
   };
 
@@ -108,11 +113,26 @@ export function useLocalStorage<K extends string | number | boolean>(
       return { value: parseFloat(stored) as any, set };
     } else if (typeof defaultValue === "boolean") {
       return { value: (stored === "true") as any, set };
+    } else if (typeof defaultValue === "object") {
+      return { value: JSON.parse(stored) as any, set };
     } else {
       return { value: stored as any, set };
     }
   }
 
-  localStorage.setItem(key, defaultValue.toString());
+  if (typeof defaultValue === "object") {
+    localStorage.setItem(key, JSON.stringify(defaultValue));
+  } else {
+    localStorage.setItem(key, defaultValue.toString());
+  }
   return { value: defaultValue as any, set };
+}
+
+export function createThemeFromJSON(jsonTheme: { name: string; color: number; transitionColor: number; backgroundColor: number }[]): Theme[] {
+  return jsonTheme.map((theme) => ({
+    name: theme.name,
+    color: new T.Color(theme.color),
+    transitionColor: new T.Color(theme.transitionColor),
+    backgroundColor: new T.Color(theme.backgroundColor),
+  }));
 }

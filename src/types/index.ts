@@ -93,6 +93,7 @@ export type PersistedValues = {
   volume: { value: any; set: (newValue: any) => void };
   sceneIndex: { value: any; set: (newValue: any) => void };
   themeIndex: { value: any; set: (newValue: any) => void };
+  themes: { value: any; set: (newValue: any) => void };
 };
 
 export type StateManagerProps = {

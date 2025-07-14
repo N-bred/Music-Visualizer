@@ -9,7 +9,7 @@ import FlatCircleScene from "./scenes/flatCircle";
 import Player from "./player";
 import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
-import { createSongList, randomID, useLocalStorage } from "./utils/utils";
+import { createSongList, createThemeFromJSON, randomID, useLocalStorage } from "./utils/utils";
 import type { PersistedValues, Song, State, Theme } from "./types";
 
 const canvasContainer = document.querySelector(".canvas-container")! as HTMLDivElement;
@@ -55,6 +55,7 @@ const PERSISTED_VALUES: PersistedValues = {
   volume: useLocalStorage<number>("volume", 0.5),
   sceneIndex: useLocalStorage<number>("sceneIndex", 0),
   themeIndex: useLocalStorage<number>("themeIndex", 0),
+  themes: useLocalStorage<Theme[]>("themes", DEFAULT_THEMES),
 };
 
 const DEFAULT_STATE: State = {
@@ -64,9 +65,9 @@ const DEFAULT_STATE: State = {
   panEnabled: PERSISTED_VALUES.panEnabled.value,
   zoomEnabled: PERSISTED_VALUES.zoomEnabled.value,
   sceneIndex: PERSISTED_VALUES.sceneIndex.value,
-  themeIndex: 0,
+  themeIndex: PERSISTED_VALUES.themeIndex.value,
   numberOfFrequencies: 1024 * 2,
-  themes: DEFAULT_THEMES,
+  themes: createThemeFromJSON(PERSISTED_VALUES.themes.value),
   currentSong: 0,
   volume: PERSISTED_VALUES.volume.value,
   width: canvasContainer.getBoundingClientRect().width || 0,

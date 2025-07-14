@@ -214,6 +214,7 @@ export default class StateManager {
 
   handleSceneChangeTheme() {
     window.addEventListener(changedThemeIndexEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.themeIndex.set(e.detail.themeIndex);
       this.updateState({ themeIndex: e.detail.themeIndex });
       this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
@@ -253,6 +254,9 @@ export default class StateManager {
         themes: [...this._state.themes, detail!],
         themeIndex: this.lastThemeIndex + 1,
       });
+
+      this.props.persistedValues.themes.set(this._state.themes);
+      this.props.persistedValues.themeIndex.set(this.lastThemeIndex);
       this.handlePopulateThemesDropdown();
       this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
     });
