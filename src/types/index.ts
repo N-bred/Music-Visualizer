@@ -1,4 +1,4 @@
-import type { Color, WebGLRenderer, PerspectiveCamera } from "three";
+import type { Color, WebGLRenderer, PerspectiveCamera, Group } from "three";
 import type AudioManager from "../audioManager";
 import type PlayerType from "../player";
 import type SongPanelType from "../songPanel";
@@ -42,10 +42,9 @@ export type Schema = {
   textContent: string;
   minValue?: string | number;
   maxValue?: string | number;
+  eventProvider: (groups: Group[]) => (e: Event) => void;
   eventHandler: (e: Event) => void;
 };
-
-export type InputEventMap<S extends readonly { readonly id: string }[]> = { [K in S[number]["id"]]: Schema["eventHandler"] };
 
 export type Song = {
   id: string;

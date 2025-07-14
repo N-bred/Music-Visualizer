@@ -1,6 +1,6 @@
 import * as T from "three";
 import CustomScene from "../customScene";
-import type { Schema, Theme, InputEventMap } from "../types";
+import type { Schema, Theme } from "../types";
 import { useLocalStorage } from "../utils/utils";
 
 const SCENE_NAME = "ChaoticScene";
@@ -15,7 +15,7 @@ const DEFAULT_VALUES = {
   rotationSpeed: useLocalStorage<number>(SCENE_NAME + INPUT_IDS.RotationSpeedInput, 100),
 };
 
-const DEFAULT_SCHEMAS = [
+const DEFAULT_SCHEMAS: Schema[] = [
   {
     id: INPUT_IDS.boxSizeInput,
     localStorageId: SCENE_NAME + INPUT_IDS.boxSizeInput,
@@ -26,6 +26,17 @@ const DEFAULT_SCHEMAS = [
     order: 1,
     textContent: "Box Size: ",
     minValue: 0,
+    eventProvider: (groups: T.Group[]) => {
+      return (e: Event) => {
+        const { value } = DEFAULT_VALUES.boxSize.set(parseFloat((e.target as HTMLInputElement).value));
+        for (const group of groups) {
+          for (let i = 0; i < group.children.length; ++i) {
+            const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
+            box.scale.set(value, value, value);
+          }
+        }
+      };
+    },
     eventHandler: () => {},
   },
   {
@@ -38,9 +49,15 @@ const DEFAULT_SCHEMAS = [
     order: 2,
     textContent: "Rotation Speed: ",
     minValue: 1,
+    eventProvider: (_) => {
+      return (e: Event) => {
+        const { value } = DEFAULT_VALUES.rotationSpeed.set(parseInt((e.target as HTMLInputElement).value));
+        DEFAULT_VALUES.rotationSpeed.value = value;
+      };
+    },
     eventHandler: () => {},
   },
-] as const;
+];
 
 export default class ChaoticScene extends CustomScene {
   private _groups: T.Group[] = [];
@@ -97,29 +114,7 @@ export default class ChaoticScene extends CustomScene {
     this.maxScalar = fft[0];
   }
 
-  handleNewBoxSize = (e: Event) => {
-    const { value } = DEFAULT_VALUES.boxSize.set(parseFloat((e.target as HTMLInputElement).value));
-    for (const group of this._groups) {
-      for (let i = 0; i < group.children.length; ++i) {
-        const box = group.children[i] as T.Mesh<T.BoxGeometry, T.MeshBasicMaterial, T.Object3DEventMap>;
-        box.scale.set(value, value, value);
-      }
-    }
-  };
-
-  handleSpeedInput = (e: Event) => {
-    const { value } = DEFAULT_VALUES.rotationSpeed.set(parseInt((e.target as HTMLInputElement).value));
-    DEFAULT_VALUES.rotationSpeed.value = value;
-  };
-
-  inputEventMap(): InputEventMap<typeof DEFAULT_SCHEMAS> {
-    return {
-      BoxSizeInput: this.handleNewBoxSize,
-      RotationSpeedInput: this.handleSpeedInput,
-    };
-  }
-
   scheme(): Schema[] {
-    return DEFAULT_SCHEMAS.map((schema) => ({ ...schema, eventHandler: this.inputEventMap()[schema.id] }));
+    return DEFAULT_SCHEMAS.map((schema) => ({ ...schema, eventHandler: schema.eventProvider(this._groups) }));
   }
 }
