@@ -46,7 +46,7 @@
             <button type="submit">Upload Song</button>
           </form>
         </div>
-        <button id="panel-song-swap-button" tabindex="-1" data-open="false" data-first-panel-text="Show All Songs" data-second-panel-text="Upload a Song">
+        <button id="panel-song-swap-button" data-open="false" data-first-panel-text="Show All Songs" data-second-panel-text="Upload a Song">
           Upload a Song
         </button>
       </div>
@@ -62,7 +62,7 @@
             </div>
             <button
               id="scenes-properties-button"
-              data-open="false" tabindex="-1"
+              data-open="false"
               data-first-panel-text="Show all Scenes"
               data-second-panel-text="Modify Scene Properties"
             >
@@ -86,11 +86,17 @@
                 <input type="color" name="transition-color" id="transition-color-input" required />
                 <label for="background-color-input">Background Color: </label>
                 <input type="color" name="background-color" id="background-color-input" required />
-                <button type="submit">Add custom color</button>
+                <button type="submit" data-add-text="Add Custom Theme" data-update-text="Update Custom Theme">Add Custom Theme</button>
               </form>
             </div>
-            <button id="custom-themes-button" tabindex="-1" data-open="false" data-first-panel-text="Show all Colors" data-second-panel-text="Add a Color">
-              Add a Color
+            <button id="custom-themes-add-button" data-open="false" data-first-panel-text="Show all Themes" data-second-panel-text="Add a Theme">
+              Add a Theme
+            </button>
+            <button id="custom-themes-update-button" data-open="false" data-first-panel-text="Show all Themes" data-second-panel-text="Update Selected Theme">
+              Update Selected Theme
+            </button>
+            <button id="custom-themes-delete-button">
+              Delete Selected Theme
             </button>
           </div>
           <span class="divider"></span>

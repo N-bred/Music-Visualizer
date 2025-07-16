@@ -1,6 +1,7 @@
 import * as T from "three";
 import {
-  AddedNewThemeEvent,
+  removedThemeEvent,
+  addedNewThemeEvent,
   changedThemeIndexEvent,
   changedRotationCheckboxEvent,
   changedPanCheckboxEvent,
@@ -24,7 +25,9 @@ export default class PropertiesPanel {
   private customThemesFormContainer: HTMLDivElement;
   private scenesPropertiesForm: HTMLFormElement;
   private scenesPropertiesButton: HTMLButtonElement;
-  private customThemesButton: HTMLButtonElement;
+  private customThemesAddButton: HTMLButtonElement;
+  private customThemesUpdateButton: HTMLButtonElement;
+  private customThemesDeleteButton: HTMLButtonElement;
   private customColorName: HTMLInputElement;
   private initialColorInput: HTMLInputElement;
   private transitionColorInput: HTMLInputElement;
@@ -44,7 +47,9 @@ export default class PropertiesPanel {
     this.scenesPropertiesForm = document.querySelector("#scene-properties-form")!;
     this.scenesPropertiesButton = document.querySelector("#scenes-properties-button")!;
     this.customThemesForm = document.querySelector("#custom-theme-form")!;
-    this.customThemesButton = document.querySelector("#custom-themes-button")!;
+    this.customThemesAddButton = document.querySelector("#custom-themes-add-button")!;
+    this.customThemesUpdateButton = document.querySelector("#custom-themes-update-button")!;
+    this.customThemesDeleteButton = document.querySelector("#custom-themes-delete-button")!;
     this.initialColorInput = document.querySelector("#initial-color-input")!;
     this.transitionColorInput = document.querySelector("#transition-color-input")!;
     this.backgroundColorInput = document.querySelector("#background-color-input")!;
@@ -56,7 +61,9 @@ export default class PropertiesPanel {
     this.rotationCheckbox.addEventListener("change", () => this.handleRotationCheckbox());
     this.panCheckbox.addEventListener("change", () => this.handlePanCheckbox());
     this.zoomCheckbox.addEventListener("change", () => this.handleZoomCheckbox());
-    this.customThemesButton.addEventListener("click", () => this.handleCustomThemesButton());
+    this.customThemesAddButton.addEventListener("click", () => this.handleCustomThemesAddButton());
+    this.customThemesUpdateButton.addEventListener("click", () => this.handleCustomThemesUpdateButton());
+    this.customThemesDeleteButton.addEventListener("click", () => this.handleCustomThemesDeleteButton());
     this.customThemesForm.addEventListener("submit", (e) => this.handleCustomThemesForm(e));
     this.scenesPropertiesButton.addEventListener("click", () => this.handleScenePropertiesButton());
     this.scenesPropertiesForm.addEventListener("submit", (e) => this.handleScenesPropertiesForm(e));
@@ -72,8 +79,28 @@ export default class PropertiesPanel {
     switchPanels(this.scenesPropertiesButton, this.scenesDropdownContainer, this.scenesPropertiesContainer);
   }
 
-  handleCustomThemesButton() {
-    switchPanels(this.customThemesButton, this.themesDropdownContainer, this.customThemesFormContainer);
+  handleCustomThemesAddButton() {
+    const showingFirstPanel = switchPanels(this.customThemesAddButton, this.themesDropdownContainer, this.customThemesFormContainer);
+
+    if (showingFirstPanel) {
+      this.customThemesDeleteButton.classList.remove("hidden");
+      this.customThemesUpdateButton.classList.remove("hidden");
+    } else {
+      this.customThemesDeleteButton.classList.add("hidden");
+      this.customThemesUpdateButton.classList.add("hidden");
+    }
+  }
+
+  handleCustomThemesUpdateButton() {}
+
+  handleCustomThemesDeleteButton() {
+    window.dispatchEvent(
+      new CustomEvent(removedThemeEvent, {
+        detail: {
+          themeIndex: this.themesDropdown.options.selectedIndex,
+        },
+      })
+    );
   }
 
   populateScenesDropdown(scenes: Scene[], selectedIndex: number) {
@@ -158,7 +185,7 @@ export default class PropertiesPanel {
     e.preventDefault();
 
     window.dispatchEvent(
-      new CustomEvent<Theme>(AddedNewThemeEvent, {
+      new CustomEvent<Theme>(addedNewThemeEvent, {
         detail: {
           name: this.customColorName.value,
           color: new T.Color(this.initialColorInput.value),
@@ -169,7 +196,7 @@ export default class PropertiesPanel {
     );
 
     this.handleResetForm();
-    this.customThemesButton.click();
+    this.customThemesAddButton.click();
   }
 
   handleResetForm() {

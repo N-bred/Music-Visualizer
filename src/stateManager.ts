@@ -8,11 +8,12 @@ import {
   changedRotationCheckboxEvent,
   changedPanCheckboxEvent,
   changedZoomCheckboxEvent,
-  AddedNewThemeEvent,
+  addedNewThemeEvent,
   progressBarClickedEvent,
   songEndedEvent,
   songChangedEvent,
   newSongSelectedEvent,
+  removedThemeEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
 
@@ -208,6 +209,7 @@ export default class StateManager {
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
     this.handleAddCustomTheme();
+    this.handleDeleteCustomTheme();
   }
 
   handleSceneIndex() {
@@ -255,13 +257,27 @@ export default class StateManager {
   }
 
   handleAddCustomTheme() {
-    window.addEventListener(AddedNewThemeEvent, ({ detail }: CustomEventInit<Theme>) => {
+    window.addEventListener(addedNewThemeEvent, ({ detail }: CustomEventInit<Theme>) => {
       const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name);
       if (isFound !== -1) return;
 
       this.updateState({
         themes: [...this._state.themes, detail!],
         themeIndex: this.lastThemeIndex + 1,
+      });
+
+      this.props.persistedValues.themes.set(this._state.themes);
+      this.props.persistedValues.themeIndex.set(this.lastThemeIndex);
+      this.handlePopulateThemesDropdown();
+      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
+    });
+  }
+
+  handleDeleteCustomTheme() {
+    window.addEventListener(removedThemeEvent, (e: CustomEventInit) => {
+      this.updateState({
+        themes: this._state.themes.filter((_, i) => i !== e.detail.themeIndex),
+        themeIndex: this.lastThemeIndex - 1,
       });
 
       this.props.persistedValues.themes.set(this._state.themes);

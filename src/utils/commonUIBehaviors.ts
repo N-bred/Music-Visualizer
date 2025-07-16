@@ -18,6 +18,8 @@ export function switchPanels(switchButton: HTMLButtonElement, panel1: HTMLElemen
   } else {
     switchButton.textContent = switchButton.dataset.firstPanelText!;
   }
+
+  return showingFirstPanel;
 }
 
 export function populateDropdown<T extends { name: string }>(dropdown: HTMLSelectElement, selectables: T[], selectedIndex: number) {
