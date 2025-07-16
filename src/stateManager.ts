@@ -13,7 +13,9 @@ import {
   songEndedEvent,
   songChangedEvent,
   newSongSelectedEvent,
-  removedThemeEvent,
+  removedThemeButtonEvent,
+  updateThemeButtonEvent,
+  addThemeButtonEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
 
@@ -209,7 +211,9 @@ export default class StateManager {
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
     this.handleAddCustomTheme();
-    this.handleDeleteCustomTheme();
+    this.handleAddCustomThemeButton();
+    this.handleUpdateCustomThemeButton();
+    this.handleDeleteCustomThemeButton();
   }
 
   handleSceneIndex() {
@@ -258,13 +262,23 @@ export default class StateManager {
 
   handleAddCustomTheme() {
     window.addEventListener(addedNewThemeEvent, ({ detail }: CustomEventInit<Theme>) => {
-      const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name);
-      if (isFound !== -1) return;
+      const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name) !== -1 && !this._state.isUpdating;
+      if (isFound) return;
 
-      this.updateState({
-        themes: [...this._state.themes, detail!],
-        themeIndex: this.lastThemeIndex + 1,
-      });
+      if (this._state.isUpdating) {
+        this.updateState({
+          themes: this._state.themes.map((theme, i) => {
+            console.log(i, this._state.themeIndex, detail, theme);
+            if (i === this._state.themeIndex) return detail!;
+            return theme;
+          }),
+        });
+      } else {
+        this.updateState({
+          themes: [...this._state.themes, detail!],
+          themeIndex: this.lastThemeIndex + 1,
+        });
+      }
 
       this.props.persistedValues.themes.set(this._state.themes);
       this.props.persistedValues.themeIndex.set(this.lastThemeIndex);
@@ -273,8 +287,34 @@ export default class StateManager {
     });
   }
 
-  handleDeleteCustomTheme() {
-    window.addEventListener(removedThemeEvent, (e: CustomEventInit) => {
+  handleAddCustomThemeButton() {
+    window.addEventListener(addThemeButtonEvent, (e: CustomEventInit) => {
+      this.updateState({
+        isUpdating: e.detail.isUpdating,
+      });
+    });
+  }
+
+  handleUpdateCustomThemeButton() {
+    window.addEventListener(updateThemeButtonEvent, (e: CustomEventInit) => {
+      this.updateState({
+        isUpdating: e.detail.isUpdating,
+      });
+
+      const theme = this._state.themes.find((_, i) => i === e.detail.themeIndex)!;
+      const formData = {
+        name: theme.name,
+        color: "#" + theme.color.getHexString(),
+        transitionColor: "#" + theme.transitionColor.getHexString(),
+        backgroundColor: "#" + theme.backgroundColor.getHexString(),
+      };
+
+      this.props.propertiesPanel.handleCustomThemesFormFillContent(formData);
+    });
+  }
+
+  handleDeleteCustomThemeButton() {
+    window.addEventListener(removedThemeButtonEvent, (e: CustomEventInit) => {
       this.updateState({
         themes: this._state.themes.filter((_, i) => i !== e.detail.themeIndex),
         themeIndex: this.lastThemeIndex - 1,

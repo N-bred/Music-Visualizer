@@ -59,6 +59,7 @@ const PERSISTED_VALUES: PersistedValues = {
 };
 
 const DEFAULT_STATE: State = {
+  isUpdating: false,
   isAnimationRunning: false,
   songList,
   rotationEnabled: PERSISTED_VALUES.rotationEnabled.value,

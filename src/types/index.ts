@@ -62,6 +62,7 @@ export type Theme = {
 };
 
 export type State = {
+  isUpdating: boolean;
   isAnimationRunning: boolean;
   songList: Song[];
   rotationEnabled: boolean;

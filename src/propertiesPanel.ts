@@ -1,6 +1,6 @@
 import * as T from "three";
 import {
-  removedThemeEvent,
+  removedThemeButtonEvent,
   addedNewThemeEvent,
   changedThemeIndexEvent,
   changedRotationCheckboxEvent,
@@ -8,6 +8,8 @@ import {
   changedZoomCheckboxEvent,
   changedSceneIndexEvent,
   stateChangedEvent,
+  updateThemeButtonEvent,
+  addThemeButtonEvent,
 } from "./Events";
 import type { Theme, Scene, Schema } from "./types";
 import { alternateCheckedPropertie, populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
@@ -33,6 +35,7 @@ export default class PropertiesPanel {
   private transitionColorInput: HTMLInputElement;
   private backgroundColorInput: HTMLInputElement;
   private customThemesForm: HTMLFormElement;
+  private customThemesFormButton: HTMLButtonElement;
 
   constructor() {
     this.scenesDropdown = document.querySelector("#scenes-dropdown")!;
@@ -47,6 +50,7 @@ export default class PropertiesPanel {
     this.scenesPropertiesForm = document.querySelector("#scene-properties-form")!;
     this.scenesPropertiesButton = document.querySelector("#scenes-properties-button")!;
     this.customThemesForm = document.querySelector("#custom-theme-form")!;
+    this.customThemesFormButton = document.querySelector("#custom-theme-form-button")!;
     this.customThemesAddButton = document.querySelector("#custom-themes-add-button")!;
     this.customThemesUpdateButton = document.querySelector("#custom-themes-update-button")!;
     this.customThemesDeleteButton = document.querySelector("#custom-themes-delete-button")!;
@@ -79,7 +83,7 @@ export default class PropertiesPanel {
     switchPanels(this.scenesPropertiesButton, this.scenesDropdownContainer, this.scenesPropertiesContainer);
   }
 
-  handleCustomThemesAddButton() {
+  handleButtonsUI(isUpdating: boolean) {
     const showingFirstPanel = switchPanels(this.customThemesAddButton, this.themesDropdownContainer, this.customThemesFormContainer);
 
     if (showingFirstPanel) {
@@ -89,13 +93,42 @@ export default class PropertiesPanel {
       this.customThemesDeleteButton.classList.add("hidden");
       this.customThemesUpdateButton.classList.add("hidden");
     }
+
+    if (isUpdating) {
+      this.customThemesFormButton.textContent = this.customThemesFormButton.dataset.updateText!;
+    } else {
+      this.customThemesFormButton.textContent = this.customThemesFormButton.dataset.addText!;
+    }
+
+    this.handleResetForm();
   }
 
-  handleCustomThemesUpdateButton() {}
+  handleCustomThemesAddButton() {
+    this.handleButtonsUI(false);
+    window.dispatchEvent(
+      new CustomEvent(addThemeButtonEvent, {
+        detail: {
+          isUpdating: false,
+        },
+      })
+    );
+  }
+
+  handleCustomThemesUpdateButton() {
+    this.handleButtonsUI(true);
+    window.dispatchEvent(
+      new CustomEvent(updateThemeButtonEvent, {
+        detail: {
+          themeIndex: this.themesDropdown.options.selectedIndex,
+          isUpdating: true,
+        },
+      })
+    );
+  }
 
   handleCustomThemesDeleteButton() {
     window.dispatchEvent(
-      new CustomEvent(removedThemeEvent, {
+      new CustomEvent(removedThemeButtonEvent, {
         detail: {
           themeIndex: this.themesDropdown.options.selectedIndex,
         },
@@ -201,5 +234,12 @@ export default class PropertiesPanel {
 
   handleResetForm() {
     this.customThemesForm.reset();
+  }
+
+  handleCustomThemesFormFillContent(formData: { name: string; color: string; transitionColor: string; backgroundColor: string }) {
+    this.customColorName.value = formData.name;
+    this.initialColorInput.value = formData.color;
+    this.transitionColorInput.value = formData.transitionColor;
+    this.backgroundColorInput.value = formData.backgroundColor;
   }
 }
