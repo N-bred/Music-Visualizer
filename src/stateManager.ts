@@ -25,6 +25,7 @@ export default class StateManager {
     this._state = props.state;
 
     this.initializeEventHandlers();
+    this.handlePlayerPanelSetup();
     this.handleSongsPanelSetup();
     this.handlePropertiesPanelSetup();
     this.updateState({});
@@ -49,6 +50,14 @@ export default class StateManager {
   updateState(newState: Partial<State>) {
     this._state = { ...this._state, ...newState };
     window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
+  }
+
+  handlePlayerPanelSetup() {
+    this.handlePlayerVolumeUI();
+  }
+
+  handlePlayerVolumeUI() {
+    this.props.player.handleVolumeUI(this._state.volume);
   }
 
   handleSongsPanelSetup() {

@@ -1,35 +1,6 @@
 import * as T from "three";
 import type { Schema, Song, Theme } from "../types";
 
-export function disposeObject(object: any) {
-  if (object.children) {
-    for (let i = object.children.length - 1; i >= 0; i--) {
-      disposeObject(object.children[i]);
-    }
-  }
-
-  if (object.isMesh) {
-    if (object.geometry) {
-      object.geometry.dispose();
-    }
-    if (object.material) {
-      const materials: any[] = Array.isArray(object.material) ? object.material : [object.material];
-      materials.forEach((material) => {
-        for (const key in material) {
-          if (material[key] instanceof T.Texture) {
-            material[key].dispose();
-          }
-        }
-        material.dispose();
-      });
-    }
-  }
-
-  if (object.parent) {
-    object.parent.remove(object);
-  }
-}
-
 export function randomID(artistName: string, songName: string) {
   return artistName + " " + songName;
 }
@@ -90,42 +61,65 @@ export function createSongList(songs: Song[], songsFolder: string) {
   }));
 }
 
-export function useLocalStorage<K extends string | number | boolean | object>(
-  key: string,
-  defaultValue: K
-): {
-  value: K extends object ? object : K extends number ? number : K extends boolean ? boolean : string;
-  set: (newValue: K) => { value: K extends object ? object : K extends number ? number : K extends boolean ? boolean : string };
-} {
-  const set = (newValue: K) => {
-    if (typeof newValue === "object") {
-      localStorage.setItem(key, JSON.stringify(newValue));
-    } else {
-      localStorage.setItem(key, newValue.toString());
+export function parseValue(value: string, type: string): string | boolean | number | object | null {
+  switch (type) {
+    case "string":
+      return value;
+    case "number":
+      return !Number.isNaN(parseFloat(value)) ? parseFloat(value) : null;
+    case "boolean":
+      return value === "true";
+    case "object":
+      return JSON.parse(value);
+    default:
+      return null;
+  }
+}
+
+function setLocalStorage(key: string, value: any) {
+  let valueToSave = value.toString();
+
+  if (typeof value === "object") {
+    valueToSave = JSON.stringify(value);
+  }
+
+  localStorage.setItem(key, valueToSave);
+
+  return { value };
+}
+
+function getFromLocalStorage(key: string, value: any) {
+  const stored = localStorage.getItem(key);
+
+  if (stored !== null) {
+    const valueType = typeof value;
+    const newValue = parseValue(stored, valueType);
+
+    if (newValue !== null) {
+      return { value: newValue };
     }
 
-    return { value: newValue as any };
+    return null;
+  }
+  return null;
+}
+
+export function useLocalStorage<K extends boolean | string | number | object>(key: string, value: K): { set: (newVal: K) => { value: K }; value: K } {
+  const response = {
+    set: (newValue: K) => setLocalStorage(key, newValue),
+    value,
   };
 
-  const stored = localStorage.getItem(key);
-  if (stored !== null) {
-    if (typeof defaultValue === "number") {
-      return { value: parseFloat(stored) as any, set };
-    } else if (typeof defaultValue === "boolean") {
-      return { value: (stored === "true") as any, set };
-    } else if (typeof defaultValue === "object") {
-      return { value: JSON.parse(stored) as any, set };
-    } else {
-      return { value: stored as any, set };
-    }
+  const found = getFromLocalStorage(key, value);
+
+  if (found !== null) {
+    response.value = found.value as K;
+    return response;
   }
 
-  if (typeof defaultValue === "object") {
-    localStorage.setItem(key, JSON.stringify(defaultValue));
-  } else {
-    localStorage.setItem(key, defaultValue.toString());
-  }
-  return { value: defaultValue as any, set };
+  const setObject = setLocalStorage(key, value);
+  response.value = setObject.value;
+  return response;
 }
 
 export function createThemeFromJSON(jsonTheme: { name: string; color: number; transitionColor: number; backgroundColor: number }[]): Theme[] {

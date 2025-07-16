@@ -73,6 +73,10 @@ export default class Player {
     switchClasses(!showPlayButton, this.playButton, this.pauseButton);
   }
 
+  handleVolumeUI(volume: number) {
+    this.volumeRange.value = volume.toString();
+  }
+
   handlePlayPauseButton() {
     const isPlaying = !this.isPlaying;
     this.handlePlayPauseButtonUI(isPlaying);
