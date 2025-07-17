@@ -16,6 +16,13 @@ import type { Theme, Scene, Schema } from "./types";
 import { alternateCheckedPropertie, populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
 import { createInputElementsFromSchema } from "./utils/utils";
 
+const DEFAULT_THEME = {
+  name: "",
+  color: new T.Color("#000000"),
+  transitionColor: new T.Color("#ffffff"),
+  backgroundColor: new T.Color("#000000"),
+};
+
 export default class PropertiesPanel {
   private scenesDropdown: HTMLSelectElement;
   private themesDropdown: HTMLSelectElement;
@@ -126,17 +133,18 @@ export default class PropertiesPanel {
   }
 
   handleCustomThemesAddButton() {
+    if (this.customThemesAddButton.dataset.open === "true") {
+      this.handleButtonsUI(false);
+      this.customThemesDeleteButton.click();
+      return;
+    }
+
     this.handleButtonsUI(false);
     window.dispatchEvent(
       new CustomEvent(addThemeButtonEvent, {
         detail: {
           isUpdating: false,
-          theme: {
-            name: "",
-            color: new T.Color("#000000"),
-            transitionColor: new T.Color("#000000"),
-            backgroundColor: new T.Color("#000000"),
-          },
+          theme: { ...DEFAULT_THEME },
         },
       })
     );
@@ -187,18 +195,20 @@ export default class PropertiesPanel {
       new CustomEvent(changedThemeIndexEvent, {
         detail: {
           themeIndex: this.themesDropdown.options.selectedIndex,
+          saveToLocalStorage: true,
         },
       })
     );
   }
 
-  handleSelectThemeIndex(index: number) {
+  handleSelectThemeIndex(index: number, saveToLocalStorage: boolean) {
     this.themesDropdown.selectedIndex = index;
 
     window.dispatchEvent(
       new CustomEvent(changedThemeIndexEvent, {
         detail: {
           themeIndex: index,
+          saveToLocalStorage,
         },
       })
     );

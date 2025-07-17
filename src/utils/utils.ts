@@ -123,10 +123,21 @@ export function useLocalStorage<K extends boolean | string | number | object>(ke
 }
 
 export function createThemeFromJSON(jsonTheme: { name: string; color: number; transitionColor: number; backgroundColor: number }[]): Theme[] {
-  return jsonTheme.map((theme) => ({
+  return jsonTheme
+    .filter((theme) => theme.name !== "")
+    .map((theme) => ({
+      name: theme.name,
+      color: new T.Color(theme.color),
+      transitionColor: new T.Color(theme.transitionColor),
+      backgroundColor: new T.Color(theme.backgroundColor),
+    }));
+}
+
+export function threeThemeToObject(theme: Theme) {
+  return {
     name: theme.name,
-    color: new T.Color(theme.color),
-    transitionColor: new T.Color(theme.transitionColor),
-    backgroundColor: new T.Color(theme.backgroundColor),
-  }));
+    color: "#" + theme.color.getHexString(),
+    transitionColor: "#" + theme.transitionColor.getHexString(),
+    backgroundColor: "#" + theme.backgroundColor.getHexString(),
+  };
 }

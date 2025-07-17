@@ -19,6 +19,7 @@ import {
   updatedThemeDataEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
+import { threeThemeToObject } from "./utils/utils";
 
 export default class StateManager {
   private props: StateManagerProps;
@@ -231,7 +232,9 @@ export default class StateManager {
 
   handleSceneChangeTheme() {
     window.addEventListener(changedThemeIndexEvent, (e: CustomEventInit) => {
-      this.props.persistedValues.themeIndex.set(e.detail.themeIndex);
+      if (e.detail.saveToLocalStorage) {
+        this.props.persistedValues.themeIndex.set(e.detail.themeIndex);
+      }
       this.updateState({ themeIndex: e.detail.themeIndex });
       this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
@@ -280,7 +283,7 @@ export default class StateManager {
       this.props.persistedValues.themes.set(this._state.themes);
       this.props.persistedValues.themeIndex.set(this.lastThemeIndex);
       this.handlePopulateThemesDropdown();
-      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
+      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex, true);
     });
   }
 
@@ -298,15 +301,10 @@ export default class StateManager {
         themeIndex: this.lastThemeIndex + 1,
         isUpdating: e.detail.isUpdating,
       });
-      this.props.propertiesPanel.handleCustomThemesFormFillContent(e.detail.theme);
 
-      window.dispatchEvent(
-        new CustomEvent(changedThemeIndexEvent, {
-          detail: {
-            themeIndex: this._state.themeIndex,
-          },
-        })
-      );
+      this.props.propertiesPanel.handleCustomThemesFormFillContent(threeThemeToObject(e.detail.theme));
+      this.handlePopulateThemesDropdown();
+      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex, false);
     });
   }
 
@@ -317,13 +315,8 @@ export default class StateManager {
       });
 
       const theme = this._state.themes.find((_, i) => i === e.detail.themeIndex)!;
-      const formData = {
-        name: theme.name,
-        color: "#" + theme.color.getHexString(),
-        transitionColor: "#" + theme.transitionColor.getHexString(),
-        backgroundColor: "#" + theme.backgroundColor.getHexString(),
-      };
-
+      const formData = threeThemeToObject(theme);
+      console.log(formData);
       this.props.propertiesPanel.handleCustomThemesFormFillContent(formData);
     });
   }
@@ -338,7 +331,7 @@ export default class StateManager {
       this.props.persistedValues.themes.set(this._state.themes);
       this.props.persistedValues.themeIndex.set(this.lastThemeIndex);
       this.handlePopulateThemesDropdown();
-      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex);
+      this.props.propertiesPanel?.handleSelectThemeIndex(this._state.themeIndex, true);
     });
   }
 
