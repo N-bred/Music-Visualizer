@@ -53,6 +53,33 @@ canvas {
       "player";
   }
 
+  &.theater {
+    grid-template-areas:
+      "panel-songs canvas-container canvas-container"
+      "panel-data canvas-container canvas-container"
+      "player player player";
+    grid-template-rows: 4.5fr 5.5fr 1fr;
+    grid-template-columns: 13% 87%;
+    transition: grid-template-rows 0.3s ease-in-out;
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: 29% 69%;
+    }
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 8fr 3fr;
+      grid-template-areas:
+        "top-bar"
+        "canvas-container"
+        "player";
+    }
+
+    & .top-bar {
+      display: none;
+    }
+  }
+
   .panel-songs,
   .panel-data {
     @media screen and (max-width: 768px) {
@@ -143,6 +170,10 @@ canvas {
     z-index: 1;
     gap: 5px;
 
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+
     button {
       padding: 1.3rem;
       margin: 0;
@@ -150,7 +181,8 @@ canvas {
       color: #aaa;
       font-size: 22px;
 
-      &:hover {
+      &:hover,
+      &.active {
         color: #fff;
       }
     }
