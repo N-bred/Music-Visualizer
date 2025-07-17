@@ -10,6 +10,7 @@ import {
   stateChangedEvent,
   updateThemeButtonEvent,
   addThemeButtonEvent,
+  updatedThemeDataEvent,
 } from "./Events";
 import type { Theme, Scene, Schema } from "./types";
 import { alternateCheckedPropertie, populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
@@ -30,12 +31,12 @@ export default class PropertiesPanel {
   private customThemesAddButton: HTMLButtonElement;
   private customThemesUpdateButton: HTMLButtonElement;
   private customThemesDeleteButton: HTMLButtonElement;
+  private customThemesForm: HTMLFormElement;
+  private customThemesFormButton: HTMLButtonElement;
   private customColorName: HTMLInputElement;
   private initialColorInput: HTMLInputElement;
   private transitionColorInput: HTMLInputElement;
   private backgroundColorInput: HTMLInputElement;
-  private customThemesForm: HTMLFormElement;
-  private customThemesFormButton: HTMLButtonElement;
 
   constructor() {
     this.scenesDropdown = document.querySelector("#scenes-dropdown")!;
@@ -54,10 +55,10 @@ export default class PropertiesPanel {
     this.customThemesAddButton = document.querySelector("#custom-themes-add-button")!;
     this.customThemesUpdateButton = document.querySelector("#custom-themes-update-button")!;
     this.customThemesDeleteButton = document.querySelector("#custom-themes-delete-button")!;
+    this.customColorName = document.querySelector("#custom-color-name")!;
     this.initialColorInput = document.querySelector("#initial-color-input")!;
     this.transitionColorInput = document.querySelector("#transition-color-input")!;
     this.backgroundColorInput = document.querySelector("#background-color-input")!;
-    this.customColorName = document.querySelector("#custom-color-name")!;
 
     // EVENTS
     this.scenesDropdown.addEventListener("change", () => this.handleScenesDropdown());
@@ -71,6 +72,10 @@ export default class PropertiesPanel {
     this.customThemesForm.addEventListener("submit", (e) => this.handleCustomThemesForm(e));
     this.scenesPropertiesButton.addEventListener("click", () => this.handleScenePropertiesButton());
     this.scenesPropertiesForm.addEventListener("submit", (e) => this.handleScenesPropertiesForm(e));
+    this.customColorName.addEventListener("change", (e) => this.handleThemeInputOnChange(e, "name"));
+    this.initialColorInput.addEventListener("change", (e) => this.handleThemeInputOnChange(e, "color"));
+    this.transitionColorInput.addEventListener("change", (e) => this.handleThemeInputOnChange(e, "transitionColor"));
+    this.backgroundColorInput.addEventListener("change", (e) => this.handleThemeInputOnChange(e, "backgroundColor"));
 
     window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
       this.rotationCheckbox.dataset.enabled = e.detail.rotationEnabled;
@@ -79,11 +84,30 @@ export default class PropertiesPanel {
     });
   }
 
+  handleThemeInputOnChange(e: Event, key: keyof Theme) {
+    let value: string | T.Color = (e.target! as HTMLInputElement).value;
+
+    if (key !== "name") {
+      value = new T.Color((e.target! as HTMLInputElement).value);
+    }
+
+    window.dispatchEvent(
+      new CustomEvent(updatedThemeDataEvent, {
+        detail: {
+          key,
+          value,
+        },
+      })
+    );
+  }
+
   handleScenePropertiesButton() {
     switchPanels(this.scenesPropertiesButton, this.scenesDropdownContainer, this.scenesPropertiesContainer);
   }
 
   handleButtonsUI(isUpdating: boolean) {
+    this.handleResetForm();
+
     const showingFirstPanel = switchPanels(this.customThemesAddButton, this.themesDropdownContainer, this.customThemesFormContainer);
 
     if (showingFirstPanel) {
@@ -99,8 +123,6 @@ export default class PropertiesPanel {
     } else {
       this.customThemesFormButton.textContent = this.customThemesFormButton.dataset.addText!;
     }
-
-    this.handleResetForm();
   }
 
   handleCustomThemesAddButton() {
@@ -109,6 +131,12 @@ export default class PropertiesPanel {
       new CustomEvent(addThemeButtonEvent, {
         detail: {
           isUpdating: false,
+          theme: {
+            name: "",
+            color: new T.Color("#000000"),
+            transitionColor: new T.Color("#000000"),
+            backgroundColor: new T.Color("#000000"),
+          },
         },
       })
     );
@@ -229,7 +257,7 @@ export default class PropertiesPanel {
     );
 
     this.handleResetForm();
-    this.customThemesAddButton.click();
+    this.handleButtonsUI(true);
   }
 
   handleResetForm() {

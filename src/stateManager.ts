@@ -16,6 +16,7 @@ import {
   removedThemeButtonEvent,
   updateThemeButtonEvent,
   addThemeButtonEvent,
+  updatedThemeDataEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
 
@@ -211,6 +212,7 @@ export default class StateManager {
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
     this.handleAddCustomTheme();
+    this.handleUpdatedThemeData();
     this.handleAddCustomThemeButton();
     this.handleUpdateCustomThemeButton();
     this.handleDeleteCustomThemeButton();
@@ -262,23 +264,18 @@ export default class StateManager {
 
   handleAddCustomTheme() {
     window.addEventListener(addedNewThemeEvent, ({ detail }: CustomEventInit<Theme>) => {
-      const isFound = this._state.themes.findIndex((theme) => theme.name === detail!.name) !== -1 && !this._state.isUpdating;
+      const isFound =
+        this._state.themes.findIndex((theme, index) => theme.name === detail!.name && index !== this._state.themeIndex) !== -1 &&
+        !this._state.isUpdating;
+
       if (isFound) return;
 
-      if (this._state.isUpdating) {
-        this.updateState({
-          themes: this._state.themes.map((theme, i) => {
-            console.log(i, this._state.themeIndex, detail, theme);
-            if (i === this._state.themeIndex) return detail!;
-            return theme;
-          }),
-        });
-      } else {
-        this.updateState({
-          themes: [...this._state.themes, detail!],
-          themeIndex: this.lastThemeIndex + 1,
-        });
-      }
+      this.updateState({
+        themes: this._state.themes.map((theme, i) => {
+          if (i === this._state.themeIndex) return detail!;
+          return theme;
+        }),
+      });
 
       this.props.persistedValues.themes.set(this._state.themes);
       this.props.persistedValues.themeIndex.set(this.lastThemeIndex);
@@ -287,11 +284,29 @@ export default class StateManager {
     });
   }
 
+  handleUpdatedThemeData() {
+    window.addEventListener(updatedThemeDataEvent, (e: CustomEventInit) => {
+      const key = e.detail.key! as keyof Theme;
+      this._state.themes[this._state.themeIndex][key] = e.detail.value;
+    });
+  }
+
   handleAddCustomThemeButton() {
     window.addEventListener(addThemeButtonEvent, (e: CustomEventInit) => {
       this.updateState({
+        themes: [...this._state.themes, e.detail.theme],
+        themeIndex: this.lastThemeIndex + 1,
         isUpdating: e.detail.isUpdating,
       });
+      this.props.propertiesPanel.handleCustomThemesFormFillContent(e.detail.theme);
+
+      window.dispatchEvent(
+        new CustomEvent(changedThemeIndexEvent, {
+          detail: {
+            themeIndex: this._state.themeIndex,
+          },
+        })
+      );
     });
   }
 
