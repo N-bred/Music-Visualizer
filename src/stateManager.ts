@@ -316,7 +316,6 @@ export default class StateManager {
 
       const theme = this._state.themes.find((_, i) => i === e.detail.themeIndex)!;
       const formData = threeThemeToObject(theme);
-      console.log(formData);
       this.props.propertiesPanel.handleCustomThemesFormFillContent(formData);
     });
   }
@@ -359,25 +358,27 @@ export default class StateManager {
 
   handleKeyboardEvents() {
     window.addEventListener("keydown", (e) => {
-      switch (e.key) {
-        case "d":
-          console.log(this.props.audioManager?.currentTime);
-          console.log(this._state);
-          break;
-        case "p":
-          this.props.player?.handlePlayPauseButton();
-          break;
-        case "]":
-          if (this.state.isAnimationRunning) {
-            this.props.renderer!.setAnimationLoop(null);
-            this.updateState({ isAnimationRunning: false });
-          } else {
-            this.props.renderer!.setAnimationLoop(this.props.updateFn!);
-            this.updateState({ isAnimationRunning: true });
-          }
-          break;
-        default:
-          break;
+      if (e.ctrlKey && e.altKey && e.metaKey) {
+        switch (e.key) {
+          case "d":
+            console.log(this.props.audioManager?.currentTime);
+            console.log(this._state);
+            break;
+          case "p":
+            this.props.player?.handlePlayPauseButton();
+            break;
+          case "]":
+            if (this.state.isAnimationRunning) {
+              this.props.renderer!.setAnimationLoop(null);
+              this.updateState({ isAnimationRunning: false });
+            } else {
+              this.props.renderer!.setAnimationLoop(this.props.updateFn!);
+              this.updateState({ isAnimationRunning: true });
+            }
+            break;
+          default:
+            break;
+        }
       }
     });
   }
