@@ -6,6 +6,7 @@ import type PropertiesPanel from "../propertiesPanel";
 import type { OrbitControls } from "three/examples/jsm/Addons.js";
 import type SceneManager from "../sceneManager";
 import CustomScene from "../customScene";
+import type CanvasPanel from "../canvasPanel";
 
 type HTMLInputTypes =
   | "button"
@@ -85,6 +86,7 @@ export type StateManagerChildren = {
   player: PlayerType;
   songPanel: SongPanelType;
   propertiesPanel: PropertiesPanel;
+  canvasPanel: CanvasPanel;
 };
 
 export type PersistedValues = {

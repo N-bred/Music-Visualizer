@@ -11,6 +11,7 @@ import SongPanel from "./songPanel";
 import PropertiesPanel from "./propertiesPanel";
 import { createSongList, createThemeFromJSON, randomID, useLocalStorage } from "./utils/utils";
 import type { PersistedValues, Song, State, Theme } from "./types";
+import CanvasPanel from "./canvasPanel";
 
 const canvasContainer = document.querySelector(".canvas-container")! as HTMLDivElement;
 
@@ -145,6 +146,7 @@ const stateManager = new StateManager({
     songList: DEFAULT_STATE.songList,
   }),
   propertiesPanel: new PropertiesPanel(),
+  canvasPanel: new CanvasPanel(renderer.domElement),
 });
 
 let firstRender = false;
