@@ -10,6 +10,16 @@ html {
   --primary: #000;
   --secondary: #111;
   --font-color: #fff;
+  --top-bar-color: #cdcdcd;
+  --button-color: #aaa;
+  --button-active-color: #fff;
+  --button-hover-color: #999;
+  --button-hover-color2: #cacaca;
+  --accent-color: #444;
+  --input-border-color: #dadada;
+  --input-background-color: #fafafa;
+  --song-color: #aaa;
+  --song-selected-color: #fff;
 }
 
 body {
@@ -26,7 +36,9 @@ canvas {
 
 .app {
   display: grid;
-  background: var(--primary);
+  background: var(--primary) url("/public/texture1.jpeg") center;
+
+  background-size: cover;
   position: relative;
   height: 100%;
   width: 100%;
@@ -83,7 +95,7 @@ canvas {
   .panel-songs,
   .panel-data {
     padding-top: 70px;
-    
+
     @media screen and (max-width: 768px) {
       position: absolute;
       bottom: 0;
@@ -92,7 +104,6 @@ canvas {
       transition: transform 0.3s ease-in-out;
       z-index: 1;
       padding-top: 50px;
-      
 
       &.active {
         transform: translateX(0%);
@@ -124,6 +135,8 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(10px);
+  background: rgba(10, 10, 10, 0.9);
 }
 
 .panel-songs {
@@ -131,7 +144,6 @@ canvas {
   grid-area: panel-songs;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--secondary);
 }
 
 .top-bar {
@@ -141,7 +153,6 @@ canvas {
   font-style: normal;
   position: relative;
   z-index: 10;
-
   background: var(--primary);
 
   p {
@@ -149,7 +160,7 @@ canvas {
     width: 100%;
     flex-basis: 100%;
     font-size: 14px;
-    color: #cdcdcd;
+    color: var(--top-bar-color);
   }
 }
 
@@ -158,14 +169,12 @@ canvas {
   grid-area: panel-data;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--secondary);
 }
 
 .canvas-container {
   grid-area: canvas-container;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--secondary);
   position: relative;
 
   .canvas-buttons {
@@ -184,12 +193,14 @@ canvas {
       padding: 1.3rem;
       margin: 0;
       background: transparent;
-      color: #aaa;
+      color: var(--button-color);
       font-size: 22px;
+      outline: none;
 
       &:hover,
       &.active {
-        color: #fff;
+        color: var(--button-active-color);
+        box-shadow: none;
       }
     }
   }
@@ -199,7 +210,6 @@ canvas {
   grid-area: player;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: #111;
   display: grid;
   grid-template-columns: 2fr 8fr 2fr;
   grid-template-areas:
@@ -230,8 +240,8 @@ canvas {
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      background: #aaa;
-      color: #000;
+      background: var(--button-color);
+      color: var(--primary);
       padding: 20px;
       margin: 0 15px;
       aspect-ratio: 4/3;
@@ -239,11 +249,15 @@ canvas {
       min-width: 15.5px;
 
       &:hover {
-        background: #999;
+        background: var(--button-hover-color);
       }
 
       &.hide {
         display: none;
+      }
+
+      &.pause-button {
+        animation: pulsating 0.725s ease-in-out infinite;
       }
     }
   }
@@ -260,13 +274,13 @@ canvas {
 
     input {
       transform: scale(0.8);
-      accent-color: #444;
+      accent-color: var(--accent-color);
     }
   }
 
   .progress-bar {
     width: 100%;
-    accent-color: #444;
+    accent-color: var(--accent-color);
 
     &-container {
       grid-area: progress-bar-container;
@@ -319,7 +333,7 @@ canvas {
     &-3 {
       width: 100%;
       height: 2px;
-      background: #fff;
+      background: var(--font-color);
       margin: 2px 0;
     }
   }
@@ -328,7 +342,7 @@ canvas {
 .divider {
   display: block;
   height: 2px;
-  background: #fff;
+  background: var(--font-color);
   margin: 10px 0;
 }
 
@@ -339,10 +353,10 @@ label {
 
 input {
   padding: 10px 15px;
-  background: #000;
-  color: #fafafa;
+  background: var(--primary);
+  color: var(--input-background-color);
   border: none;
-  border-bottom: 1px solid #dadada;
+  border-bottom: 1px solid var(--input-border-color);
   border-radius: 5px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -350,7 +364,7 @@ input {
   &:focus {
     outline: none;
     border: none;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--font-color);
   }
 }
 
@@ -358,8 +372,9 @@ button {
   all: unset;
   margin: 15px 0;
   box-sizing: border-box;
-  background: #dadada;
-  color: #444;
+  background: var(--secondary);
+  color: var(--button-hover-color2);
+  outline: 2px solid var(--button-hover-color2);
   border-radius: 5px;
   display: flex;
   justify-content: center;
@@ -368,25 +383,24 @@ button {
   cursor: pointer;
   font-weight: bold;
 
-  &:hover,
-  &:focus {
-    background: #cacaca;
+  &:hover {
+    box-shadow: 0px 0px 10px var(--button-active-color);
+    color: var(--button-active-color);
   }
 }
 
 select {
-  border: 2px solid #111;
+  border: 2px solid var(--secondary);
   background: #444;
   padding: 5px;
-  color: #fff;
+  color: var(--font-color);
   border-radius: 5px;
-  accent-color: red;
   margin: 10px 0;
   width: 100%;
 }
 
 input[type="checkbox"] {
-  accent-color: #444;
+  accent-color: var(--accent-color);
   margin: 15px 0 5px;
   align-self: flex-start;
 }
@@ -404,19 +418,19 @@ input[type="checkbox"] {
       width: 100%;
       li {
         a {
-          color: #fafafa;
+          color: var(--song-color);
           text-decoration: none;
           padding: 5px 0;
           display: block;
 
           &:hover {
-            color: #dadada;
+            color: var(--song-selected-color);
           }
 
           &.active {
-            color: red;
+            color: var(--song-selected-color);
             &:hover {
-              color: red;
+              color: var(--song-selected-color);
             }
           }
         }
@@ -466,4 +480,18 @@ form {
 
 .hidden {
   display: none;
+}
+
+@keyframes pulsating {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
