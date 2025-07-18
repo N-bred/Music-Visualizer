@@ -378,22 +378,21 @@ export default class StateManager {
   }
 
   handlePlayPauseAnimation() {
-    this.handlePauseAnimation();
-    this.handlePlayAnimation();
+    if (this.state.isAnimationRunning) {
+      this.handlePauseAnimation();
+    } else {
+      this.handlePlayAnimation();
+    }
   }
 
   handlePauseAnimation() {
-    if (this.state.isAnimationRunning) {
-      this.props.renderer!.setAnimationLoop(null);
-      this.updateState({ isAnimationRunning: false });
-    }
+    this.props.renderer!.setAnimationLoop(null);
+    this.updateState({ isAnimationRunning: false });
   }
 
   handlePlayAnimation() {
-    if (!this.state.isAnimationRunning) {
-      this.props.renderer!.setAnimationLoop(this.props.updateFn!);
-      this.updateState({ isAnimationRunning: true });
-    }
+    this.props.renderer!.setAnimationLoop(this.props.updateFn!);
+    this.updateState({ isAnimationRunning: true });
   }
 
   handleKeyboardEvents() {
