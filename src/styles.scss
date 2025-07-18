@@ -384,7 +384,7 @@ button {
   font-weight: bold;
 
   &:hover {
-    box-shadow: 0px 0px 10px var(--button-active-color);
+    box-shadow: 0px 0px 10px var(--accent-color);
     color: var(--button-active-color);
   }
 }

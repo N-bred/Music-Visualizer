@@ -89,14 +89,16 @@ export type StateManagerChildren = {
   canvasPanel: CanvasPanel;
 };
 
+type PerssitedValue = { value: any; set: (newValue: any) => void };
+
 export type PersistedValues = {
-  rotationEnabled: { value: any; set: (newValue: any) => void };
-  panEnabled: { value: any; set: (newValue: any) => void };
-  zoomEnabled: { value: any; set: (newValue: any) => void };
-  volume: { value: any; set: (newValue: any) => void };
-  sceneIndex: { value: any; set: (newValue: any) => void };
-  themeIndex: { value: any; set: (newValue: any) => void };
-  themes: { value: any; set: (newValue: any) => void };
+  rotationEnabled: PerssitedValue;
+  panEnabled: PerssitedValue;
+  zoomEnabled: PerssitedValue;
+  volume: PerssitedValue;
+  sceneIndex: PerssitedValue;
+  themeIndex: PerssitedValue;
+  themes: PerssitedValue;
 };
 
 export type StateManagerProps = {

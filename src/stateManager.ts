@@ -19,7 +19,7 @@ import {
   updatedThemeDataEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
-import { threeThemeToObject } from "./utils/utils";
+import { getCssAccentColorValue, threeThemeToObject } from "./utils/utils";
 
 export default class StateManager {
   private props: StateManagerProps;
@@ -34,6 +34,7 @@ export default class StateManager {
     this.handleSongsPanelSetup();
     this.handlePropertiesPanelSetup();
     this.updateState({});
+    this.handleUpdateCSSVariables();
   }
 
   get state() {
@@ -55,6 +56,25 @@ export default class StateManager {
   updateState(newState: Partial<State>) {
     this._state = { ...this._state, ...newState };
     window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
+  }
+
+  handleUpdateCSSVariables() {
+    const value = getCssAccentColorValue(this._state.themes[this._state.themeIndex]);
+
+    const properties = [
+      {
+        name: "--accent-color",
+        value,
+      },
+      {
+        name: "--song-selected-color",
+        value,
+      },
+    ];
+
+    properties.forEach((property) => {
+      document.documentElement.style.setProperty(property.name, property.value);
+    });
   }
 
   handlePlayerPanelSetup() {
@@ -238,6 +258,7 @@ export default class StateManager {
       this.updateState({ themeIndex: e.detail.themeIndex });
       this.props.sceneManager!.currentScene?.changeTheme(this._state.themeIndex);
       this.props.sceneManager!.setCurrentThemeIndex(this._state.themeIndex);
+      this.handleUpdateCSSVariables();
     });
   }
 

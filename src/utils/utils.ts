@@ -141,3 +141,21 @@ export function threeThemeToObject(theme: Theme) {
     backgroundColor: "#" + theme.backgroundColor.getHexString(),
   };
 }
+
+export function getCssAccentColorValue(theme: Theme) {
+  const hsl = { h: 0, s: 0, l: 0 };
+  const transitionColorHSL = theme.transitionColor.getHSL({ ...hsl });
+  const colorHSL = theme.color.getHSL({ ...hsl });
+
+  if (transitionColorHSL.l > 0.2) {
+    return theme.transitionColor.getStyle();
+  } else if (colorHSL.l > 0.2) {
+    return theme.color.getStyle();
+  } else {
+    if (transitionColorHSL.l > colorHSL.l) {
+      return theme.transitionColor.clone().offsetHSL(0, 0, 0.6).getStyle();
+    } else {
+      return theme.color.clone().offsetHSL(0, 0, 0.6).getStyle();
+    }
+  }
+}
