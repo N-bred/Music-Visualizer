@@ -434,6 +434,12 @@ export default class StateManager {
             this.handlePlayAnimation();
             this.props.player?.handlePlayPauseButton(true);
             break;
+          case "KeyF":
+            this.props.canvasPanel.handleFullscreenButton();
+            break;
+          case "KeyT":
+            this.props.canvasPanel.handleTheaterButton();
+            break;
           default:
             break;
         }
