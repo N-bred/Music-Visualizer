@@ -380,21 +380,55 @@ export default class StateManager {
   handleKeyboardEvents() {
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.altKey && e.metaKey) {
-        switch (e.key) {
-          case "d":
-            console.log(this.props.audioManager?.currentTime);
+        switch (e.code) {
+          case "KeyD":
             console.log(this._state);
             break;
-          case "p":
+          case "ArrowUp":
+            this.props.player.handlePreviousButton();
+            break;
+          case "ArrowDown":
+            this.props.player.handleNextButton();
+            break;
+          case "ArrowLeft":
+            this.props.player.handlePreviousButton();
+            break;
+          case "ArrowRight":
+            this.props.player.handleNextButton();
+            break;
+          case "KeyP":
             this.props.player?.handlePlayPauseButton();
             break;
-          case "]":
+          case "Space":
+            this.props.player?.handlePlayPauseButton();
+            break;
+          case "BracketRight":
             if (this.state.isAnimationRunning) {
               this.props.renderer!.setAnimationLoop(null);
               this.updateState({ isAnimationRunning: false });
             } else {
               this.props.renderer!.setAnimationLoop(this.props.updateFn!);
               this.updateState({ isAnimationRunning: true });
+            }
+            break;
+          case "KeyO":
+            if (this.state.isAnimationRunning) {
+              this.props.renderer!.setAnimationLoop(null);
+              this.updateState({ isAnimationRunning: false });
+            } else {
+              this.props.renderer!.setAnimationLoop(this.props.updateFn!);
+              this.updateState({ isAnimationRunning: true });
+            }
+            break;
+          case "KeyL":
+            if (this.state.isAnimationRunning) {
+              this.props.renderer!.setAnimationLoop(null);
+              this.updateState({ isAnimationRunning: false });
+              this.props.player?.handlePlayPauseButton();
+            } else {
+              this.props.renderer!.setAnimationLoop(this.props.updateFn!);
+              this.updateState({ isAnimationRunning: true });
+              this.props.player?.handlePlayPauseButton();
             }
             break;
           default:
