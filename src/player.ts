@@ -77,8 +77,8 @@ export default class Player {
     this.volumeRange.value = volume.toString();
   }
 
-  handlePlayPauseButton() {
-    const isPlaying = !this.isPlaying;
+  handlePlayPauseButton(forceAction?: boolean) {
+    const isPlaying = forceAction ?? !this.isPlaying;
     this.handlePlayPauseButtonUI(isPlaying);
 
     window.dispatchEvent(
