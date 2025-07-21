@@ -19,7 +19,16 @@ import {
   updatedThemeDataEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
-import { getCssAccentColorValue, threeThemeToObject } from "./utils/utils";
+import { threeThemeToObject, updateCSSVariables } from "./utils/utils";
+
+const CSS_VARIABLE_NAMES = [
+  {
+    name: "--accent-color",
+  },
+  {
+    name: "--song-selected-color",
+  },
+];
 
 export default class StateManager {
   private props: StateManagerProps;
@@ -65,22 +74,7 @@ export default class StateManager {
   }
 
   handleUpdateCSSVariables() {
-    const value = getCssAccentColorValue(this._state.themes[this._state.themeIndex]);
-
-    const properties = [
-      {
-        name: "--accent-color",
-        value,
-      },
-      {
-        name: "--song-selected-color",
-        value,
-      },
-    ];
-
-    properties.forEach((property) => {
-      document.documentElement.style.setProperty(property.name, property.value);
-    });
+    updateCSSVariables(this._state.themes[this._state.themeIndex], CSS_VARIABLE_NAMES);
   }
 
   handlePlayerPanelSetup() {

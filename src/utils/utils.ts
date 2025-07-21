@@ -159,3 +159,11 @@ export function getCssAccentColorValue(theme: Theme) {
     }
   }
 }
+
+export function updateCSSVariables(theme: Theme, properties: { name: string }[]) {
+  const value = getCssAccentColorValue(theme);
+
+  properties.forEach((property) => {
+    document.documentElement.style.setProperty(property.name, value);
+  });
+}
