@@ -38,21 +38,26 @@ export default class StateManager {
     this.props = props;
     this._state = props.state;
 
+    // Children Event Listeners
     this.initializeEventHandlers();
+
+    // Global CSS Variables Setup
+    this.handleUpdateCSSVariables();
+
+    // FPS Counter Setup
+    this.handleFPSCounter();
+
+    // Children UI Setups
     this.handlePlayerPanelSetup();
     this.handleSongsPanelSetup();
     this.handlePropertiesPanelSetup();
-    this.handleUpdateCSSVariables();
-    this.handleFpsCounter();
+
+    // Initial State Synchronization
     this.updateState({});
   }
 
   get state() {
     return this._state;
-  }
-
-  set currentSong(song: number) {
-    this.updateState({ currentSong: song });
   }
 
   get lastSongListIndex() {
@@ -68,47 +73,39 @@ export default class StateManager {
     window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
   }
 
-  handleFpsCounter() {
-    this.props.fpsCounter.dom.classList.add("fpsCounter");
-    this.props.fpsCounter.dom.removeAttribute("style");
+  initializeEventHandlers() {
+    this.handlePlayerEvents();
+    this.handleSongPanelEvents();
+    this.handlePropertiesPanelEvents();
+    this.handleWindowResize();
+    this.handleKeyboardEvents();
   }
 
   handleUpdateCSSVariables() {
     updateCSSVariables(this._state.themes[this._state.themeIndex], CSS_VARIABLE_NAMES);
   }
 
-  handlePlayerPanelSetup() {
-    this.handlePlayerVolumeUI();
+  // FPS Counter
+
+  handleFPSCounter() {
+    this.props.fpsCounter.dom.classList.add("fpsCounter");
+    this.props.fpsCounter.dom.removeAttribute("style");
   }
 
-  handlePlayerVolumeUI() {
-    this.props.player.handleVolumeUI(this._state.volume);
-  }
-
-  handleSongsPanelSetup() {
-    this.handlePopulateSongs();
-  }
-
-  handlePopulateSongs() {
-    this.props.songPanel!.handleRefreshUIState(false);
-  }
-
-  handlePropertiesPanelSetup() {
-    this.handlePopulateScenesDropdown();
-    this.handlePopulateThemesDropdown();
-    this.props.propertiesPanel.handleOrbitControlsProperties();
-    this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
-  }
-
-  handlePopulateScenesDropdown() {
-    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
-  }
-
-  handlePopulateThemesDropdown() {
-    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
+  handleShowFPSCounter() {
+    if (this._state.isFPSCounterShowing) {
+      document.body.removeChild(this.props.fpsCounter.dom);
+    } else {
+      document.body.appendChild(this.props.fpsCounter.dom);
+    }
+    this.updateState({ isFPSCounterShowing: !this._state.isFPSCounterShowing });
   }
 
   // Player Panel
+
+  handlePlayerPanelSetup() {
+    this.props.player.handleVolumeUI(this._state.volume);
+  }
 
   handlePlayerEvents() {
     this.handlePlayerChangedSong();
@@ -202,6 +199,10 @@ export default class StateManager {
 
   // Songs Panel
 
+  handleSongsPanelSetup() {
+    this.props.songPanel!.handleRefreshUIState(false);
+  }
+
   handleSongPanelEvents() {
     this.handleAddNewSong();
   }
@@ -225,6 +226,21 @@ export default class StateManager {
   }
 
   // Properties Panel
+
+  handlePropertiesPanelSetup() {
+    this.handlePopulateScenesDropdown();
+    this.handlePopulateThemesDropdown();
+    this.props.propertiesPanel.handleOrbitControlsProperties();
+    this.props.propertiesPanel!.handleSceneSchemeChanged(this.props.sceneManager!.currentScene.scheme());
+  }
+
+  handlePopulateScenesDropdown() {
+    this.props.propertiesPanel?.populateScenesDropdown(this.props.sceneManager!.scenes, this._state.sceneIndex);
+  }
+
+  handlePopulateThemesDropdown() {
+    this.props.propertiesPanel?.populateThemesDropdown(this._state.themes, this._state.themeIndex);
+  }
 
   handlePropertiesPanelEvents() {
     this.handleSceneIndex();
@@ -355,27 +371,7 @@ export default class StateManager {
     });
   }
 
-  // Events
-
-  initializeEventHandlers() {
-    this.handlePlayerEvents();
-    this.handleSongPanelEvents();
-    this.handlePropertiesPanelEvents();
-    this.handleKeyboardEvents();
-    this.handleWindowResize();
-  }
-
-  handleWindowResize() {
-    window.addEventListener("resize", () => {
-      this.updateState({
-        width: this.props.canvasContainer.getBoundingClientRect().width || 0,
-        height: this.props.canvasContainer.getBoundingClientRect().height || 0,
-      });
-      this.props.camera!.aspect = this._state.width / this._state.height;
-      this.props.camera!.updateProjectionMatrix();
-      this.props.renderer!.setSize(this._state.width, this._state.height);
-    });
-  }
+  // Animation Loop Handling
 
   handlePlayPauseAnimation() {
     if (this.state.isAnimationRunning) {
@@ -406,13 +402,18 @@ export default class StateManager {
     this.updateState({ isAnimationRunning: true });
   }
 
-  handleShowFPSCounter() {
-    if (this._state.isFPSCounterShowing) {
-      document.body.removeChild(this.props.fpsCounter.dom);
-    } else {
-      document.body.appendChild(this.props.fpsCounter.dom);
-    }
-    this.updateState({ isFPSCounterShowing: !this._state.isFPSCounterShowing });
+  // UI Events
+
+  handleWindowResize() {
+    window.addEventListener("resize", () => {
+      this.updateState({
+        width: this.props.canvasContainer.getBoundingClientRect().width || 0,
+        height: this.props.canvasContainer.getBoundingClientRect().height || 0,
+      });
+      this.props.camera!.aspect = this._state.width / this._state.height;
+      this.props.camera!.updateProjectionMatrix();
+      this.props.renderer!.setSize(this._state.width, this._state.height);
+    });
   }
 
   handleKeyboardEvents() {
