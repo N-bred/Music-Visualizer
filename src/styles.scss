@@ -482,6 +482,18 @@ form {
   display: none;
 }
 
+.fpsCounter {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  opacity: 0.7;
+  z-index: 10000;
+  width: 80px;
+  height: 40px;
+  scale: 1.2;
+}
+
 @keyframes pulsating {
   0% {
     transform: scale(1);

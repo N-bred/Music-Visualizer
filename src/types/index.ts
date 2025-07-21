@@ -63,6 +63,7 @@ export type Theme = {
 };
 
 export type State = {
+  isFPSCounterShowing: boolean;
   isUpdating: boolean;
   isAnimationRunning: boolean;
   songList: Song[];
@@ -87,6 +88,7 @@ export type StateManagerChildren = {
   songPanel: SongPanelType;
   propertiesPanel: PropertiesPanel;
   canvasPanel: CanvasPanel;
+  fpsCounter: Stats;
 };
 
 type PerssitedValue = { value: any; set: (newValue: any) => void };

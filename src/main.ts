@@ -12,6 +12,7 @@ import PropertiesPanel from "./propertiesPanel";
 import { createSongList, createThemeFromJSON, randomID, useLocalStorage } from "./utils/utils";
 import type { PersistedValues, Song, State, Theme } from "./types";
 import CanvasPanel from "./canvasPanel";
+import Stats from "stats.js";
 
 const canvasContainer = document.querySelector(".canvas-container")! as HTMLDivElement;
 
@@ -60,6 +61,7 @@ const PERSISTED_VALUES: PersistedValues = {
 };
 
 const DEFAULT_STATE: State = {
+  isFPSCounterShowing: false,
   isUpdating: false,
   isAnimationRunning: false,
   songList,
@@ -95,12 +97,7 @@ const sceneManager = new SceneManager({
 });
 sceneManager.currentScene.position.set(0, -0, 0);
 
-const light = new T.DirectionalLight(0xffffff, 1);
-light.position.set(5, 5, -10);
-light.target.position.set(0, 0, 0);
-sceneManager.currentScene.add(light);
-
-const camera = new T.PerspectiveCamera(75, DEFAULT_STATE.width / DEFAULT_STATE.height, 0.1, 2000);
+const camera = new T.PerspectiveCamera(75, DEFAULT_STATE.width / DEFAULT_STATE.height, 10, 1500);
 camera.position.set(0, 0, 1200);
 camera.lookAt(sceneManager.currentScene.position);
 
@@ -113,15 +110,6 @@ orbitControls.enableDamping = true;
 orbitControls.enableRotate = DEFAULT_STATE.rotationEnabled;
 orbitControls.enablePan = DEFAULT_STATE.panEnabled;
 orbitControls.enableZoom = DEFAULT_STATE.zoomEnabled;
-
-let delta = 0;
-
-function update() {
-  renderer.render(sceneManager.currentScene, camera);
-  sceneManager.currentScene.animate(audioManager.fft, delta);
-  orbitControls.update();
-  delta += 0.1;
-}
 
 const stateManager = new StateManager({
   state: { ...DEFAULT_STATE },
@@ -147,7 +135,17 @@ const stateManager = new StateManager({
   }),
   propertiesPanel: new PropertiesPanel(),
   canvasPanel: new CanvasPanel(renderer.domElement),
+  fpsCounter: new Stats(),
 });
+
+let delta = 0;
+
+function update() {
+  renderer.render(sceneManager.currentScene, camera);
+  sceneManager.currentScene.animate(audioManager.fft, delta);
+  orbitControls.update();
+  delta += 0.1;
+}
 
 let firstRender = false;
 

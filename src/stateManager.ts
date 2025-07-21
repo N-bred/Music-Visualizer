@@ -33,8 +33,9 @@ export default class StateManager {
     this.handlePlayerPanelSetup();
     this.handleSongsPanelSetup();
     this.handlePropertiesPanelSetup();
-    this.updateState({});
     this.handleUpdateCSSVariables();
+    this.handleFpsCounter();
+    this.updateState({});
   }
 
   get state() {
@@ -56,6 +57,11 @@ export default class StateManager {
   updateState(newState: Partial<State>) {
     this._state = { ...this._state, ...newState };
     window.dispatchEvent(new CustomEvent(stateChangedEvent, { detail: { ...this._state } }));
+  }
+
+  handleFpsCounter() {
+    this.props.fpsCounter.dom.classList.add("fpsCounter");
+    this.props.fpsCounter.dom.removeAttribute("style");
   }
 
   handleUpdateCSSVariables() {
@@ -391,8 +397,28 @@ export default class StateManager {
   }
 
   handlePlayAnimation() {
-    this.props.renderer!.setAnimationLoop(this.props.updateFn!);
+    this.props.renderer!.setAnimationLoop(() => {
+      if (this._state.isFPSCounterShowing) {
+        this.props.fpsCounter.begin();
+      }
+
+      this.props.updateFn();
+
+      if (this._state.isFPSCounterShowing) {
+        this.props.fpsCounter.end();
+      }
+    });
+
     this.updateState({ isAnimationRunning: true });
+  }
+
+  handleShowFPSCounter() {
+    if (this._state.isFPSCounterShowing) {
+      document.body.removeChild(this.props.fpsCounter.dom);
+    } else {
+      document.body.appendChild(this.props.fpsCounter.dom);
+    }
+    this.updateState({ isFPSCounterShowing: !this._state.isFPSCounterShowing });
   }
 
   handleKeyboardEvents() {
@@ -401,6 +427,9 @@ export default class StateManager {
         switch (e.code) {
           case "KeyD":
             console.log(this._state);
+            break;
+          case "KeyS":
+            this.handleShowFPSCounter();
             break;
           case "ArrowUp":
             this.props.player.handlePreviousButton();
