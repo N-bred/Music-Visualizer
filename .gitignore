@@ -30,3 +30,6 @@ dist-ssr
 
 #SONGS
 /public/songs/*
+
+#TODOS
+/TODOS.md
