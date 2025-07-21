@@ -13,6 +13,7 @@ import { createSongList, createThemeFromJSON, randomID, useLocalStorage } from "
 import type { PersistedValues, Song, State, Theme } from "./types";
 import CanvasPanel from "./canvasPanel";
 import Stats from "stats.js";
+const MODE = import.meta.env.MODE;
 
 const canvasContainer = document.querySelector(".canvas-container")! as HTMLDivElement;
 
@@ -32,24 +33,26 @@ const DEFAULT_THEMES: Theme[] = [
 ];
 
 const SONGS_FOLDER = "/public/songs/";
+let DEFAULT_SONGS: Song[] = [];
 
-const DEFAULT_SONGS: Song[] = [
-  {
-    id: randomID("System of a Down", "Forest"),
-    artistName: "System of a Down",
-    songName: "Forest",
-    fileName: "Forest.mp3",
-  },
-  {
-    id: randomID("Therion", "Clavicula Nox"),
-    artistName: "Therion",
-    songName: "Clavicula Nox",
-    fileName: "Clavicula Nox.mp3",
-  },
-];
+if (MODE === "development") {
+  DEFAULT_SONGS = [
+    {
+      id: randomID("System of a Down", "Forest"),
+      artistName: "System of a Down",
+      songName: "Forest",
+      fileName: "Forest.mp3",
+    },
+    {
+      id: randomID("Therion", "Clavicula Nox"),
+      artistName: "Therion",
+      songName: "Clavicula Nox",
+      fileName: "Clavicula Nox.mp3",
+    },
+  ];
+}
 
 const songList = createSongList(DEFAULT_SONGS, SONGS_FOLDER);
-
 const PERSISTED_VALUES: PersistedValues = {
   rotationEnabled: useLocalStorage<boolean>("rotationEnabled", true),
   panEnabled: useLocalStorage<boolean>("panEnabled", true),
