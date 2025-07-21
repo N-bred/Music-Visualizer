@@ -1,3 +1,3 @@
 export default {
-    base: '/Music-Visualizer/'
+    base: '/music-visualizer/'
 };
