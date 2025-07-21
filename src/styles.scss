@@ -10,6 +10,16 @@ html {
   --primary: #000;
   --secondary: #111;
   --font-color: #fff;
+  --top-bar-color: #cdcdcd;
+  --button-color: #aaa;
+  --button-active-color: #fff;
+  --button-hover-color: #999;
+  --button-hover-color2: #cacaca;
+  --accent-color: #444;
+  --input-border-color: #dadada;
+  --input-background-color: #fafafa;
+  --song-color: #aaa;
+  --song-selected-color: #fff;
 }
 
 body {
@@ -26,19 +36,25 @@ canvas {
 
 .app {
   display: grid;
-  background: var(--primary);
+  background: var(--primary) url("/public/texture1.jpeg") center;
+
+  background-size: cover;
   position: relative;
   height: 100%;
   width: 100%;
   overflow: hidden;
   gap: 5px;
   padding: 5px;
-  grid-template-columns: 2fr 8fr 2fr;
+  grid-template-columns: minmax(15%, 2fr) 8fr minmax(15%, 2fr);
   grid-template-rows: 0.5fr 10.5fr 1fr;
   grid-template-areas:
     "panel-songs top-bar panel-data"
     "panel-songs canvas-container panel-data"
     "player player player";
+
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: minmax(25%, 1fr) 10fr minmax(25%, 1fr);
+  }
 
   @media screen and (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -49,15 +65,45 @@ canvas {
       "player";
   }
 
+  &.theater {
+    grid-template-areas:
+      "panel-songs canvas-container canvas-container"
+      "panel-data canvas-container canvas-container"
+      "player player player";
+    grid-template-rows: 4.5fr 5.5fr 1fr;
+    grid-template-columns: 13% 87%;
+    transition: grid-template-rows 0.3s ease-in-out;
+
+    @media screen and (max-width: 1200px) {
+      grid-template-columns: 29% 69%;
+    }
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 8fr 3fr;
+      grid-template-areas:
+        "top-bar"
+        "canvas-container"
+        "player";
+    }
+
+    & .top-bar {
+      display: none;
+    }
+  }
+
   .panel-songs,
   .panel-data {
+    padding-top: 70px;
+
     @media screen and (max-width: 768px) {
       position: absolute;
-      top: 0;
+      bottom: 0;
       width: 100%;
-      height: 100%;
+      height: 95%;
       transition: transform 0.3s ease-in-out;
       z-index: 1;
+      padding-top: 50px;
 
       &.active {
         transform: translateX(0%);
@@ -89,6 +135,8 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(10px);
+  background: rgba(10, 10, 10, 0.9);
 }
 
 .panel-songs {
@@ -96,7 +144,6 @@ canvas {
   grid-area: panel-songs;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--secondary);
 }
 
 .top-bar {
@@ -106,13 +153,14 @@ canvas {
   font-style: normal;
   position: relative;
   z-index: 10;
-
   background: var(--primary);
 
   p {
     text-align: center;
     width: 100%;
     flex-basis: 100%;
+    font-size: 14px;
+    color: var(--top-bar-color);
   }
 }
 
@@ -121,36 +169,66 @@ canvas {
   grid-area: panel-data;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--secondary);
 }
 
 .canvas-container {
   grid-area: canvas-container;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--secondary);
+  position: relative;
+
+  .canvas-buttons {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    z-index: 1;
+    gap: 5px;
+
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+
+    button {
+      padding: 1.3rem;
+      margin: 0;
+      background: transparent;
+      color: var(--button-color);
+      font-size: 22px;
+      outline: none;
+
+      &:hover,
+      &.active {
+        color: var(--button-active-color);
+        box-shadow: none;
+      }
+    }
+  }
 }
 
 .player {
   grid-area: player;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  background: var(--primary);
   display: grid;
   grid-template-columns: 2fr 8fr 2fr;
-  grid-template-areas: ". buttons-menu volume-menu";
+  grid-template-areas:
+    ". progress-bar-container ."
+    ". buttons-menu volume-menu";
   place-items: center;
 
   @media screen and (max-width: 768px) {
-    grid-template-rows: 100px 1fr;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr;
     grid-template-areas:
+      "progress-bar-container"
       "buttons-menu"
       "volume-menu";
   }
 
   .buttons-menu {
     grid-area: buttons-menu;
+    margin-bottom: 15px;
 
     @media screen and (max-width: 768px) {
       align-self: self-end;
@@ -162,19 +240,24 @@ canvas {
       display: inline-flex;
       justify-content: center;
       align-items: center;
-      background: #aaa;
-      color: #000;
+      background: var(--button-color);
+      color: var(--primary);
       padding: 20px;
       margin: 0 15px;
       aspect-ratio: 4/3;
       font-size: 18px;
+      min-width: 15.5px;
 
       &:hover {
-        background: #999;
+        background: var(--button-hover-color);
       }
 
       &.hide {
         display: none;
+      }
+
+      &.pause-button {
+        animation: pulsating 0.725s ease-in-out infinite;
       }
     }
   }
@@ -191,7 +274,30 @@ canvas {
 
     input {
       transform: scale(0.8);
-      accent-color: #444;
+      accent-color: var(--accent-color);
+    }
+  }
+
+  .progress-bar {
+    width: 100%;
+    accent-color: var(--accent-color);
+
+    &-container {
+      grid-area: progress-bar-container;
+      width: 80%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin: 30px 0;
+      gap: 0 15px;
+
+      @media screen and (max-width: 768px) {
+        width: 90%;
+      }
+
+      span {
+        font-weight: 800;
+      }
     }
   }
 }
@@ -227,8 +333,177 @@ canvas {
     &-3 {
       width: 100%;
       height: 2px;
-      background: #fff;
+      background: var(--font-color);
       margin: 2px 0;
     }
+  }
+}
+
+.divider {
+  display: block;
+  height: 2px;
+  background: var(--font-color);
+  margin: 10px 0;
+}
+
+label {
+  font-weight: bold;
+  margin: 10px 0 0;
+}
+
+input {
+  padding: 10px 15px;
+  background: var(--primary);
+  color: var(--input-background-color);
+  border: none;
+  border-bottom: 1px solid var(--input-border-color);
+  border-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+
+  &:focus {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--font-color);
+  }
+}
+
+button {
+  all: unset;
+  margin: 15px 0;
+  box-sizing: border-box;
+  background: var(--secondary);
+  color: var(--button-hover-color2);
+  outline: 2px solid var(--button-hover-color2);
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:hover {
+    box-shadow: 0px 0px 10px var(--accent-color);
+    color: var(--button-active-color);
+  }
+}
+
+select {
+  border: 2px solid var(--secondary);
+  background: #444;
+  padding: 5px;
+  color: var(--font-color);
+  border-radius: 5px;
+  margin: 10px 0;
+  width: 100%;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--accent-color);
+  margin: 15px 0 5px;
+  align-self: flex-start;
+}
+
+.panel-songs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: unset;
+  justify-content: flex-start;
+
+  .song-list-container {
+    ul {
+      list-style: none;
+      width: 100%;
+      li {
+        a {
+          color: var(--song-color);
+          text-decoration: none;
+          padding: 5px 0;
+          display: block;
+
+          &:hover {
+            color: var(--song-selected-color);
+          }
+
+          &.active {
+            color: var(--song-selected-color);
+            &:hover {
+              color: var(--song-selected-color);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hide {
+  transform: scale(0);
+  pointer-events: none;
+  height: 0;
+}
+
+.panel-data {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: unset;
+  justify-content: flex-start;
+}
+
+.properties-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-songs,
+.panel-data {
+  padding: 50px 1.5rem 0;
+  overflow-y: scroll;
+
+  button {
+    width: 100%;
+  }
+
+  @media screen and (max-width: 768px) {
+    padding: 50px 0.5rem 0;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.fpsCounter {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  opacity: 0.7;
+  z-index: 10000;
+  width: 80px;
+  height: 40px;
+  scale: 1.2;
+}
+
+@keyframes pulsating {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
