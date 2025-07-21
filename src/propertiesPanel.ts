@@ -176,10 +176,6 @@ export default class PropertiesPanel {
     populateDropdown(this.scenesDropdown, scenes, selectedIndex);
   }
 
-  populateThemesDropdown(themes: Theme[], selectedIndex: number) {
-    populateDropdown(this.themesDropdown, themes, selectedIndex);
-  }
-
   handleScenesDropdown() {
     window.dispatchEvent(
       new CustomEvent(changedSceneIndexEvent, {
@@ -188,6 +184,10 @@ export default class PropertiesPanel {
         },
       })
     );
+  }
+
+  populateThemesDropdown(themes: Theme[], selectedIndex: number) {
+    populateDropdown(this.themesDropdown, themes, selectedIndex);
   }
 
   handleThemesDropdown() {
