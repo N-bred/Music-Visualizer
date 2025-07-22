@@ -85,7 +85,10 @@ const DEFAULT_STATE: State = {
 };
 
 const audioManager = new AudioManager(DEFAULT_STATE.songList, DEFAULT_STATE.numberOfFrequencies);
-audioManager.setSong(DEFAULT_STATE.currentSong);
+
+if (MODE === "development") {
+  audioManager.setSong(DEFAULT_STATE.currentSong);
+}
 audioManager.volume = DEFAULT_STATE.volume;
 
 const sceneManager = new SceneManager({
@@ -114,32 +117,35 @@ orbitControls.enableRotate = DEFAULT_STATE.rotationEnabled;
 orbitControls.enablePan = DEFAULT_STATE.panEnabled;
 orbitControls.enableZoom = DEFAULT_STATE.zoomEnabled;
 
-const stateManager = new StateManager({
-  state: { ...DEFAULT_STATE },
-  persistedValues: PERSISTED_VALUES,
+const stateManager = new StateManager(
+  {
+    state: { ...DEFAULT_STATE },
+    persistedValues: PERSISTED_VALUES,
 
-  // Helpers
-  canvasContainer,
-  audioManager,
-  sceneManager,
-  camera,
-  orbitControls,
-  renderer,
-  updateFn: update,
+    // Helpers
+    canvasContainer,
+    audioManager,
+    sceneManager,
+    camera,
+    orbitControls,
+    renderer,
+    updateFn: update,
 
-  // Children
-  player: new Player({
-    currentSong: DEFAULT_STATE.currentSong,
-    songList: DEFAULT_STATE.songList,
-  }),
-  songPanel: new SongPanel({
-    currentSong: DEFAULT_STATE.currentSong,
-    songList: DEFAULT_STATE.songList,
-  }),
-  propertiesPanel: new PropertiesPanel(),
-  canvasPanel: new CanvasPanel(renderer.domElement),
-  fpsCounter: new Stats(),
-});
+    // Children
+    player: new Player({
+      currentSong: DEFAULT_STATE.currentSong,
+      songList: DEFAULT_STATE.songList,
+    }),
+    songPanel: new SongPanel({
+      currentSong: DEFAULT_STATE.currentSong,
+      songList: DEFAULT_STATE.songList,
+    }),
+    propertiesPanel: new PropertiesPanel(),
+    canvasPanel: new CanvasPanel(renderer.domElement),
+    fpsCounter: new Stats(),
+  },
+  MODE
+);
 
 let delta = 0;
 

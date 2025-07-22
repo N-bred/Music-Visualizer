@@ -34,7 +34,7 @@ export default class StateManager {
   private props: StateManagerProps;
   private _state: State;
 
-  constructor(props: StateManagerProps) {
+  constructor(props: StateManagerProps, mode: string) {
     this.props = props;
     this._state = props.state;
 
@@ -49,7 +49,11 @@ export default class StateManager {
 
     // Children UI Setups
     this.handlePlayerPanelSetup();
-    this.handleSongsPanelSetup();
+
+    if (mode === "development") {
+      this.handleSongsPanelSetup();
+    }
+
     this.handlePropertiesPanelSetup();
 
     // Initial State Synchronization
