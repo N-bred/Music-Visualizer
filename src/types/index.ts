@@ -124,3 +124,8 @@ export type SceneManagerProps = {
   scenes: Scene[];
   index: number;
 };
+
+export type ConstructedFFT = {
+  reloadFFT: () => void;
+  fft: Uint8Array<ArrayBuffer>;
+};

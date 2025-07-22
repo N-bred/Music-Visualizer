@@ -144,7 +144,7 @@ export default class StateManager {
       this.handlePlayerProgressBarInterval(true);
       this.props.player.handleUpdateProgressBarUI(0, 0);
       this.props.songPanel.handleSongListStyles(this._state.currentSong);
-      await this.props.audioManager.setSong(this._state.currentSong);
+      this.props.audioManager.setSong(this._state.currentSong);
 
       if (this._state.isPlaying) {
         this.props.audioManager.play();

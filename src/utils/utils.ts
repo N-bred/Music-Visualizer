@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { Schema, Song, Theme } from "../types";
+import type { ConstructedFFT, Schema, Song, Theme } from "../types";
 
 export function randomID(artistName: string, songName: string) {
   return artistName + " " + songName;
@@ -166,4 +166,20 @@ export function updateCSSVariables(theme: Theme, properties: { name: string }[])
   properties.forEach((property) => {
     document.documentElement.style.setProperty(property.name, value);
   });
+}
+
+export function constructFFT(audio: HTMLAudioElement, fftSize: number): ConstructedFFT {
+  const audioCtx = new AudioContext();
+  const analyser = audioCtx.createAnalyser();
+  const source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  analyser.fftSize = fftSize;
+  let frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(frequencyData);
+
+  return {
+    reloadFFT: () => analyser.getByteFrequencyData(frequencyData),
+    fft: frequencyData,
+  };
 }

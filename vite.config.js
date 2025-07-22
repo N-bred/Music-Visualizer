@@ -1,3 +1,3 @@
 export default {
-    base: '/music-visualizer/'
+  base: process.env.mode === "prodiction" ? "/music-visualizer" : "/",
 };

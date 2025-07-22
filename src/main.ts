@@ -89,6 +89,7 @@ const audioManager = new AudioManager(DEFAULT_STATE.songList, DEFAULT_STATE.numb
 if (MODE === "development") {
   audioManager.setSong(DEFAULT_STATE.currentSong);
 }
+
 audioManager.volume = DEFAULT_STATE.volume;
 
 const sceneManager = new SceneManager({

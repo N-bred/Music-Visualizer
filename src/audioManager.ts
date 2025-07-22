@@ -1,24 +1,22 @@
-import * as T from "three";
-import type { Song } from "./types";
 import { songChangedEvent, songEndedEvent, stateChangedEvent } from "./Events";
+import type { ConstructedFFT, Song } from "./types";
+import { constructFFT } from "./utils/utils";
 
 export default class AudioManager {
-  private listener: T.AudioListener;
-  private sound: T.Audio;
-  private audioLoader: T.AudioLoader;
-  private analyser: T.AudioAnalyser;
   private songList: Song[];
   private _currentTime: number;
   private currentTimeInterval: number;
+  private audioElement: HTMLAudioElement;
+  private constructedFFT: ConstructedFFT;
+  private _duration: number;
 
   constructor(songList: Song[], numberOfFrequencies: number) {
     this.songList = songList;
-    this.listener = new T.AudioListener();
-    this.sound = new T.Audio(this.listener);
-    this.audioLoader = new T.AudioLoader();
-    this.analyser = new T.AudioAnalyser(this.sound, numberOfFrequencies);
     this._currentTime = 0;
     this.currentTimeInterval = 0;
+    this.audioElement = document.querySelector("#main-audio")!;
+    this.constructedFFT = constructFFT(this.audioElement, numberOfFrequencies);
+    this._duration = 0;
 
     window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
       this.volume = e.detail.volume;
@@ -26,25 +24,29 @@ export default class AudioManager {
     });
   }
 
-  async setSong(songIndex: number) {
-    this.stop();
+  setSong(songIndex: number) {
     const song = this.songList[songIndex];
-    const buffer = await this.audioLoader.loadAsync(song.src!);
-    this.sound.setBuffer(buffer);
+    this.stop();
+    this.audioElement.src = song.src!;
+    this.audioElement.load();
 
-    window.dispatchEvent(new CustomEvent(songChangedEvent));
+    this.audioElement.onloadeddata = () => {
+      this._duration = this.audioElement.duration;
+      window.dispatchEvent(new CustomEvent(songChangedEvent));
+    };
 
-    this.sound.onEnded = () => {
+    this.audioElement.onended = () => {
       window.dispatchEvent(new CustomEvent(songEndedEvent));
     };
   }
 
   set volume(newVolume: number) {
-    this.sound.setVolume(newVolume);
+    this.audioElement.volume = newVolume;
   }
 
   get duration() {
-    return this.sound.buffer?.duration;
+    console.log(this._duration);
+    return this._duration;
   }
 
   get currentTime() {
@@ -53,27 +55,27 @@ export default class AudioManager {
 
   playFromSecond(second: number) {
     this.handleCurrentTimeInterval(true);
-    this.sound.stop(0);
-    this.sound.offset = second;
+    this.audioElement.pause();
+    this.audioElement.currentTime = second;
+    this.audioElement.play();
     this._currentTime = second;
-    this.sound.play();
     this.handleCurrentTimeInterval(false);
   }
 
   play() {
-    if (this.sound.isPlaying) return;
-    this.sound.play();
+    if (!this.audioElement.paused) return;
+    this.audioElement.play();
     this.handleCurrentTimeInterval(false);
   }
 
   pause() {
-    this.sound.pause();
+    this.audioElement.pause();
     this.handleCurrentTimeInterval(true);
   }
 
   stop() {
-    this.sound.stop(0);
-    this.sound.offset = 0;
+    this.audioElement.pause();
+    this.audioElement.currentTime = 0;
     this._currentTime = 0;
     this.handleCurrentTimeInterval(true);
   }
@@ -89,6 +91,7 @@ export default class AudioManager {
   }
 
   get fft() {
-    return this.analyser.getFrequencyData();
+    this.constructedFFT.reloadFFT();
+    return this.constructedFFT.fft;
   }
 }
