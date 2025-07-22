@@ -475,6 +475,8 @@ form {
 
   @media screen and (max-width: 768px) {
     padding: 50px 0.5rem 0;
+    backdrop-filter: blur(3px);
+    background-color: rgba(10, 10, 10, 0.6);
   }
 }
 

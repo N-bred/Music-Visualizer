@@ -89,6 +89,7 @@ export default class PropertiesPanel {
     this.backgroundColorInput.addEventListener("change", (e) => this.handleThemeInputOnChange(e, "backgroundColor"));
 
     window.addEventListener(stateChangedEvent, (e: CustomEventInit) => {
+      this.animationCheckbox.dataset.enabled = e.detail.isAnimationRunning;
       this.rotationCheckbox.dataset.enabled = e.detail.rotationEnabled;
       this.panCheckbox.dataset.enabled = e.detail.panEnabled;
       this.zoomCheckbox.dataset.enabled = e.detail.zoomEnabled;
@@ -219,7 +220,7 @@ export default class PropertiesPanel {
   }
 
   handleAnimationCheckbox() {
-    window.dispatchEvent(new CustomEvent(changedAnimationCheckboxEvent, { detail: { animationEnabled: this.animationCheckbox.checked } }));
+    window.dispatchEvent(new CustomEvent(changedAnimationCheckboxEvent, { detail: { isAnimationRunning: this.animationCheckbox.checked } }));
   }
 
   handleRotationCheckbox() {
@@ -238,7 +239,8 @@ export default class PropertiesPanel {
     e.preventDefault();
   }
 
-  handleOrbitControlsProperties() {
+  handleCheckboxProperties() {
+    alternateCheckedPropertie(this.animationCheckbox.dataset.enabled!, this.animationCheckbox);
     alternateCheckedPropertie(this.rotationCheckbox.dataset.enabled!, this.rotationCheckbox);
     alternateCheckedPropertie(this.panCheckbox.dataset.enabled!, this.panCheckbox);
     alternateCheckedPropertie(this.zoomCheckbox.dataset.enabled!, this.zoomCheckbox);

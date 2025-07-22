@@ -235,7 +235,7 @@ export default class StateManager {
   handlePropertiesPanelSetup() {
     this.handlePopulateScenesDropdown();
     this.handlePopulateThemesDropdown();
-    this.props.propertiesPanel.handleOrbitControlsProperties();
+    this.props.propertiesPanel.handleCheckboxProperties();
     this.props.propertiesPanel.handleSceneSchemeChanged(this.props.sceneManager.currentScene.scheme());
   }
 
@@ -285,9 +285,9 @@ export default class StateManager {
 
   handleAnimationCheckbox() {
     window.addEventListener(changedAnimationCheckboxEvent, (e: CustomEventInit) => {
-      this.props.persistedValues.animationEnabled.set(e.detail.animationEnabled);
+      this.props.persistedValues.isAnimationRunning.set(e.detail.isAnimationRunning);
       this.handlePlayPauseAnimation();
-      this.updateState({ isAnimationRunning: e.detail.animationEnabled });
+      this.updateState({ isAnimationRunning: e.detail.isAnimationRunning });
     });
   }
 
