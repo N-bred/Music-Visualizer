@@ -94,6 +94,7 @@ export type StateManagerChildren = {
 type PerssitedValue = { value: any; set: (newValue: any) => void };
 
 export type PersistedValues = {
+  animationEnabled: PerssitedValue;
   rotationEnabled: PerssitedValue;
   panEnabled: PerssitedValue;
   zoomEnabled: PerssitedValue;

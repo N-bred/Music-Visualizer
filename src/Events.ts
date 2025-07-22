@@ -8,6 +8,7 @@ export const changedThemeIndexEvent = "changedThemeIndex";
 export const changedSceneIndexEvent = "changedSceneIndex";
 export const sceneSchemeInputChangedEvent = "sceneSchemeInputChanged";
 export const sceneSchemeInputsCreatedEvent = "sceneSchemeInputsCreated";
+export const changedAnimationCheckboxEvent = "changedAnimationCheckbox";
 export const changedRotationCheckboxEvent = "changedRotationCheckbox";
 export const changedPanCheckboxEvent = "changedPanCheckbox";
 export const changedZoomCheckboxEvent = "changedZoomCheckbox";

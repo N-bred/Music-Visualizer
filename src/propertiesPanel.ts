@@ -11,6 +11,7 @@ import {
   updateThemeButtonEvent,
   addThemeButtonEvent,
   updatedThemeDataEvent,
+  changedAnimationCheckboxEvent,
 } from "./Events";
 import type { Theme, Scene, Schema } from "./types";
 import { alternateCheckedPropertie, populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
@@ -29,6 +30,7 @@ export default class PropertiesPanel {
   private rotationCheckbox: HTMLInputElement;
   private panCheckbox: HTMLInputElement;
   private zoomCheckbox: HTMLInputElement;
+  private animationCheckbox: HTMLInputElement;
   private scenesDropdownContainer: HTMLDivElement;
   private scenesPropertiesContainer: HTMLDivElement;
   private themesDropdownContainer: HTMLDivElement;
@@ -51,6 +53,7 @@ export default class PropertiesPanel {
     this.rotationCheckbox = document.querySelector("#enable-rotation-checkbox")!;
     this.panCheckbox = document.querySelector("#enable-pan-checkbox")!;
     this.zoomCheckbox = document.querySelector("#enable-zoom-checkbox")!;
+    this.animationCheckbox = document.querySelector("#enable-animation-checkbox")!;
     this.scenesDropdownContainer = document.querySelector(".scenes-dropdown-container")!;
     this.scenesPropertiesContainer = document.querySelector(".scenes-properties-container")!;
     this.themesDropdownContainer = document.querySelector(".themes-dropdown-container")!;
@@ -73,6 +76,7 @@ export default class PropertiesPanel {
     this.rotationCheckbox.addEventListener("change", () => this.handleRotationCheckbox());
     this.panCheckbox.addEventListener("change", () => this.handlePanCheckbox());
     this.zoomCheckbox.addEventListener("change", () => this.handleZoomCheckbox());
+    this.animationCheckbox.addEventListener("change", () => this.handleAnimationCheckbox());
     this.customThemesAddButton.addEventListener("click", () => this.handleCustomThemesAddButton());
     this.customThemesUpdateButton.addEventListener("click", () => this.handleCustomThemesUpdateButton());
     this.customThemesDeleteButton.addEventListener("click", () => this.handleCustomThemesDeleteButton());
@@ -212,6 +216,10 @@ export default class PropertiesPanel {
         },
       })
     );
+  }
+
+  handleAnimationCheckbox() {
+    window.dispatchEvent(new CustomEvent(changedAnimationCheckboxEvent, { detail: { animationEnabled: this.animationCheckbox.checked } }));
   }
 
   handleRotationCheckbox() {

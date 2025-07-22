@@ -53,7 +53,9 @@ if (MODE === "development") {
 }
 
 const songList = createSongList(DEFAULT_SONGS, SONGS_FOLDER);
+
 const PERSISTED_VALUES: PersistedValues = {
+  animationEnabled: useLocalStorage<boolean>("animationEnabled", MODE === "production"),
   rotationEnabled: useLocalStorage<boolean>("rotationEnabled", true),
   panEnabled: useLocalStorage<boolean>("panEnabled", true),
   zoomEnabled: useLocalStorage<boolean>("zoomEnabled", true),
@@ -66,7 +68,7 @@ const PERSISTED_VALUES: PersistedValues = {
 const DEFAULT_STATE: State = {
   isFPSCounterShowing: false,
   isUpdating: false,
-  isAnimationRunning: false,
+  isAnimationRunning: PERSISTED_VALUES.animationEnabled.value,
   songList,
   rotationEnabled: PERSISTED_VALUES.rotationEnabled.value,
   panEnabled: PERSISTED_VALUES.panEnabled.value,

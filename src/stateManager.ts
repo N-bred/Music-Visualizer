@@ -17,6 +17,7 @@ import {
   updateThemeButtonEvent,
   addThemeButtonEvent,
   updatedThemeDataEvent,
+  changedAnimationCheckboxEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
 import { threeThemeToObject, updateCSSVariables } from "./utils/utils";
@@ -249,7 +250,7 @@ export default class StateManager {
   handlePropertiesPanelEvents() {
     this.handleSceneIndex();
     this.handleSceneChangeTheme();
-    this.handleRotationCheckbox();
+    this.handleAnimationCheckbox();
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
     this.handleAddCustomTheme();
@@ -279,6 +280,14 @@ export default class StateManager {
       this.props.sceneManager.currentScene.changeTheme(this._state.themeIndex);
       this.props.sceneManager.setCurrentThemeIndex(this._state.themeIndex);
       this.handleUpdateCSSVariables();
+    });
+  }
+
+  handleAnimationCheckbox() {
+    window.addEventListener(changedAnimationCheckboxEvent, (e: CustomEventInit) => {
+      this.props.persistedValues.animationEnabled.set(e.detail.animationEnabled);
+      this.handlePlayPauseAnimation();
+      this.updateState({ isAnimationRunning: e.detail.animationEnabled });
     });
   }
 

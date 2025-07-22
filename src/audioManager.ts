@@ -45,7 +45,6 @@ export default class AudioManager {
   }
 
   get duration() {
-    console.log(this._duration);
     return this._duration;
   }
 
