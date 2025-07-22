@@ -110,6 +110,12 @@ export default class StateManager {
 
   handlePlayerPanelSetup() {
     this.props.player.handleVolumeUI(this._state.volume);
+    this.handlePlayButtonEnabled();
+  }
+
+  handlePlayButtonEnabled() {
+    const canPlay = this._state.songList.length > 0;
+    this.props.player.disablePlayButton(!canPlay);
   }
 
   handlePlayerEvents() {
@@ -227,6 +233,7 @@ export default class StateManager {
       });
 
       this.props.songPanel.handlePostFormSubmission(true);
+      this.handlePlayButtonEnabled();
     });
   }
 
