@@ -12,6 +12,7 @@ import {
   addThemeButtonEvent,
   updatedThemeDataEvent,
   changedAnimationCheckboxEvent,
+  revertThemeEvent,
 } from "./Events";
 import type { Theme, Scene, Schema } from "./types";
 import { alternateCheckedPropertie, populateDropdown, switchPanels } from "./utils/commonUIBehaviors";
@@ -46,6 +47,7 @@ export default class PropertiesPanel {
   private initialColorInput: HTMLInputElement;
   private transitionColorInput: HTMLInputElement;
   private backgroundColorInput: HTMLInputElement;
+  private isUpdating: boolean;
 
   constructor() {
     this.scenesDropdown = document.querySelector("#scenes-dropdown")!;
@@ -69,6 +71,7 @@ export default class PropertiesPanel {
     this.initialColorInput = document.querySelector("#initial-color-input")!;
     this.transitionColorInput = document.querySelector("#transition-color-input")!;
     this.backgroundColorInput = document.querySelector("#background-color-input")!;
+    this.isUpdating = false;
 
     // EVENTS
     this.scenesDropdown.addEventListener("change", () => this.handleScenesDropdown());
@@ -93,6 +96,7 @@ export default class PropertiesPanel {
       this.rotationCheckbox.dataset.enabled = e.detail.rotationEnabled;
       this.panCheckbox.dataset.enabled = e.detail.panEnabled;
       this.zoomCheckbox.dataset.enabled = e.detail.zoomEnabled;
+      this.isUpdating = e.detail.isUpdating;
     });
   }
 
@@ -140,11 +144,18 @@ export default class PropertiesPanel {
   handleCustomThemesAddButton() {
     if (this.customThemesAddButton.dataset.open === "true") {
       this.handleButtonsUI(false);
-      this.customThemesDeleteButton.click();
+
+      if (!this.isUpdating) {
+        this.customThemesDeleteButton.click();
+      } else {
+        window.dispatchEvent(new CustomEvent(revertThemeEvent));
+      }
+
       return;
     }
 
-    this.handleButtonsUI(false);
+    this.handleButtonsUI(true);
+
     window.dispatchEvent(
       new CustomEvent(addThemeButtonEvent, {
         detail: {

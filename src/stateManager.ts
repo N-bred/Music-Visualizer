@@ -18,6 +18,7 @@ import {
   addThemeButtonEvent,
   updatedThemeDataEvent,
   changedAnimationCheckboxEvent,
+  revertThemeEvent,
 } from "./Events";
 import type { Theme, Song, StateManagerProps, State } from "./types";
 import { threeThemeToObject, updateCSSVariables } from "./utils/utils";
@@ -262,6 +263,7 @@ export default class StateManager {
     this.handleZoomCheckbox();
     this.handleAddCustomTheme();
     this.handleUpdatedThemeData();
+    this.handleRevertTheme();
     this.handleAddCustomThemeButton();
     this.handleUpdateCustomThemeButton();
     this.handleDeleteCustomThemeButton();
@@ -351,6 +353,16 @@ export default class StateManager {
     });
   }
 
+  handleRevertTheme() {
+    window.addEventListener(revertThemeEvent, () => {
+      if (this._state.previousTheme) {
+        this._state.themes[this._state.themeIndex] = { ...this._state.previousTheme };
+        this.updateState({ previousTheme: undefined });
+        this.props.sceneManager.setCurrentThemeIndex(this._state.themeIndex);
+      }
+    });
+  }
+
   handleAddCustomThemeButton() {
     window.addEventListener(addThemeButtonEvent, (e: CustomEventInit) => {
       this.updateState({
@@ -367,15 +379,16 @@ export default class StateManager {
 
   handleUpdateCustomThemeButton() {
     window.addEventListener(updateThemeButtonEvent, (e: CustomEventInit) => {
-      this.updateState({
-        isUpdating: e.detail.isUpdating,
-      });
-
       const theme = this._state.themes.find((_, i) => i === e.detail.themeIndex);
 
       if (theme) {
         const formData = threeThemeToObject(theme);
         this.props.propertiesPanel.handleCustomThemesFormFillContent(formData);
+
+        this.updateState({
+          isUpdating: e.detail.isUpdating,
+          previousTheme: { ...theme },
+        });
       }
     });
   }

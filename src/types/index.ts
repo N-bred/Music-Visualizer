@@ -63,6 +63,7 @@ export type Theme = {
 };
 
 export type State = {
+  previousTheme?: Theme;
   isFPSCounterShowing: boolean;
   isUpdating: boolean;
   isAnimationRunning: boolean;
