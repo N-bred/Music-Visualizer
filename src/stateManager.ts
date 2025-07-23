@@ -419,7 +419,9 @@ export default class StateManager {
 
   handlePauseAnimation() {
     this.props.renderer.setAnimationLoop(null);
-    this.updateState({ isAnimationRunning: false });
+    const { value } = this.props.persistedValues.isAnimationRunning.set(false);
+    this.updateState({ isAnimationRunning: value });
+    this.props.propertiesPanel.handleCheckboxProperties();
   }
 
   handlePlayAnimation() {
@@ -431,7 +433,9 @@ export default class StateManager {
       }
     });
 
-    this.updateState({ isAnimationRunning: true });
+    const { value } = this.props.persistedValues.isAnimationRunning.set(true);
+    this.updateState({ isAnimationRunning: value });
+    this.props.propertiesPanel.handleCheckboxProperties();
   }
 
   // UI Events

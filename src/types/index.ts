@@ -92,17 +92,17 @@ export type StateManagerChildren = {
   fpsCounter: Stats;
 };
 
-type PerssitedValue = { value: any; set: (newValue: any) => void };
+export type PersistedValue<T> = { value: T; set: (newValue: T) => { value: T } };
 
 export type PersistedValues = {
-  isAnimationRunning: PerssitedValue;
-  rotationEnabled: PerssitedValue;
-  panEnabled: PerssitedValue;
-  zoomEnabled: PerssitedValue;
-  volume: PerssitedValue;
-  sceneIndex: PerssitedValue;
-  themeIndex: PerssitedValue;
-  themes: PerssitedValue;
+  isAnimationRunning: PersistedValue<boolean>;
+  rotationEnabled: PersistedValue<boolean>;
+  panEnabled: PersistedValue<boolean>;
+  zoomEnabled: PersistedValue<boolean>;
+  volume: PersistedValue<number>;
+  sceneIndex: PersistedValue<number>;
+  themeIndex: PersistedValue<number>;
+  themes: PersistedValue<Theme[]>;
 };
 
 export type StateManagerProps = {

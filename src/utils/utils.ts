@@ -1,5 +1,5 @@
 import * as T from "three";
-import type { ConstructedFFT, Schema, Song, Theme } from "../types";
+import type { ConstructedFFT, PersistedValue, Schema, Song, Theme } from "../types";
 
 export function randomID(artistName: string, songName: string) {
   return artistName + " " + songName;
@@ -104,7 +104,7 @@ function getFromLocalStorage(key: string, value: any) {
   return null;
 }
 
-export function useLocalStorage<K extends boolean | string | number | object>(key: string, value: K): { set: (newVal: K) => { value: K }; value: K } {
+export function useLocalStorage<K extends boolean | string | number | object>(key: string, value: K): PersistedValue<K> {
   const response = {
     set: (newValue: K) => setLocalStorage(key, newValue),
     value,
@@ -122,7 +122,9 @@ export function useLocalStorage<K extends boolean | string | number | object>(ke
   return response;
 }
 
-export function createThemeFromJSON(jsonTheme: { name: string; color: number; transitionColor: number; backgroundColor: number }[]): Theme[] {
+export function createThemeFromJSON(
+  jsonTheme: Theme[] | { name: string; color: number; transitionColor: number; backgroundColor: number }[]
+): Theme[] {
   return jsonTheme
     .filter((theme) => theme.name !== "")
     .map((theme) => ({
