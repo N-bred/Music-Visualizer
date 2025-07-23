@@ -259,6 +259,7 @@ export default class StateManager {
     this.handleSceneIndex();
     this.handleSceneChangeTheme();
     this.handleAnimationCheckbox();
+    this.handleRotationCheckbox();
     this.handlePanCheckbox();
     this.handleZoomCheckbox();
     this.handleAddCustomTheme();
