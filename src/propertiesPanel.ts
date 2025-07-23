@@ -154,7 +154,7 @@ export default class PropertiesPanel {
       return;
     }
 
-    this.handleButtonsUI(true);
+    this.handleButtonsUI(false);
 
     window.dispatchEvent(
       new CustomEvent(addThemeButtonEvent, {
