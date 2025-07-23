@@ -39,7 +39,7 @@ export type Schema = {
   type: HTMLInputTypes;
   order: number;
   required: HTMLInputElement["required"];
-  defaultValue: string | number;
+  defaultValue: string | number | boolean;
   textContent: string;
   minValue?: string | number;
   maxValue?: string | number;

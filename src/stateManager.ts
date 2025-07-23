@@ -411,14 +411,10 @@ export default class StateManager {
 
   handlePlayAnimation() {
     this.props.renderer.setAnimationLoop(() => {
-      if (this._state.isFPSCounterShowing) {
-        this.props.fpsCounter.begin();
-      }
-
       this.props.updateFn();
 
       if (this._state.isFPSCounterShowing) {
-        this.props.fpsCounter.end();
+        this.props.fpsCounter.update();
       }
     });
 

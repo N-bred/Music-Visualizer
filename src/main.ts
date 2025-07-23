@@ -13,6 +13,7 @@ import { createSongList, createThemeFromJSON, randomID, useLocalStorage } from "
 import type { PersistedValues, Song, State, Theme } from "./types";
 import CanvasPanel from "./canvasPanel";
 import Stats from "stats.js";
+import SpiralScene from "./scenes/spiralScene";
 const MODE = import.meta.env.MODE;
 
 const canvasContainer = document.querySelector(".canvas-container")! as HTMLDivElement;
@@ -101,6 +102,10 @@ const sceneManager = new SceneManager({
       name: "Flat Circle",
       scene: new FlatCircleScene(DEFAULT_STATE.numberOfFrequencies, DEFAULT_STATE.themes, DEFAULT_STATE.themeIndex),
     },
+    {
+      name: "Spiral",
+      scene: new SpiralScene(DEFAULT_STATE.numberOfFrequencies, DEFAULT_STATE.themes, DEFAULT_STATE.themeIndex),
+    },
   ],
   index: DEFAULT_STATE.sceneIndex,
 });
@@ -156,7 +161,7 @@ function update() {
   renderer.render(sceneManager.currentScene, camera);
   sceneManager.currentScene.animate(audioManager.fft, delta);
   orbitControls.update();
-  delta += 0.1;
+  delta += 0.001;
 }
 
 let firstRender = false;
@@ -167,5 +172,5 @@ while (!firstRender) {
 }
 
 if (stateManager.state.isAnimationRunning) {
-  renderer.setAnimationLoop(update);
+  stateManager.handlePlayAnimation();
 }
