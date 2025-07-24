@@ -80,6 +80,7 @@ export default class Player {
   handlePlayPauseButton(forceAction?: boolean) {
     if (this.playButton.getAttribute("disabled") !== null) return;
     const isPlaying = forceAction ?? !this.isPlaying;
+    
     this.handlePlayPauseButtonUI(isPlaying);
 
     window.dispatchEvent(
